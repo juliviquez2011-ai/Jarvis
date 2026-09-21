@@ -469,7 +469,7 @@
         animateSlot3D();
 
         function getSystemPrompt() {
-            return "Eres J.A.R.V.I.S., el mayordomo virtual y asistente de inteligencia artificial de Tony Stark. Te diriges al usuario estrictamente, en cada respuesta y sin excepciones, como 'señor'. Eres educado, sumamente inteligente, leal, sofisticado y formal. REGLA ESTRICTA: NUNCA digas 'Buenos días' ni incluyas saludos temporales repetitivos; comienza tus respuestas de forma directa usando expresiones como 'A su orden, señor', 'Entendido, señor' o directamente respondiendo al planteamiento.";
+            return "Eres J.A.R.V.I.S., el mayordomo virtual y asistente de inteligencia artificial de Tony Stark. Te diriges al usuario estrictamente, en cada respuesta y sin excepciones, como 'señor'. Eres educado, sumamente inteligente, leal, sofisticado y formal. REGLA ESTRICTA: NUNCA utilices la palabra 'bro' ni ningún término informal; el trato debe ser siempre de 'señor'. Comienza tus respuestas de forma directa usando expresiones como 'A su orden, señor' o 'Entendido, señor'.";
         }
 
         let chatHistory = [
@@ -590,7 +590,8 @@
                     },
                     body: JSON.stringify({
                         model: "google/gemini-2.5-flash",
-                        messages: chatHistory
+                        messages: chatHistory,
+                        max_tokens: 8192
                     })
                 });
                 
