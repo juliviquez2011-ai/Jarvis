@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>J.A.R.V.I.S. OS - Neural Audio & OpenRouter Core</title>
+    <title>J.A.R.V.I.S. OS - OpenRouter Neural Core</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; }
@@ -307,7 +307,7 @@
         </div>
 
         <div id="jarvis-chat" class="interactive">
-            <div class="msg jarvis" id="welcome-msg">JARVIS: Núcleo OpenRouter y motor de voz enlazados, bro. A su orden.</div>
+            <div class="msg jarvis" id="welcome-msg">JARVIS: Núcleo OpenRouter conectado, bro. A su orden.</div>
         </div>
 
         <div id="top-right-slot" class="interactive">
@@ -590,13 +590,7 @@
                     },
                     body: JSON.stringify({
                         model: "google/gemini-2.5-flash:online",
-                        messages: chatHistory,
-                        plugins: [
-                            {
-                                id: "web_search",
-                                max_results: 3
-                            }
-                        ]
+                        messages: chatHistory
                     })
                 });
                 
