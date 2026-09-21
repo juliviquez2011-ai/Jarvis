@@ -491,8 +491,13 @@
 
         function saveKeys() {
             const googleKey = document.getElementById('google-key-input').value.trim();
-            if (googleKey) localStorage.setItem('google_api_key', googleKey);
-            addChatMessage("JARVIS: Credencial de Google AI guardada en memoria, señor. A su orden.", "jarvis");
+            if (googleKey) {
+                localStorage.setItem('google_api_key', googleKey);
+                chatHistory = [{ role: "system", content: getSystemPrompt() }];
+                addChatMessage("JARVIS: Credencial de Google AI actualizada y memoria depurada, señor. A su orden.", "jarvis");
+            } else {
+                addChatMessage("JARVIS: Por favor, ingrese una credencial válida, señor.", "jarvis");
+            }
         }
 
         window.addEventListener('DOMContentLoaded', () => {
