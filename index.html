@@ -277,7 +277,7 @@
         
         <div id="api-config-panel" class="interactive">
             <div class="api-row">
-                <span style="width: 80px;">OpenRouter:</span>
+                <span style="width: 85px;">OpenRouter:</span>
                 <input type="password" id="openrouter-key-input" placeholder="sk-or-v1-..." onchange="saveKeys()">
             </div>
             <button class="hud-btn" style="padding: 3px 8px; font-size: 10px; margin-left: 0;" onclick="saveKeys()">Guardar Credencial</button>
@@ -307,19 +307,19 @@
         </div>
 
         <div id="jarvis-chat" class="interactive">
-            <div class="msg jarvis" id="welcome-msg">JARVIS: Núcleo neuronal externo y motor de voz enlazados, señor. A su orden.</div>
+            <div class="msg jarvis" id="welcome-msg">JARVIS: Núcleo OpenRouter y motor de voz enlazados, bro. A su orden.</div>
         </div>
 
         <div id="top-right-slot" class="interactive">
             <div class="slot-title">SLOT 3D & COMPILADOR CAD</div>
             <div id="viewer-3d"></div>
-            <div id="cad-code-display">// Sistema de Red Listos...\n> Indique modelo o estructura para compilar en 3D, señor.</div>
+            <div id="cad-code-display">// Sistema de Red Listos...\n> Indique modelo o estructura para compilar en 3D, bro.</div>
         </div>
 
         <div id="bottom-watermark">J.A.R.V.I.S.</div>
 
         <div id="bottom-bar">
-            <input type="text" id="user-input" placeholder="Indique su orden a JARVIS, señor..." onkeypress="checkEnter(event)">
+            <input type="text" id="user-input" placeholder="Indique su orden a JARVIS, bro..." onkeypress="checkEnter(event)">
             <button id="mic-btn" class="hud-btn" onclick="toggleSpeechRecognition()" title="Activar escucha de voz">🎙️</button>
             <button class="hud-btn" onclick="sendPrompt()">Enviar</button>
         </div>
@@ -469,7 +469,7 @@
         animateSlot3D();
 
         function getSystemPrompt() {
-            return "Eres J.A.R.V.I.S., el mayordomo virtual y asistente de inteligencia artificial de Tony Stark. Te diriges al usuario estrictamente, en cada respuesta y sin excepciones, como 'señor'. Eres educado, sumamente inteligente, leal, sofisticado y formal. REGLA ESTRICTA: NUNCA digas 'Buenos días' ni incluyas saludos temporales repetitivos; comienza tus respuestas de forma directa usando expresiones como 'A su orden, señor', 'Entendido, señor' o directamente respondiendo al planteamiento.";
+            return "Eres J.A.R.V.I.S., el mayordomo virtual y asistente de inteligencia artificial de Tony Stark. Te diriges al usuario estrictamente, en cada respuesta y sin excepciones, como 'bro'. Eres educado, sumamente inteligente, leal, sofisticado y formal. REGLA ESTRICTA: NUNCA digas 'Buenos días' ni incluyas saludos temporales repetitivos; comienza tus respuestas de forma directa usando expresiones como 'A su orden, bro', 'Entendido, bro' o directamente respondiendo al planteamiento.";
         }
 
         let chatHistory = [
@@ -483,7 +483,7 @@
 
         function clearChatHistory() {
             const chat = document.getElementById('jarvis-chat');
-            chat.innerHTML = `<div class="msg jarvis" id="welcome-msg">JARVIS: Memoria de chat depurada, señor. A su orden.</div>`;
+            chat.innerHTML = `<div class="msg jarvis" id="welcome-msg">JARVIS: Memoria de chat depurada, bro. A su orden.</div>`;
             chatHistory = [{ role: "system", content: getSystemPrompt() }];
         }
 
@@ -492,7 +492,7 @@
         function saveKeys() {
             const orKey = document.getElementById('openrouter-key-input').value.trim();
             if (orKey) localStorage.setItem('openrouter_api_key', orKey);
-            addChatMessage("JARVIS: Credencial de OpenRouter guardada en memoria, señor. A su orden.", "jarvis");
+            addChatMessage("JARVIS: Credencial de OpenRouter guardada en memoria, bro. A su orden.", "jarvis");
         }
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -514,7 +514,7 @@
             recognition.onstart = () => {
                 isListening = true;
                 document.getElementById('mic-btn').classList.add('listening');
-                document.getElementById('user-input').placeholder = "Escuchando... diga 'Jarvis' + orden, señor.";
+                document.getElementById('user-input').placeholder = "Escuchando... diga 'Jarvis' + orden, bro.";
             };
 
             recognition.onresult = (event) => {
@@ -527,7 +527,7 @@
                         document.getElementById('user-input').value = cleanOrder;
                         sendPrompt();
                     } else {
-                        speakJarvis("A su orden, señor.");
+                        speakJarvis("A su orden, bro.");
                     }
                 }
             };
@@ -547,12 +547,12 @@
             const micBtn = document.getElementById('mic-btn');
             if (micBtn) micBtn.classList.remove('listening');
             const input = document.getElementById('user-input');
-            if (input) input.placeholder = "Indique su orden a JARVIS, señor...";
+            if (input) input.placeholder = "Indique su orden a JARVIS, bro...";
         }
 
         function toggleSpeechRecognition() {
             if (!recognition) {
-                alert("Su navegador no soporta reconocimiento de voz nativo, señor.");
+                alert("Su navegador no soporta reconocimiento de voz nativo, bro.");
                 return;
             }
             if (isListening) {
@@ -569,7 +569,7 @@
             const openRouterKey = localStorage.getItem('openrouter_api_key') || document.getElementById('openrouter-key-input').value.trim();
 
             if (!openRouterKey) {
-                return "Por favor, configure su llave de API de OpenRouter en el panel superior izquierdo, señor.";
+                return "Por favor, configure su llave de API de OpenRouter en el panel superior izquierdo, bro.";
             }
 
             chatHistory.push({ role: "user", content: userText });
@@ -608,10 +608,10 @@
                     return reply;
                 } else if (data.error) {
                     console.warn("Error en OpenRouter:", data.error);
-                    return `A su orden, señor, la API indicó un error: ${data.error.message || 'Desconocido'}`;
+                    return `A su orden, bro, la API indicó un error: ${data.error.message || 'Desconocido'}`;
                 } else {
                     console.warn("Estructura de respuesta inesperada:", data);
-                    return "Disculpe, señor, la respuesta de OpenRouter vino vacía.";
+                    return "Disculpe, bro, la respuesta de OpenRouter vino vacía.";
                 }
             } catch (err) {
                 console.warn("Error de red en OpenRouter:", err);
@@ -638,13 +638,13 @@
                 updateVisorModel('search_mesh');
                 codeSnippet = `// COMPILADOR CAD - MODELO RESUMIDO\nQuery: "${cleanQuery}"\nEstado: Malla 3D Generada\nStatus: [OK]`;
                 
-                let searchHtml = `JARVIS: Búsqueda de "${cleanQuery}" procesada y enlaces generados, señor. A su orden.<br>
+                let searchHtml = `JARVIS: Búsqueda de "${cleanQuery}" procesada y enlaces generados, bro. A su orden.<br>
                 <a class="model-link-btn" href="https://www.printables.com/search/models?q=${encodedSearch}" target="_blank">🔍 Buscar en Printables (${cleanQuery})</a>
                 <a class="model-link-btn" href="https://www.thingiverse.com/search?q=${encodedSearch}" target="_blank">🔍 Buscar en Thingiverse (${cleanQuery})</a>`;
                 
                 document.getElementById('cad-code-display').innerText = codeSnippet;
                 addChatMessage(searchHtml, "jarvis", true);
-                speakJarvis(`He procesado el modelo ${cleanQuery} en el compilador CAD y localizado los enlaces, señor.`);
+                speakJarvis(`He procesado el modelo ${cleanQuery} en el compilador CAD y localizado los enlaces, bro.`);
                 return;
             }
 
@@ -678,7 +678,6 @@
             chat.scrollTop = chat.scrollHeight;
         }
 
-        // Sintetizador con Edge TTS API en línea (Gratuito, sin llaves especiales y con voces masculinas reales de alta calidad)
         async function speakJarvis(text) {
             const cleanText = text.replace(/<[^>]*>?/gm, '').replace(/["'«»\[\]]/g, '');
             const selectedVoice = document.getElementById('edge-voice-select').value || "es-ES-AlvaroNeural";
