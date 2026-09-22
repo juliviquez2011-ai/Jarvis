@@ -284,11 +284,12 @@
 
         #core-label-fixed {
             font-family: 'Courier New', Courier, monospace;
-            font-size: 32px;
+            font-size: 30px;
             font-weight: bold;
-            letter-spacing: 9px;
-            fill: #ffffff;
-            filter: drop-shadow(0 0 15px var(--theme-color)) drop-shadow(0 0 30px var(--theme-color));
+            letter-spacing: 7px;
+            fill: #e0f7fa;
+            /* Brillo celeste neón integrado exactamente al centro del núcleo */
+            filter: drop-shadow(0 0 10px #00e5ff) drop-shadow(0 0 20px #00e5ff) drop-shadow(0 0 30px #00bcd4);
             text-anchor: middle;
             dominant-baseline: central;
         }
@@ -422,7 +423,7 @@
             <circle cx="310" cy="310" r="104" fill="var(--theme-bg)" stroke="var(--theme-color)" stroke-width="4" opacity="0.99"/>
             <circle cx="310" cy="310" r="92" fill="none" stroke="var(--theme-color)" stroke-width="1.5" stroke-dasharray="5 6" opacity="0.8"/>
 
-            <!-- Texto fijo central "J.A.R.V.I.S." -->
+            <!-- Texto fijo central "J.A.R.V.I.S." perfectamente centrado con brillo celeste -->
             <text x="310" y="310" id="core-label-fixed">J.A.R.V.I.S.</text>
         </svg>
     </div>
