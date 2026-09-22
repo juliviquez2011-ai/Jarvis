@@ -11,7 +11,7 @@
 
         :root {
             --theme-color: #00f0ff;
-            --theme-glow: rgba(0, 240, 255, 0.4);
+            --theme-glow: rgba(0, 240, 255, 0.6);
             --theme-bg: rgba(2, 8, 19, 0.95);
         }
 
@@ -193,14 +193,14 @@
         }
         .model-link-btn:hover { background: var(--theme-color); color: #000; }
 
-        /* Núcleo HUD Central idéntico a la referencia, más grande y con celeste súper brillante */
+        /* Núcleo HUD Central ampliado, con máximo brillo celeste y múltiples anillos densos */
         #core-hud-wrapper {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 480px;
-            height: 480px;
+            width: 560px;
+            height: 560px;
             pointer-events: none;
             display: flex;
             justify-content: center;
@@ -215,16 +215,17 @@
             top: 0;
             left: 0;
             transform-origin: center;
-            filter: drop-shadow(0 0 12px #00f0ff);
+            filter: drop-shadow(0 0 18px var(--theme-color)) drop-shadow(0 0 35px var(--theme-glow));
         }
 
         /* Ondas de voz exteriores que ondulan únicamente cuando JARVIS habla */
         .audio-wave-ring {
             fill: none;
             stroke: var(--theme-color);
-            stroke-width: 2;
+            stroke-width: 2.5;
             opacity: 0;
             transform-origin: center;
+            filter: drop-shadow(0 0 10px var(--theme-color));
         }
 
         .speaking-active .wave-1 {
@@ -240,28 +241,32 @@
         @keyframes pulseWave {
             0% {
                 transform: scale(0.95);
-                opacity: 0.9;
-                stroke-width: 3.5;
+                opacity: 0.95;
+                stroke-width: 4;
             }
             100% {
-                transform: scale(1.4);
+                transform: scale(1.45);
                 opacity: 0;
                 stroke-width: 0.5;
             }
         }
 
-        /* Animaciones de rotación constante */
+        /* Animaciones de rotación constante en los anillos */
         .rot-clockwise {
-            transform-origin: 240px 240px;
-            animation: spinClockwise 30s linear infinite;
+            transform-origin: 280px 280px;
+            animation: spinClockwise 35s linear infinite;
         }
         .rot-counter {
-            transform-origin: 240px 240px;
-            animation: spinCounter 22s linear infinite;
+            transform-origin: 280px 280px;
+            animation: spinCounter 25s linear infinite;
         }
         .rot-fast {
-            transform-origin: 240px 240px;
-            animation: spinClockwise 14s linear infinite;
+            transform-origin: 280px 280px;
+            animation: spinClockwise 16s linear infinite;
+        }
+        .rot-reverse-fast {
+            transform-origin: 280px 280px;
+            animation: spinCounter 12s linear infinite;
         }
 
         @keyframes spinClockwise {
@@ -275,11 +280,11 @@
 
         #core-label-fixed {
             font-family: 'Courier New', Courier, monospace;
-            font-size: 26px;
+            font-size: 30px;
             font-weight: bold;
-            letter-spacing: 6px;
-            fill: var(--theme-color);
-            filter: drop-shadow(0 0 10px var(--theme-color));
+            letter-spacing: 8px;
+            fill: #ffffff;
+            filter: drop-shadow(0 0 12px var(--theme-color)) drop-shadow(0 0 25px var(--theme-color));
             text-anchor: middle;
             dominant-baseline: central;
         }
@@ -343,7 +348,7 @@
         .hud-btn:hover {
             background: var(--theme-color);
             color: #020813;
-            box-shadow: 0 0 10px var(--theme-color);
+            box-shadow: 0 0 15px var(--theme-color);
         }
 
         #mic-btn.listening {
@@ -365,45 +370,51 @@
 
     <canvas id="bg-canvas"></canvas>
     
-    <!-- Núcleo HUD Central idéntico a la referencia, más grande, celeste súper brillante -->
+    <!-- Núcleo HUD Central ensanchado, súper brillante y con alta densidad de aros concéntricos -->
     <div id="core-hud-wrapper">
-        <svg id="svg-core-hud" viewBox="0 0 480 480">
-            <!-- Ondas de voz exteriores (solo se mueven al hablar) -->
+        <svg id="svg-core-hud" viewBox="0 0 560 560">
+            <!-- Ondas de voz exteriores (activas únicamente al hablar) -->
             <g id="voice-waves" class="">
-                <circle class="audio-wave-ring wave-1" cx="240" cy="240" r="180"></circle>
-                <circle class="audio-wave-ring wave-2" cx="240" cy="240" r="205"></circle>
-                <circle class="audio-wave-ring wave-3" cx="240" cy="240" r="230"></circle>
+                <circle class="audio-wave-ring wave-1" cx="280" cy="280" r="210"></circle>
+                <circle class="audio-wave-ring wave-2" cx="280" cy="280" r="238"></circle>
+                <circle class="audio-wave-ring wave-3" cx="280" cy="280" r="266"></circle>
             </g>
 
-            <!-- Anillo Exterior Ancho con segmentos -->
+            <!-- Anillo Exterior Ancho 1 -->
             <g class="rot-clockwise">
-                <circle cx="240" cy="240" r="215" fill="none" stroke="var(--theme-color)" stroke-width="4" stroke-dasharray="35 15, 10 15, 80 20" opacity="0.85"/>
-                <circle cx="240" cy="240" r="200" fill="none" stroke="var(--theme-color)" stroke-width="1.5" stroke-dasharray="5 5" opacity="0.6"/>
+                <circle cx="280" cy="280" r="255" fill="none" stroke="var(--theme-color)" stroke-width="4.5" stroke-dasharray="40 20, 12 18, 90 25" opacity="0.9"/>
+                <circle cx="280" cy="280" r="238" fill="none" stroke="var(--theme-color)" stroke-width="1.8" stroke-dasharray="6 6" opacity="0.75"/>
             </g>
 
-            <!-- Anillo Intermedio con bloques de datos y graduación -->
+            <!-- Anillo Exterior 2 (Giro inverso) -->
             <g class="rot-counter">
-                <circle cx="240" cy="240" r="170" fill="none" stroke="var(--theme-color)" stroke-width="8" stroke-dasharray="12 18, 4 4, 30 12" opacity="0.75"/>
-                <circle cx="240" cy="240" r="148" fill="none" stroke="var(--theme-color)" stroke-width="2" stroke-dasharray="2 6" opacity="0.9"/>
-                <!-- Pequeños bloques decorativos -->
-                <rect x="235" y="62" width="10" height="12" fill="var(--theme-color)" opacity="0.9"/>
-                <rect x="235" y="406" width="10" height="12" fill="var(--theme-color)" opacity="0.9"/>
-                <rect x="62" y="235" width="12" height="10" fill="var(--theme-color)" opacity="0.9"/>
-                <rect x="406" y="235" width="12" height="10" fill="var(--theme-color)" opacity="0.9"/>
+                <circle cx="280" cy="280" r="222" fill="none" stroke="var(--theme-color)" stroke-width="2.5" stroke-dasharray="25 15, 8 8, 50 15" opacity="0.85"/>
+                <circle cx="280" cy="280" r="206" fill="none" stroke="var(--theme-color)" stroke-width="1.2" opacity="0.6"/>
             </g>
 
-            <!-- Anillo Interior con arcos de ceros/unos simulados -->
+            <!-- Anillo Intermedio con bloques de datos y graduación densa -->
             <g class="rot-fast">
-                <circle cx="240" cy="240" r="122" fill="none" stroke="var(--theme-color)" stroke-width="14" stroke-dasharray="55 25, 15 15, 30 10" opacity="0.55"/>
-                <circle cx="240" cy="240" r="102" fill="none" stroke="var(--theme-color)" stroke-width="2" opacity="0.8"/>
+                <circle cx="280" cy="280" r="190" fill="none" stroke="var(--theme-color)" stroke-width="10" stroke-dasharray="14 20, 4 6, 35 14" opacity="0.85"/>
+                <circle cx="280" cy="280" r="166" fill="none" stroke="var(--theme-color)" stroke-width="2.5" stroke-dasharray="3 7" opacity="0.95"/>
+                <!-- Bloques decorativos cardinales -->
+                <rect x="274" y="66" width="12" height="14" fill="var(--theme-color)" opacity="0.95"/>
+                <rect x="274" y="480" width="12" height="14" fill="var(--theme-color)" opacity="0.95"/>
+                <rect x="66" y="274" width="14" height="12" fill="var(--theme-color)" opacity="0.95"/>
+                <rect x="480" y="274" width="14" height="12" fill="var(--theme-color)" opacity="0.95"/>
             </g>
 
-            <!-- Círculo interior base del logo -->
-            <circle cx="240" cy="240" r="82" fill="var(--theme-bg)" stroke="var(--theme-color)" stroke-width="3" opacity="0.95"/>
-            <circle cx="240" cy="240" r="72" fill="none" stroke="var(--theme-color)" stroke-width="1" stroke-dasharray="3 4" opacity="0.6"/>
+            <!-- Anillo Interior Denso con arcos binarios / ceros -->
+            <g class="rot-reverse-fast">
+                <circle cx="280" cy="280" r="142" fill="none" stroke="var(--theme-color)" stroke-width="16" stroke-dasharray="60 30, 18 18, 35 12" opacity="0.7"/>
+                <circle cx="280" cy="280" r="118" fill="none" stroke="var(--theme-color)" stroke-width="2" opacity="0.9"/>
+            </g>
+
+            <!-- Círculo interior base del logotipo -->
+            <circle cx="280" cy="280" r="96" fill="var(--theme-bg)" stroke="var(--theme-color)" stroke-width="3.5" opacity="0.98"/>
+            <circle cx="280" cy="280" r="84" fill="none" stroke="var(--theme-color)" stroke-width="1.2" stroke-dasharray="4 5" opacity="0.7"/>
 
             <!-- Texto fijo central "J.A.R.V.I.S." -->
-            <text x="240" y="240" id="core-label-fixed">J.A.R.V.I.S.</text>
+            <text x="280" y="280" id="core-label-fixed">J.A.R.V.I.S.</text>
         </svg>
     </div>
 
@@ -511,16 +522,16 @@
             const svgCore = document.getElementById('svg-core-hud');
             if (active) {
                 root.style.setProperty('--theme-color', '#ff3333');
-                root.style.setProperty('--theme-glow', 'rgba(255, 50, 50, 0.5)');
+                root.style.setProperty('--theme-glow', 'rgba(255, 50, 50, 0.6)');
                 root.style.setProperty('--theme-bg', 'rgba(20, 2, 2, 0.95)');
                 particlesMat.color.setHex(0xff3333);
-                if(svgCore) svgCore.style.filter = "drop-shadow(0 0 12px #ff3333)";
+                if(svgCore) svgCore.style.filter = "drop-shadow(0 0 18px #ff3333) drop-shadow(0 0 35px rgba(255, 50, 50, 0.6))";
             } else {
                 root.style.setProperty('--theme-color', '#00f0ff');
-                root.style.setProperty('--theme-glow', 'rgba(0, 240, 255, 0.4)');
+                root.style.setProperty('--theme-glow', 'rgba(0, 240, 255, 0.6)');
                 root.style.setProperty('--theme-bg', 'rgba(2, 8, 19, 0.95)');
                 particlesMat.color.setHex(0x00f0ff);
-                if(svgCore) svgCore.style.filter = "drop-shadow(0 0 12px #00f0ff)";
+                if(svgCore) svgCore.style.filter = "drop-shadow(0 0 18px #00f0ff) drop-shadow(0 0 35px rgba(0, 240, 255, 0.6))";
             }
         }
 
@@ -727,7 +738,6 @@
             const lower = text.toLowerCase();
             let codeSnippet = '';
 
-            // Comandos para Protocolo Stark o desactivarlo
             if (lower.includes("protocolo stark") && !lower.includes("apagar") && !lower.includes("desactivar")) {
                 setStarkTheme(true);
             } else if (lower.includes("apagar protocolo stark") || lower.includes("desactivar protocolo stark") || lower.includes("apagar stark") || lower.includes("desactivar stark")) {
