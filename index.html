@@ -461,7 +461,7 @@
         </div>
 
         <div id="jarvis-chat" class="interactive">
-            <div class="msg jarvis" id="welcome-msg">JARVIS: Núcleo Groq conectado, señor. A su orden.</div>
+            <div class="msg jarvis" id="welcome-msg">JARVIS: Núcleo GPT-OSS conectado, señor. A su orden.</div>
         </div>
 
         <div id="top-right-slot" class="interactive">
@@ -715,7 +715,7 @@
                         "Authorization": `Bearer ${key}`
                     },
                     body: JSON.stringify({
-                        model: "llama-3.1-8b-instant",
+                        model: "openai/gpt-oss-120b",
                         messages: chatHistory,
                         max_tokens: 2048
                     })
