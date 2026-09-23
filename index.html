@@ -646,7 +646,6 @@
         let lastQueryTimestamp = 0;
         const QUERY_COOLDOWN_MS = 2500;
 
-        // Función para realizar búsqueda web externa exclusivamente con "busca en internet"
         async function buscarEnInternet(query) {
             const tavilyKey = localStorage.getItem('tavily_api_key') || document.getElementById('tavily-key-input').value.trim();
             if (!tavilyKey) return null;
@@ -682,7 +681,6 @@
             const groqKey = localStorage.getItem('groq_api_key') || document.getElementById('groq-key-input').value.trim();
             if (!groqKey) return "Por favor, configure su llave de API de Groq en el panel superior izquierdo, señor.";
             
-            // Verificamos únicamente el comando estricto "busca en internet"
             const lowerText = userText.toLowerCase();
             const triggerBusqueda = "busca en internet";
 
@@ -750,6 +748,27 @@
                 setStarkTheme(false);
             } else if (lower.includes("código") || lower.includes("code") || lower.includes("function") || lower.includes("class")) {
                 setStarkTheme(true);
+            }
+
+            // Validación estricta para el comando de IA 3D ("crea un modelo en 3d")
+            const triggerIa3d = "crea un modelo en 3d";
+            if (lower.includes(triggerIa3d)) {
+                let promptModelo = text.replace(/jarvis/gi, "").replace(triggerIa3d, "").trim();
+                promptModelo = promptModelo.replace(/^[:,\s-]+/, "");
+                if (!promptModelo) promptModelo = "stand para iPad de 11 pulgadas";
+
+                let codeSnippetIa = `// MOTOR DE IA 3D - GENERACIÓN NEURONAL\nPrompt: "${promptModelo}"\nEstado: Procesando polígonos con IA...\nStatus: [PENDIENTE DE ENLACE]`;
+                document.getElementById('cad-code-display').innerText = codeSnippetIa;
+
+                updateVisorModel('search_mesh');
+
+                let respuestaIaHtml = `JARVIS: Solicitud de modelado 3D por IA recibida para "${promptModelo}", señor. Procesando la malla poligonal en el núcleo...<br>` +
+                `<span style="color: var(--theme-color);">[Simulación de Enlace CAD / Web generado]</span><br>` +
+                `<a class="model-link-btn" href="https://gltf-viewer.donmccurdy.com/" target="_blank">🌐 Ver modelo generado en visor externo</a>`;
+
+                addChatMessage(respuestaIaHtml, "jarvis", true);
+                speakJarvis(`He procesado la orden de crear un modelo en 3D para ${promptModelo}, señor. El compilador CAD muestra el estado actual.`);
+                return;
             }
 
             if (lower.includes("busca modelo") || lower.includes("modelo 3d") || lower.includes("stl") || lower.includes("imprimir") || lower.includes("brazo")) {
