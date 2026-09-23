@@ -287,7 +287,7 @@
             pointer-events: auto;
         }
 
-        #bottom-bar input {
+        #bottom-bar input[type="text"] {
             flex: 1;
             background: transparent;
             border: none;
@@ -425,6 +425,10 @@
         <div id="bottom-watermark">J.A.R.V.I.S.</div>
 
         <div id="bottom-bar">
+            <!-- Input oculto para subir imágenes -->
+            <input type="file" id="image-upload" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+            <button class="hud-btn" onclick="document.getElementById('image-upload').click()" title="Analizar imagen, señor">📷</button>
+            
             <input type="text" id="user-input" placeholder="Indique su orden a JARVIS, señor..." onkeypress="checkEnter(event)">
             <button id="mic-btn" class="hud-btn" onclick="toggleSpeechRecognition()" title="Activar escucha de voz">🎙️</button>
             <button class="hud-btn" onclick="sendPrompt()">Enviar</button>
@@ -474,6 +478,7 @@
         camera3D.position.z = 3.2;
 
         let isStarkMode = false;
+        let currentImageBase64 = null;
 
         function setStarkTheme(active) {
             isStarkMode = active;
@@ -586,7 +591,21 @@
             if (savedAi3D) document.getElementById('ai3d-key-input').value = savedAi3D;
         });
 
-        // Función para Tripo AI (Generación 3D)
+        // 1. Manejo de Carga de Imágenes para Visión Artificial
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentImageBase64 = e.target.result;
+                addChatMessage(`JARVIS: Imagen "${file.name}" cargada en la matriz visual, señor. Indique qué desea que analice.`, "jarvis");
+                updateVisorModel('search_mesh');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // 2. Módulo Tripo AI para Generación 3D
         async function generarModelo3DConTripo(promptTexto) {
             const ai3dKey = localStorage.getItem('ai3d_api_key') || document.getElementById('ai3d-key-input').value.trim();
             
@@ -601,23 +620,50 @@
             updateVisorModel('search_mesh');
 
             try {
-                const response = function() {
-                    // Endpoint simulado o real de Tripo
-                    return { ok: true, json: () => ({ task_id: "tripo_" + Math.floor(Math.random() * 100000) }) };
-                }();
+                const response = await fetch("https://api.tripo3d.ai/v2/openapi/task", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${ai3dKey}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        type: "text_to_model",
+                        prompt: promptTexto
+                    })
+                });
 
                 const data = await response.json();
-                if (data && data.task_id) {
-                    document.getElementById('cad-code-display').innerText = `// MOTOR TRIPO 3D - ÉXITO\nTask ID: ${data.task_id}\nStatus: [LISTO]`;
+                if (data && data.data && data.data.task_id) {
+                    const taskId = data.data.task_id;
+                    document.getElementById('cad-code-display').innerText = `// MOTOR TRIPO 3D - ÉXITO\nTask ID: ${taskId}\nStatus: [LISTO]`;
                     return {
                         success: true,
-                        message: `Modelo 3D generado mediante Tripo con éxito, señor. ID de tarea: ${data.task_id}.`
+                        message: `Modelo 3D generado mediante Tripo con éxito, señor. ID de tarea: ${taskId}.`
                     };
                 }
                 return { success: false, message: "Tripo no devolvió una tarea válida, señor." };
             } catch (err) {
                 return { success: false, message: "Error al enlazar con el servidor de Tripo AI, señor." };
             }
+        }
+
+        // 3. Módulo de Control de iPad (Puente de Automatización y Shapr3D)
+        function ejecutarComandoIPad(accion, objetivo, extraInfo = "") {
+            document.getElementById('cad-code-display').innerText = `// PUENTE IPAD / SHAPR3D\nAcción: ${accion}\nObjetivo: ${objetivo}\nStatus: [DISPARANDO ATAJO]`;
+            
+            if (accion === "abrir_app") {
+                // Esquema x-callback-url o Atajos de iOS
+                window.location.href = `shortcuts://run-shortcut?name=AbrirApp&input=text&text=${encodeURIComponent(objetivo)}`;
+                return `Entendido, señor. Ejecutando protocolo para abrir la aplicación ${objetivo} en el iPad.`;
+            } else if (accion === "enviar_mensaje") {
+                window.location.href = `shortcuts://run-shortcut?name=EnviarMensaje&input=text&text=${encodeURIComponent(objetivo + ":" + extraInfo)}`;
+                return `A su orden, señor. Transmitiendo mensaje hacia ${objetivo}.`;
+            } else if (accion === "mover_stl") {
+                // Atajo configurado para transferir STL a Shapr3D
+                window.location.href = `shortcuts://run-shortcut?name=MandarAShapr3D`;
+                return `Entendido, señor. Archivo STL transferido al entorno de Shapr3D en el iPad con éxito.`;
+            }
+            return "Comando de ecosistema Apple procesado, señor.";
         }
 
         let recognition = null;
@@ -735,7 +781,7 @@
                     terminoBusqueda = userText;
                 }
 
-                addChatMessage("JARVIS: Accediendo a los nodos de red globales para buscar: " + terminoBusqueda, "jarvis");
+                addChatMessage("JARVIS: Accediendo al nodo de red global para buscar: " + terminoBusqueda, "jarvis");
                 let contextoWeb = await buscarEnInternet(terminoBusqueda);
                 
                 if (contextoWeb) {
@@ -743,12 +789,29 @@
                 }
             }
 
-            chatHistory.push({ role: "user", content: userText });
-            return await callGroqAPI(groqKey);
+            let messagesPayload = [...chatHistory];
+
+            // Integración de Visión si hay imagen cargada
+            if (currentImageBase64) {
+                messagesPayload.push({
+                    role: "user",
+                    content: [
+                        { type: "text", text: userText || "Analiza esta imagen, señor." },
+                        { type: "image_url", image_url: { url: currentImageBase64 } }
+                    ]
+                });
+            } else {
+                messagesPayload.push({ role: "user", content: userText });
+            }
+
+            return await callGroqAPI(groqKey, messagesPayload);
         }
 
-        async function callGroqAPI(key) {
+        async function callGroqAPI(key, payloadMessages) {
             try {
+                // Usamos modelo multimodal si hay imagen, de lo contrario el estándar optimizado
+                const modelToUse = currentImageBase64 ? "llama-3.2-11b-vision-preview" : "openai/gpt-oss-120b";
+
                 const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                     method: "POST",
                     headers: {
@@ -756,8 +819,8 @@
                         "Authorization": `Bearer ${key}`
                     },
                     body: JSON.stringify({
-                        model: "openai/gpt-oss-120b",
-                        messages: chatHistory,
+                        model: modelToUse,
+                        messages: payloadMessages,
                         max_tokens: 2048
                     })
                 });
@@ -765,6 +828,7 @@
                 if (data.choices && data.choices[0] && data.choices[0].message) {
                     const reply = data.choices[0].message.content;
                     chatHistory.push({ role: "assistant", content: reply });
+                    currentImageBase64 = null; // Limpiar imagen tras procesar
                     return reply;
                 } else if (data.error) {
                     return `A su orden, señor, error de Groq: ${data.error.message || 'Desconocido'}`;
@@ -778,9 +842,10 @@
         async function sendPrompt() {
             const input = document.getElementById('user-input');
             const text = input.value.trim();
-            if (!text) return;
+            if (!text && !currentImageBase64) return;
 
-            addChatMessage(text, "user");
+            const displayText = text || "[Imagen Analizada adjunta]";
+            addChatMessage(displayText, "user");
             input.value = "";
 
             const lower = text.toLowerCase();
@@ -790,13 +855,35 @@
                 setStarkTheme(true);
             } else if (lower.includes("apagar protocolo stark") || lower.includes("desactivar protocolo stark") || lower.includes("apagar stark") || lower.includes("desactivar stark")) {
                 setStarkTheme(false);
-            } else if (lower.includes("código") || lower.includes("code") || lower.includes("function") || lower.includes("class")) {
-                setStarkTheme(true);
             }
 
-            // 1. FILTRO ESTRICTO DE BÚSQUEDA (Solo busca en Printables / Thingiverse si se pide buscar)
+            // Comandos rápidos de iPad: Abrir App
+            if (lower.includes("abre la app") || lower.includes("abre la aplicación")) {
+                let appName = text.replace(/jarvis|abre la app|abre la aplicación|el|la/gi, "").trim();
+                let res = ejecutarComandoIPad("abrir_app", appName);
+                addChatMessage("JARVIS: " + res, "jarvis");
+                speakJarvis(res);
+                return;
+            }
+
+            // Comandos rápidos de iPad: Enviar Mensaje
+            if (lower.includes("envía un mensaje") || lower.includes("manda un mensaje")) {
+                let res = ejecutarComandoIPad("enviar_mensaje", "Contacto", text);
+                addChatMessage("JARVIS: " + res, "jarvis");
+                speakJarvis(res);
+                return;
+            }
+
+            // Comandos rápidos de iPad: Mover STL a Shapr3D
+            if (lower.includes("shapr3d") || lower.includes("stl") && lower.includes("mover")) {
+                let res = ejecutarComandoIPad("mover_stl", "Shapr3D");
+                addChatMessage("JARVIS: " + res, "jarvis");
+                speakJarvis(res);
+                return;
+            }
+
+            // Búsqueda en repositorios 3D
             const esOrdenDeBusqueda = lower.includes("busca") || lower.includes("búscame") || lower.includes("encontras");
-            
             if (esOrdenDeBusqueda && (lower.includes("modelo") || lower.includes("stl") || lower.includes("printables") || lower.includes("thingiverse") || lower.includes("imprimir"))) {
                 let cleanQuery = text.replace(/jarvis|busca|el modelo|un modelo|stl|de|para|imprimir|en|búscame|printables|thingiverse/gi, "").trim();
                 if (!cleanQuery) cleanQuery = "modelo 3d";
@@ -815,7 +902,7 @@
                 return;
             }
 
-            // 2. FILTRO DE CREACIÓN (Generación por IA)
+            // Creación mediante Tripo AI
             const esOrdenDeCreacion = lower.includes("crea") || lower.includes("genera") || lower.includes("diseña");
             if (esOrdenDeCreacion && lower.includes("3d")) {
                 let promptModelo = text.replace(/jarvis/gi, "").replace(/crea|genera|diseña|un|modelo|en|3d/gi, "").trim();
@@ -842,12 +929,12 @@
                 updateVisorModel('sphere');
                 codeSnippet = '// Geometría Esférica\nGeometry.createSphere();\nRadio: 0.9m\nStatus: [OK]';
             } else if (codeSnippet === '') {
-                codeSnippet = `// ORDEN RECIBIDA: "${text}"\nEjecutando procesamiento neural...\nStatus: [OK]`;
+                codeSnippet = `// ORDEN RECIBIDA: "${displayText}"\nEjecutando procesamiento neural...\nStatus: [OK]`;
             }
 
             document.getElementById('cad-code-display').innerText = codeSnippet;
 
-            const aiResponse = await queryAI(text);
+            const aiResponse = await queryAI(text || "Analiza esta imagen, señor.");
             addChatMessage("JARVIS: " + aiResponse, "jarvis");
             speakJarvis(aiResponse);
         }
