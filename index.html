@@ -378,7 +378,6 @@
                 <span style="width: 55px;">Groq:</span>
                 <input type="password" id="groq-key-input" placeholder="gsk_..." onchange="saveKeys()">
             </div>
-            <!-- Campo adicional para la API de búsqueda web (Tavily u otra) -->
             <div class="api-row">
                 <span style="width: 55px;">Tavily:</span>
                 <input type="password" id="tavily-key-input" placeholder="tvly-..." onchange="saveKeys()">
@@ -647,7 +646,7 @@
         let lastQueryTimestamp = 0;
         const QUERY_COOLDOWN_MS = 2500;
 
-        // Función para realizar búsqueda web externa (Tavily API)
+        // Función para realizar búsqueda web externa exclusivamente con "busca en internet"
         async function buscarEnInternet(query) {
             const tavilyKey = localStorage.getItem('tavily_api_key') || document.getElementById('tavily-key-input').value.trim();
             if (!tavilyKey) return null;
@@ -659,11 +658,12 @@
                     body: JSON.stringify({
                         api_key: tavilyKey,
                         query: query,
-                        max_results: 3
+                        max_results: 3,
+                        search_depth: "basic"
                     })
                 });
                 const data = await response.json();
-                if (data.results) {
+                if (data && data.results) {
                     return data.results.map(r => r.content).join("\n\n");
                 }
             } catch (error) {
@@ -682,20 +682,21 @@
             const groqKey = localStorage.getItem('groq_api_key') || document.getElementById('groq-key-input').value.trim();
             if (!groqKey) return "Por favor, configure su llave de API de Groq en el panel superior izquierdo, señor.";
             
-            // Verificamos comandos de búsqueda web antes de enviar a Groq
+            // Verificamos únicamente el comando estricto "busca en internet"
             const lowerText = userText.toLowerCase();
-            if (lowerText.includes("busca en internet") || lowerText.includes("investiga sobre") || lowerText.includes("qué es")) {
-                let terminoBusqueda = userText
-                    .replace(/busca en internet/gi, "")
-                    .replace(/investiga sobre/gi, "")
-                    .replace(/qué es/gi, "")
-                    .trim();
+            const triggerBusqueda = "busca en internet";
+
+            if (lowerText.includes(triggerBusqueda)) {
+                let terminoBusqueda = userText.toLowerCase().replace(triggerBusqueda, "").trim();
+                terminoBusqueda = terminoBusqueda.replace(/^[:,\s-]+/, "");
+                if (!terminoBusqueda) {
+                    terminoBusqueda = userText;
+                }
 
                 addChatMessage("JARVIS: Accediendo a los nodos de red globales para buscar: " + terminoBusqueda, "jarvis");
                 let contextoWeb = await buscarEnInternet(terminoBusqueda);
                 
                 if (contextoWeb) {
-                    // Inyectamos temporalmente los datos frescos en el mensaje para Groq
                     userText = `${userText}\n\n[Información en tiempo real de internet:\n${contextoWeb}]`;
                 }
             }
