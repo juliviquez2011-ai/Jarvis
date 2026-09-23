@@ -382,6 +382,11 @@
                 <span style="width: 55px;">Tavily:</span>
                 <input type="password" id="tavily-key-input" placeholder="tvly-..." onchange="saveKeys()">
             </div>
+            <!-- NUEVO: Campo para la API de Modelado 3D -->
+            <div class="api-row">
+                <span style="width: 55px;">AI 3D:</span>
+                <input type="password" id="ai3d-key-input" placeholder="msy_... / tripo_..." onchange="saveKeys()">
+            </div>
             <button class="hud-btn" style="padding: 3px 8px; font-size: 10px; margin-left: 0;" onclick="saveKeys()">Guardar Credencial</button>
         </div>
 
@@ -562,19 +567,74 @@
         function saveKeys() {
             const groqKey = document.getElementById('groq-key-input').value.trim();
             const tavilyKey = document.getElementById('tavily-key-input').value.trim();
+            const ai3dKey = document.getElementById('ai3d-key-input').value.trim();
+
             if (groqKey) localStorage.setItem('groq_api_key', groqKey);
             if (tavilyKey) localStorage.setItem('tavily_api_key', tavilyKey);
+            if (ai3dKey) localStorage.setItem('ai3d_api_key', ai3dKey);
             
             chatHistory = [{ role: "system", content: getSystemPrompt() }];
-            addChatMessage("JARVIS: Credenciales actualizadas y memoria depurada, señor. A su orden.", "jarvis");
+            addChatMessage("JARVIS: Credenciales de red y matrices de IA 3D actualizadas, señor. A su orden.", "jarvis");
         }
 
         window.addEventListener('DOMContentLoaded', () => {
             const savedGroq = localStorage.getItem('groq_api_key');
             const savedTavily = localStorage.getItem('tavily_api_key');
+            const savedAi3D = localStorage.getItem('ai3d_api_key');
+
             if (savedGroq) document.getElementById('groq-key-input').value = savedGroq;
             if (savedTavily) document.getElementById('tavily-key-input').value = savedTavily;
+            if (savedAi3D) document.getElementById('ai3d-key-input').value = savedAi3D;
         });
+
+        // Función para conectar con la API de Modelado 3D Neuronal
+        async function generarModelo3DConIA(promptTexto) {
+            const ai3dKey = localStorage.getItem('ai3d_api_key') || document.getElementById('ai3d-key-input').value.trim();
+            
+            if (!ai3dKey) {
+                return {
+                    success: false,
+                    message: "Por favor, configure su llave de API de Modelado 3D en el panel superior izquierdo, señor."
+                };
+            }
+
+            document.getElementById('cad-code-display').innerText = `// MOTOR DE IA 3D - COMPILANDO...\nPrompt: "${promptTexto}"\nFase: Generando malla poligonal...\nStatus: [PROCESANDO]`;
+            updateVisorModel('search_mesh');
+
+            try {
+                const response = await fetch("https://api.meshy.ai/v2/text-to-3d", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${ai3dKey}`
+                    },
+                    body: JSON.stringify({
+                        mode: "preview",
+                        prompt: promptTexto,
+                        art_style: "realistic",
+                        negative_prompt: "low quality, low resolution"
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data && (data.result || data.id)) {
+                    const taskId = data.result || data.id;
+                    document.getElementById('cad-code-display').innerText = `// MOTOR DE IA 3D - ÉXITO\nTask ID: ${taskId}\nFormato: .glb / .obj\nStatus: [LISTO PARA DESCARGA]`;
+                    
+                    return {
+                        success: true,
+                        taskId: taskId,
+                        message: `Modelo 3D generado con éxito mediante red neuronal, señor. Identificador de tarea: ${taskId}.`
+                    };
+                } else {
+                    return { success: false, message: "A su orden, señor, la API de 3D no devolvió un identificador de tarea válido." };
+                }
+            } catch (err) {
+                console.error("Error al conectar con la API 3D:", err);
+                return { success: false, message: "Error crítico de enlace con el servidor de modelado 3D neuronal, señor." };
+            }
+        }
 
         let recognition = null;
         let isListening = false;
@@ -750,24 +810,23 @@
                 setStarkTheme(true);
             }
 
-            // Validación estricta para el comando de IA 3D ("crea un modelo en 3d")
+            // NUEVO: Comando estricto para activar la generación por IA 3D
             const triggerIa3d = "crea un modelo en 3d";
             if (lower.includes(triggerIa3d)) {
                 let promptModelo = text.replace(/jarvis/gi, "").replace(triggerIa3d, "").trim();
                 promptModelo = promptModelo.replace(/^[:,\s-]+/, "");
                 if (!promptModelo) promptModelo = "stand para iPad de 11 pulgadas";
 
-                let codeSnippetIa = `// MOTOR DE IA 3D - GENERACIÓN NEURONAL\nPrompt: "${promptModelo}"\nEstado: Procesando polígonos con IA...\nStatus: [PENDIENTE DE ENLACE]`;
-                document.getElementById('cad-code-display').innerText = codeSnippetIa;
+                addChatMessage("JARVIS: Iniciando motor de modelado generativo 3D para: " + promptModelo + ", señor...", "jarvis");
+                
+                generarModelo3DConIA(promptModelo).then(resultado => {
+                    let respuestaHtml = `JARVIS: ${resultado.message}<br>` +
+                    `<span style="color: var(--theme-color);">[Matriz CAD Renderizada]</span><br>` +
+                    `<a class="model-link-btn" href="https://app.meshy.ai/" target="_blank">🌐 Abrir plataforma Meshy / Ver Archivo</a>`;
 
-                updateVisorModel('search_mesh');
-
-                let respuestaIaHtml = `JARVIS: Solicitud de modelado 3D por IA recibida para "${promptModelo}", señor. Procesando la malla poligonal en el núcleo...<br>` +
-                `<span style="color: var(--theme-color);">[Simulación de Enlace CAD / Web generado]</span><br>` +
-                `<a class="model-link-btn" href="https://gltf-viewer.donmccurdy.com/" target="_blank">🌐 Ver modelo generado en visor externo</a>`;
-
-                addChatMessage(respuestaIaHtml, "jarvis", true);
-                speakJarvis(`He procesado la orden de crear un modelo en 3D para ${promptModelo}, señor. El compilador CAD muestra el estado actual.`);
+                    addChatMessage(respuestaHtml, "jarvis", true);
+                    speakJarvis(resultado.message);
+                });
                 return;
             }
 
