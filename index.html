@@ -638,8 +638,10 @@
 
             recognition.onstart = () => {
                 isListening = true;
-                document.getElementById('mic-btn').classList.add('listening');
-                document.getElementById('user-input').placeholder = "Escuchando... diga 'Jarvis' + orden, señor.";
+                const micBtn = document.getElementById('mic-btn');
+                if (micBtn) micBtn.classList.add('listening');
+                const input = document.getElementById('user-input');
+                if (input) input.placeholder = "Escuchando... diga 'Jarvis' + orden, señor.";
             };
 
             recognition.onresult = (event) => {
