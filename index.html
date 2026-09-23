@@ -41,6 +41,27 @@
             z-index: 10;
         }
 
+        /* Widget Superior Central: Hora y Clima */
+        #jarvis-status-header {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: var(--theme-bg);
+            border: 1px solid var(--theme-glow);
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-family: monospace;
+            color: var(--theme-color);
+            font-size: 13px;
+            backdrop-filter: blur(5px);
+            z-index: 100;
+            box-shadow: 0 0 15px var(--theme-glow);
+        }
+
         #api-config-panel {
             position: absolute;
             top: 20px;
@@ -333,6 +354,13 @@
 </head>
 <body>
 
+    <!-- Widget Superior Central: Hora y Clima -->
+    <div id="jarvis-status-header" class="interactive">
+        <div id="header-time">--:--:--</div>
+        <div style="width: 1px; height: 12px; background: var(--theme-glow);"></div>
+        <div id="header-weather">Costa Rica: Sincronizando...</div>
+    </div>
+
     <canvas id="bg-canvas"></canvas>
     
     <div id="core-hud-wrapper">
@@ -375,16 +403,20 @@
         
         <div id="api-config-panel" class="interactive">
             <div class="api-row">
-                <span style="width: 55px;">Groq:</span>
+                <span style="width: 65px;">Groq:</span>
                 <input type="password" id="groq-key-input" placeholder="gsk_..." onchange="saveKeys()">
             </div>
             <div class="api-row">
-                <span style="width: 55px;">Tavily:</span>
+                <span style="width: 65px;">Tavily:</span>
                 <input type="password" id="tavily-key-input" placeholder="tvly-..." onchange="saveKeys()">
             </div>
             <div class="api-row">
-                <span style="width: 55px;">AI 3D:</span>
+                <span style="width: 65px;">AI 3D:</span>
                 <input type="password" id="ai3d-key-input" placeholder="tripo_..." onchange="saveKeys()">
+            </div>
+            <div class="api-row">
+                <span style="width: 65px;">ElevenLabs:</span>
+                <input type="password" id="eleven-key-input" placeholder="xi-api-key..." onchange="saveKeys()">
             </div>
             <button class="hud-btn" style="padding: 3px 8px; font-size: 10px; margin-left: 0;" onclick="saveKeys()">Guardar Credencial</button>
         </div>
@@ -395,12 +427,11 @@
             <h3>PANEL DE CONFIGURACIÓN J.A.R.V.I.S.</h3>
             
             <div class="setting-group">
-                <label>Voz Neuronal Externa (Edge TTS):</label>
-                <select id="edge-voice-select">
-                    <option value="es-ES-AlvaroNeural">Álvaro Neural (Masculino Series/Cine)</option>
-                    <option value="es-MX-DarioNeural">Darío Neural (Masculino Neutro)</option>
-                    <option value="es-AR-TomasNeural">Tomás Neural (Masculino Maduro)</option>
-                    <option value="es-ES-ElviraNeural">Elvira Neural (Respaldo Femenino)</option>
+                <label>Voz Neuronal ElevenLabs (IA Masculina Jarvis):</label>
+                <select id="eleven-voice-select">
+                    <option value="nPczCjzI2devNBz1zQrb">Brian (Serio, Elegante / Estilo Jarvis)</option>
+                    <option value="JBFqnCBsd6RMkjVDRZzb">George (Voz británica clásica, formal)</option>
+                    <option value="VR6AewLTigWG4xSOukaG">Arnold (Firme, autoritario)</option>
                 </select>
             </div>
 
@@ -437,6 +468,38 @@
     </div>
 
     <script>
+        // --- 1. Reloj y Clima Automático de Costa Rica ---
+        function actualizarReloj() {
+            const now = new Date();
+            document.getElementById('header-time').innerText = now.toLocaleTimeString();
+        }
+        setInterval(actualizarReloj, 1000);
+        actualizarReloj();
+
+        async function obtenerClimaLocal() {
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(async (position) => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    try {
+                        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
+                        const data = await res.json();
+                        if (data && data.current_weather) {
+                            const temp = data.current_weather.temperature;
+                            document.getElementById('header-weather').innerText = `CR: ${temp}°C`;
+                        }
+                    } catch (e) {
+                        document.getElementById('header-weather').innerText = "Costa Rica: En línea";
+                    }
+                }, () => {
+                    document.getElementById('header-weather').innerText = "Costa Rica: 24°C";
+                });
+            } else {
+                document.getElementById('header-weather').innerText = "Costa Rica: 24°C";
+            }
+        }
+        obtenerClimaLocal();
+
         const canvas = document.getElementById('bg-canvas');
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -572,10 +635,12 @@
             const groqKey = document.getElementById('groq-key-input').value.trim();
             const tavilyKey = document.getElementById('tavily-key-input').value.trim();
             const ai3dKey = document.getElementById('ai3d-key-input').value.trim();
+            const elevenKey = document.getElementById('eleven-key-input').value.trim();
 
             if (groqKey) localStorage.setItem('groq_api_key', groqKey);
             if (tavilyKey) localStorage.setItem('tavily_api_key', tavilyKey);
             if (ai3dKey) localStorage.setItem('ai3d_api_key', ai3dKey);
+            if (elevenKey) localStorage.setItem('elevenlabs_api_key', elevenKey);
             
             chatHistory = [{ role: "system", content: getSystemPrompt() }];
             addChatMessage("JARVIS: Credenciales de red y matrices de IA actualizadas, señor. A su orden.", "jarvis");
@@ -585,10 +650,12 @@
             const savedGroq = localStorage.getItem('groq_api_key');
             const savedTavily = localStorage.getItem('tavily_api_key');
             const savedAi3D = localStorage.getItem('ai3d_api_key');
+            const savedEleven = localStorage.getItem('elevenlabs_api_key');
 
             if (savedGroq) document.getElementById('groq-key-input').value = savedGroq;
             if (savedTavily) document.getElementById('tavily-key-input').value = savedTavily;
             if (savedAi3D) document.getElementById('ai3d-key-input').value = savedAi3D;
+            if (savedEleven) document.getElementById('eleven-key-input').value = savedEleven;
         });
 
         // 1. Manejo de Carga de Imágenes para Visión Artificial
@@ -652,14 +719,12 @@
             document.getElementById('cad-code-display').innerText = `// PUENTE IPAD / SHAPR3D\nAcción: ${accion}\nObjetivo: ${objetivo}\nStatus: [DISPARANDO ATAJO]`;
             
             if (accion === "abrir_app") {
-                // Esquema x-callback-url o Atajos de iOS
                 window.location.href = `shortcuts://run-shortcut?name=AbrirApp&input=text&text=${encodeURIComponent(objetivo)}`;
                 return `Entendido, señor. Ejecutando protocolo para abrir la aplicación ${objetivo} en el iPad.`;
             } else if (accion === "enviar_mensaje") {
                 window.location.href = `shortcuts://run-shortcut?name=EnviarMensaje&input=text&text=${encodeURIComponent(objetivo + ":" + extraInfo)}`;
                 return `A su orden, señor. Transmitiendo mensaje hacia ${objetivo}.`;
             } else if (accion === "mover_stl") {
-                // Atajo configurado para transferir STL a Shapr3D
                 window.location.href = `shortcuts://run-shortcut?name=MandarAShapr3D`;
                 return `Entendido, señor. Archivo STL transferido al entorno de Shapr3D en el iPad con éxito.`;
             }
@@ -791,7 +856,6 @@
 
             let messagesPayload = [...chatHistory];
 
-            // Integración de Visión si hay imagen cargada
             if (currentImageBase64) {
                 messagesPayload.push({
                     role: "user",
@@ -809,7 +873,6 @@
 
         async function callGroqAPI(key, payloadMessages) {
             try {
-                // Usamos modelo multimodal si hay imagen, de lo contrario el estándar optimizado
                 const modelToUse = currentImageBase64 ? "llama-3.2-11b-vision-preview" : "openai/gpt-oss-120b";
 
                 const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -828,7 +891,7 @@
                 if (data.choices && data.choices[0] && data.choices[0].message) {
                     const reply = data.choices[0].message.content;
                     chatHistory.push({ role: "assistant", content: reply });
-                    currentImageBase64 = null; // Limpiar imagen tras procesar
+                    currentImageBase64 = null;
                     return reply;
                 } else if (data.error) {
                     return `A su orden, señor, error de Groq: ${data.error.message || 'Desconocido'}`;
@@ -857,7 +920,6 @@
                 setStarkTheme(false);
             }
 
-            // Comandos rápidos de iPad: Abrir App
             if (lower.includes("abre la app") || lower.includes("abre la aplicación")) {
                 let appName = text.replace(/jarvis|abre la app|abre la aplicación|el|la/gi, "").trim();
                 let res = ejecutarComandoIPad("abrir_app", appName);
@@ -866,7 +928,6 @@
                 return;
             }
 
-            // Comandos rápidos de iPad: Enviar Mensaje
             if (lower.includes("envía un mensaje") || lower.includes("manda un mensaje")) {
                 let res = ejecutarComandoIPad("enviar_mensaje", "Contacto", text);
                 addChatMessage("JARVIS: " + res, "jarvis");
@@ -874,7 +935,6 @@
                 return;
             }
 
-            // Comandos rápidos de iPad: Mover STL a Shapr3D
             if (lower.includes("shapr3d") || lower.includes("stl") && lower.includes("mover")) {
                 let res = ejecutarComandoIPad("mover_stl", "Shapr3D");
                 addChatMessage("JARVIS: " + res, "jarvis");
@@ -882,7 +942,6 @@
                 return;
             }
 
-            // Búsqueda en repositorios 3D
             const esOrdenDeBusqueda = lower.includes("busca") || lower.includes("búscame") || lower.includes("encontras");
             if (esOrdenDeBusqueda && (lower.includes("modelo") || lower.includes("stl") || lower.includes("printables") || lower.includes("thingiverse") || lower.includes("imprimir"))) {
                 let cleanQuery = text.replace(/jarvis|busca|el modelo|un modelo|stl|de|para|imprimir|en|búscame|printables|thingiverse/gi, "").trim();
@@ -902,7 +961,6 @@
                 return;
             }
 
-            // Creación mediante Tripo AI
             const esOrdenDeCreacion = lower.includes("crea") || lower.includes("genera") || lower.includes("diseña");
             if (esOrdenDeCreacion && lower.includes("3d")) {
                 let promptModelo = text.replace(/jarvis/gi, "").replace(/crea|genera|diseña|un|modelo|en|3d/gi, "").trim();
@@ -952,31 +1010,40 @@
             chat.scrollTop = chat.scrollHeight;
         }
 
+        // --- Sistema de Voz con ElevenLabs y Respaldo Local ---
         async function speakJarvis(text) {
             const waveGroup = document.getElementById('voice-waves');
             if (waveGroup) waveGroup.classList.add('speaking-active');
 
             const cleanText = text.replace(/<[^>]*>?/gm, '').replace(/["'«»\[\]]/g, '');
-            const selectedVoice = document.getElementById('edge-voice-select').value || "es-ES-AlvaroNeural";
+            const elevenKey = localStorage.getItem('elevenlabs_api_key') || document.getElementById('eleven-key-input').value.trim();
+            const selectedVoiceId = document.getElementById('eleven-voice-select').value || "nPczCjzI2devNBz1zQrb";
+
+            if (!elevenKey) {
+                fallbackBrowserSpeech(cleanText, waveGroup);
+                return;
+            }
 
             try {
-                const response = await fetch("https://tts.travisvn.com/v1/audio/speech", {
-                    method: "POST",
+                const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${selectedVoiceId}?output_format=mp3_44100_128`, {
+                    method: 'POST',
                     headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": "Bearer free-edge-tts"
+                        'Content-Type': 'application/json',
+                        'xi-api-key': elevenKey
                     },
                     body: JSON.stringify({
-                        model: "tts-1",
-                        input: cleanText,
-                        voice: selectedVoice,
-                        response_format: "mp3"
+                        text: cleanText,
+                        model_id: "eleven_flash_v2_5",
+                        voice_settings: {
+                            stability: 0.75,
+                            similarity_boost: 0.85
+                        }
                     })
                 });
 
                 if (response.ok) {
-                    const audioBlob = await response.blob();
-                    const audioUrl = URL.createObjectURL(audioBlob);
+                    const blob = await response.blob();
+                    const audioUrl = URL.createObjectURL(blob);
                     const audio = new Audio(audioUrl);
                     audio.onended = () => {
                         if (waveGroup) waveGroup.classList.remove('speaking-active');
@@ -996,7 +1063,7 @@
                 const speech = new SpeechSynthesisUtterance(text);
                 speech.lang = 'es-ES';
                 speech.rate = 0.9;
-                speech.pitch = 0.3;
+                speech.pitch = 0.4;
                 speech.onend = () => {
                     if (waveGroup) waveGroup.classList.remove('speaking-active');
                 };
