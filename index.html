@@ -403,23 +403,19 @@
         
         <div id="api-config-panel" class="interactive">
             <div class="api-row">
-                <span style="width: 65px;">Groq:</span>
+                <span style="width: 75px;">Groq:</span>
                 <input type="password" id="groq-key-input" placeholder="gsk_..." onchange="saveKeys()">
             </div>
             <div class="api-row">
-                <span style="width: 65px;">OpenAI:</span>
+                <span style="width: 75px;">OpenAI:</span>
                 <input type="password" id="openai-key-input" placeholder="sk-..." onchange="saveKeys()">
             </div>
             <div class="api-row">
-                <span style="width: 65px;">Tavily:</span>
+                <span style="width: 75px;">Tavily:</span>
                 <input type="password" id="tavily-key-input" placeholder="tvly-..." onchange="saveKeys()">
             </div>
             <div class="api-row">
-                <span style="width: 65px;">AI 3D:</span>
-                <input type="password" id="ai3d-key-input" placeholder="tripo_..." onchange="saveKeys()">
-            </div>
-            <div class="api-row">
-                <span style="width: 65px;">ElevenLabs:</span>
+                <span style="width: 75px;">ElevenLabs:</span>
                 <input type="password" id="eleven-key-input" placeholder="xi-api-key..." onchange="saveKeys()">
             </div>
             <button class="hud-btn" style="padding: 3px 8px; font-size: 10px; margin-left: 0;" onclick="saveKeys()">Guardar Credencial</button>
@@ -639,13 +635,11 @@
             const groqKey = document.getElementById('groq-key-input').value.trim();
             const openaiKey = document.getElementById('openai-key-input').value.trim();
             const tavilyKey = document.getElementById('tavily-key-input').value.trim();
-            const ai3dKey = document.getElementById('ai3d-key-input').value.trim();
             const elevenKey = document.getElementById('eleven-key-input').value.trim();
 
             if (groqKey) localStorage.setItem('groq_api_key', groqKey);
             if (openaiKey) localStorage.setItem('openai_api_key', openaiKey);
             if (tavilyKey) localStorage.setItem('tavily_api_key', tavilyKey);
-            if (ai3dKey) localStorage.setItem('ai3d_api_key', ai3dKey);
             if (elevenKey) localStorage.setItem('elevenlabs_api_key', elevenKey);
             
             chatHistory = [{ role: "system", content: getSystemPrompt() }];
@@ -656,13 +650,11 @@
             const savedGroq = localStorage.getItem('groq_api_key');
             const savedOpenAI = localStorage.getItem('openai_api_key');
             const savedTavily = localStorage.getItem('tavily_api_key');
-            const savedAi3D = localStorage.getItem('ai3d_api_key');
             const savedEleven = localStorage.getItem('elevenlabs_api_key');
 
             if (savedGroq) document.getElementById('groq-key-input').value = savedGroq;
             if (savedOpenAI) document.getElementById('openai-key-input').value = savedOpenAI;
             if (savedTavily) document.getElementById('tavily-key-input').value = savedTavily;
-            if (savedAi3D) document.getElementById('ai3d-key-input').value = savedAi3D;
             if (savedEleven) document.getElementById('eleven-key-input').value = savedEleven;
         });
 
@@ -677,78 +669,6 @@
                 updateVisorModel('search_mesh');
             };
             reader.readAsDataURL(file);
-        }
-
-        async function generarModelo3DConTripo(promptTexto) {
-            const ai3dKey = localStorage.getItem('ai3d_api_key') || document.getElementById('ai3d-key-input').value.trim();
-            
-            if (!ai3dKey) {
-                return {
-                    success: false,
-                    message: "Por favor, configure su llave de API de Tripo 3D en el panel superior izquierdo, señor."
-                };
-            }
-
-            document.getElementById('cad-code-display').innerText = `// MOTOR TRIPO 3D - GENERANDO...\nPrompt: "${promptTexto}"\nStatus: [INICIANDO TAREA]`;
-            updateVisorModel('search_mesh');
-
-            try {
-                const response = await fetch("https://api.tripo3d.ai/v2/openapi/task", {
-                    method: "POST",
-                    headers: {
-                        "Authorization": `Bearer ${ai3dKey}`,
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        type: "text_to_model",
-                        prompt: promptTexto
-                    })
-                });
-
-                const data = await response.json();
-                const taskId = data.data?.task_id || data.task_id;
-
-                if (!taskId) {
-                    return { success: false, message: "Tripo no devolvió una tarea válida, señor." };
-                }
-
-                document.getElementById('cad-code-display').innerText = `// MOTOR TRIPO 3D - PROCESANDO\nTask ID: ${taskId}\nStatus: [ESPERANDO RENDERIZADO]`;
-
-                let status = "running";
-                let modelUrl = null;
-
-                while (status === "running" || status === "queued") {
-                    await new Promise(resolve => setTimeout(resolve, 5000));
-                    
-                    const statusRes = await fetch(`https://api.tripo3d.ai/v2/openapi/task/${taskId}`, {
-                        method: "GET",
-                        headers: { "Authorization": `Bearer ${ai3dKey}` }
-                    });
-                    const statusData = await statusRes.json();
-                    const taskData = statusData.data || {};
-                    status = taskData.status;
-
-                    if (status === "success") {
-                        modelUrl = taskData.output?.model;
-                        break;
-                    } else if (status === "failed" || status === "banned" || status === "cancelled") {
-                        return { success: false, message: `La generación en Tripo falló con estado: ${status}, señor.` };
-                    }
-                }
-
-                if (modelUrl) {
-                    document.getElementById('cad-code-display').innerText = `// MOTOR TRIPO 3D - ÉXITO\nURL GLB: ${modelUrl}\nStatus: [LISTO]`;
-                    return {
-                        success: true,
-                        message: `Modelo 3D generado con éxito, señor.`,
-                        url: modelUrl
-                    };
-                }
-
-                return { success: false, message: "No se pudo obtener el archivo del modelo 3D, señor." };
-            } catch (err) {
-                return { success: false, message: "Error al enlazar con el servidor de Tripo AI, señor." };
-            }
         }
 
         function ejecutarComandoIPad(accion, objetivo, extraInfo = "") {
@@ -1030,29 +950,6 @@
                 document.getElementById('cad-code-display').innerText = codeSnippet;
                 addChatMessage(searchHtml, "jarvis", true);
                 speakJarvis(`He localizado los enlaces de búsqueda para ${cleanQuery} en Printables y Thingiverse, señor.`);
-                return;
-            }
-
-            const esOrdenDeCreacion = lower.includes("crea") || lower.includes("genera") || lower.includes("diseña");
-            if (esOrdenDeCreacion && lower.includes("3d")) {
-                let promptModelo = text.replace(/jarvis/gi, "").replace(/crea|genera|diseña|un|modelo|en|3d/gi, "").trim();
-                promptModelo = promptModelo.replace(/^[:,\s-]+/, "");
-                if (!promptModelo) promptModelo = "objeto mecánico";
-
-                addChatMessage("JARVIS: Iniciando motor Tripo AI para modelado de: " + promptModelo + ", señor...", "jarvis");
-                
-                generarModelo3DConTripo(promptModelo).then(resultado => {
-                    let respuestaHtml = `JARVIS: ${resultado.message}<br>`;
-                    if (resultado.success && resultado.url) {
-                        respuestaHtml += `<span style="color: var(--theme-color);">[Modelo Generado con Éxito]</span><br>` +
-                                         `<a class="model-link-btn" href="${resultado.url}" target="_blank">🌐 Descargar / Ver archivo .GLB</a>`;
-                    } else {
-                        respuestaHtml += `<a class="model-link-btn" href="https://platform.tripo3d.ai/" target="_blank">🌐 Ver en Tripo Dashboard</a>`;
-                    }
-
-                    addChatMessage(respuestaHtml, "jarvis", true);
-                    speakJarvis(resultado.message);
-                });
                 return;
             }
 
