@@ -186,10 +186,10 @@
 
         #jarvis-chat {
             position: absolute;
-            top: 185px;
+            top: 255px;
             left: 30px;
             width: 400px;
-            max-height: 40vh;
+            max-height: 35vh;
             overflow-y: auto;
             background: rgba(2, 8, 19, 0.85);
             border-left: 3px solid var(--theme-color);
@@ -407,6 +407,10 @@
                 <input type="password" id="groq-key-input" placeholder="gsk_..." onchange="saveKeys()">
             </div>
             <div class="api-row">
+                <span style="width: 65px;">OpenAI:</span>
+                <input type="password" id="openai-key-input" placeholder="sk-..." onchange="saveKeys()">
+            </div>
+            <div class="api-row">
                 <span style="width: 65px;">Tavily:</span>
                 <input type="password" id="tavily-key-input" placeholder="tvly-..." onchange="saveKeys()">
             </div>
@@ -444,7 +448,7 @@
         </div>
 
         <div id="jarvis-chat" class="interactive">
-            <div class="msg jarvis" id="welcome-msg">JARVIS: Núcleo GPT-OSS conectado, señor. A su orden.</div>
+            <div class="msg jarvis" id="welcome-msg">JARVIS: Núcleo Groq conectado, señor. A su orden.</div>
         </div>
 
         <div id="top-right-slot" class="interactive">
@@ -633,11 +637,13 @@
 
         function saveKeys() {
             const groqKey = document.getElementById('groq-key-input').value.trim();
+            const openaiKey = document.getElementById('openai-key-input').value.trim();
             const tavilyKey = document.getElementById('tavily-key-input').value.trim();
             const ai3dKey = document.getElementById('ai3d-key-input').value.trim();
             const elevenKey = document.getElementById('eleven-key-input').value.trim();
 
             if (groqKey) localStorage.setItem('groq_api_key', groqKey);
+            if (openaiKey) localStorage.setItem('openai_api_key', openaiKey);
             if (tavilyKey) localStorage.setItem('tavily_api_key', tavilyKey);
             if (ai3dKey) localStorage.setItem('ai3d_api_key', ai3dKey);
             if (elevenKey) localStorage.setItem('elevenlabs_api_key', elevenKey);
@@ -648,17 +654,18 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             const savedGroq = localStorage.getItem('groq_api_key');
+            const savedOpenAI = localStorage.getItem('openai_api_key');
             const savedTavily = localStorage.getItem('tavily_api_key');
             const savedAi3D = localStorage.getItem('ai3d_api_key');
             const savedEleven = localStorage.getItem('elevenlabs_api_key');
 
             if (savedGroq) document.getElementById('groq-key-input').value = savedGroq;
+            if (savedOpenAI) document.getElementById('openai-key-input').value = savedOpenAI;
             if (savedTavily) document.getElementById('tavily-key-input').value = savedTavily;
             if (savedAi3D) document.getElementById('ai3d-key-input').value = savedAi3D;
             if (savedEleven) document.getElementById('eleven-key-input').value = savedEleven;
         });
 
-        // 1. Manejo de Carga de Imágenes para Visión Artificial
         function handleImageUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -672,7 +679,6 @@
             reader.readAsDataURL(file);
         }
 
-        // 2. Módulo Tripo AI para Generación 3D
         async function generarModelo3DConTripo(promptTexto) {
             const ai3dKey = localStorage.getItem('ai3d_api_key') || document.getElementById('ai3d-key-input').value.trim();
             
@@ -683,7 +689,7 @@
                 };
             }
 
-            document.getElementById('cad-code-display').innerText = `// MOTOR TRIPO 3D - GENERANDO...\nPrompt: "${promptTexto}"\nStatus: [PROCESANDO RED NEURONAL]`;
+            document.getElementById('cad-code-display').innerText = `// MOTOR TRIPO 3D - GENERANDO...\nPrompt: "${promptTexto}"\nStatus: [INICIANDO TAREA]`;
             updateVisorModel('search_mesh');
 
             try {
@@ -700,21 +706,51 @@
                 });
 
                 const data = await response.json();
-                if (data && data.data && data.data.task_id) {
-                    const taskId = data.data.task_id;
-                    document.getElementById('cad-code-display').innerText = `// MOTOR TRIPO 3D - ÉXITO\nTask ID: ${taskId}\nStatus: [LISTO]`;
+                const taskId = data.data?.task_id || data.task_id;
+
+                if (!taskId) {
+                    return { success: false, message: "Tripo no devolvió una tarea válida, señor." };
+                }
+
+                document.getElementById('cad-code-display').innerText = `// MOTOR TRIPO 3D - PROCESANDO\nTask ID: ${taskId}\nStatus: [ESPERANDO RENDERIZADO]`;
+
+                let status = "running";
+                let modelUrl = null;
+
+                while (status === "running" || status === "queued") {
+                    await new Promise(resolve => setTimeout(resolve, 5000));
+                    
+                    const statusRes = await fetch(`https://api.tripo3d.ai/v2/openapi/task/${taskId}`, {
+                        method: "GET",
+                        headers: { "Authorization": `Bearer ${ai3dKey}` }
+                    });
+                    const statusData = await statusRes.json();
+                    const taskData = statusData.data || {};
+                    status = taskData.status;
+
+                    if (status === "success") {
+                        modelUrl = taskData.output?.model;
+                        break;
+                    } else if (status === "failed" || status === "banned" || status === "cancelled") {
+                        return { success: false, message: `La generación en Tripo falló con estado: ${status}, señor.` };
+                    }
+                }
+
+                if (modelUrl) {
+                    document.getElementById('cad-code-display').innerText = `// MOTOR TRIPO 3D - ÉXITO\nURL GLB: ${modelUrl}\nStatus: [LISTO]`;
                     return {
                         success: true,
-                        message: `Modelo 3D generado mediante Tripo con éxito, señor. ID de tarea: ${taskId}.`
+                        message: `Modelo 3D generado con éxito, señor.`,
+                        url: modelUrl
                     };
                 }
-                return { success: false, message: "Tripo no devolvió una tarea válida, señor." };
+
+                return { success: false, message: "No se pudo obtener el archivo del modelo 3D, señor." };
             } catch (err) {
                 return { success: false, message: "Error al enlazar con el servidor de Tripo AI, señor." };
             }
         }
 
-        // 3. Módulo de Control de iPad (Puente de Automatización y Shapr3D)
         function ejecutarComandoIPad(accion, objetivo, extraInfo = "") {
             document.getElementById('cad-code-display').innerText = `// PUENTE IPAD / SHAPR3D\nAcción: ${accion}\nObjetivo: ${objetivo}\nStatus: [DISPARANDO ATAJO]`;
             
@@ -834,7 +870,7 @@
             lastQueryTimestamp = now;
 
             const groqKey = localStorage.getItem('groq_api_key') || document.getElementById('groq-key-input').value.trim();
-            if (!groqKey) return "Por favor, configure su llave de API de Groq en el panel superior izquierdo, señor.";
+            const openaiKey = localStorage.getItem('openai_api_key') || document.getElementById('openai-key-input').value.trim();
             
             const lowerText = userText.toLowerCase();
             const triggerBusqueda = "busca en internet";
@@ -854,27 +890,34 @@
                 }
             }
 
-            let messagesPayload = [...chatHistory];
-
             if (currentImageBase64) {
-                messagesPayload.push({
-                    role: "user",
-                    content: [
-                        { type: "text", text: userText || "Analiza esta imagen, señor." },
-                        { type: "image_url", image_url: { url: currentImageBase64 } }
-                    ]
-                });
+                if (!openaiKey) {
+                    currentImageBase64 = null;
+                    return "Por favor, configure su llave de API de OpenAI en el panel izquierdo para procesar imágenes con visión, señor.";
+                }
+                
+                let visionMessages = [
+                    { role: "system", content: getSystemPrompt() },
+                    {
+                        role: "user",
+                        content: [
+                            { type: "text", text: userText || "Analiza esta imagen, señor." },
+                            { type: "image_url", image_url: { url: currentImageBase64 } }
+                        ]
+                    }
+                ];
+                return await callOpenAIVision(openaiKey, visionMessages);
             } else {
-                messagesPayload.push({ role: "user", content: userText });
+                if (!groqKey) {
+                    return "Por favor, configure su llave de API de Groq en el panel superior izquierdo, señor.";
+                }
+                chatHistory.push({ role: "user", content: userText });
+                return await callGroqAPI(groqKey, chatHistory);
             }
-
-            return await callGroqAPI(groqKey, messagesPayload);
         }
 
         async function callGroqAPI(key, payloadMessages) {
             try {
-                const modelToUse = currentImageBase64 ? "llama-3.2-11b-vision-preview" : "openai/gpt-oss-120b";
-
                 const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                     method: "POST",
                     headers: {
@@ -882,7 +925,7 @@
                         "Authorization": `Bearer ${key}`
                     },
                     body: JSON.stringify({
-                        model: modelToUse,
+                        model: "llama-3.1-70b-versatile",
                         messages: payloadMessages,
                         max_tokens: 2048
                     })
@@ -891,7 +934,6 @@
                 if (data.choices && data.choices[0] && data.choices[0].message) {
                     const reply = data.choices[0].message.content;
                     chatHistory.push({ role: "assistant", content: reply });
-                    currentImageBase64 = null;
                     return reply;
                 } else if (data.error) {
                     return `A su orden, señor, error de Groq: ${data.error.message || 'Desconocido'}`;
@@ -899,6 +941,36 @@
                 return "Disculpe, señor, respuesta vacía de Groq.";
             } catch (err) {
                 return "Disculpe, señor, falló la conexión con la API de Groq.";
+            }
+        }
+
+        async function callOpenAIVision(key, payloadMessages) {
+            try {
+                const response = await fetch("https://api.openai.com/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${key}`
+                    },
+                    body: JSON.stringify({
+                        model: "gpt-4o-mini",
+                        messages: payloadMessages,
+                        max_tokens: 1000
+                    })
+                });
+                const data = await response.json();
+                currentImageBase64 = null;
+                if (data.choices && data.choices[0] && data.choices[0].message) {
+                    const reply = data.choices[0].message.content;
+                    chatHistory.push({ role: "assistant", content: reply });
+                    return reply;
+                } else if (data.error) {
+                    return `A su orden, señor, error de OpenAI Vision: ${data.error.message || 'Desconocido'}`;
+                }
+                return "Disculpe, señor, respuesta vacía de OpenAI.";
+            } catch (err) {
+                currentImageBase64 = null;
+                return "Disculpe, señor, falló la conexión con la API de OpenAI Vision.";
             }
         }
 
@@ -970,9 +1042,13 @@
                 addChatMessage("JARVIS: Iniciando motor Tripo AI para modelado de: " + promptModelo + ", señor...", "jarvis");
                 
                 generarModelo3DConTripo(promptModelo).then(resultado => {
-                    let respuestaHtml = `JARVIS: ${resultado.message}<br>` +
-                    `<span style="color: var(--theme-color);">[Matriz Generativa Lista]</span><br>` +
-                    `<a class="model-link-btn" href="https://platform.tripo3d.ai/" target="_blank">🌐 Ver en Tripo Dashboard</a>`;
+                    let respuestaHtml = `JARVIS: ${resultado.message}<br>`;
+                    if (resultado.success && resultado.url) {
+                        respuestaHtml += `<span style="color: var(--theme-color);">[Modelo Generado con Éxito]</span><br>` +
+                                         `<a class="model-link-btn" href="${resultado.url}" target="_blank">🌐 Descargar / Ver archivo .GLB</a>`;
+                    } else {
+                        respuestaHtml += `<a class="model-link-btn" href="https://platform.tripo3d.ai/" target="_blank">🌐 Ver en Tripo Dashboard</a>`;
+                    }
 
                     addChatMessage(respuestaHtml, "jarvis", true);
                     speakJarvis(resultado.message);
@@ -1010,7 +1086,6 @@
             chat.scrollTop = chat.scrollHeight;
         }
 
-        // --- Sistema de Voz con ElevenLabs y Respaldo Local ---
         async function speakJarvis(text) {
             const waveGroup = document.getElementById('voice-waves');
             if (waveGroup) waveGroup.classList.add('speaking-active');
