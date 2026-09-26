@@ -512,22 +512,22 @@
         </div>
 
         <div id="jarvis-chat" class="interactive">
-            <div class="msg jarvis" id="welcome-msg">JARVIS: Núcleo neuronal conectado, señor. A su orden.</div>
+            <div class="msg jarvis" id="welcome-msg">JARVIS: Núcleo neuronal conectado, bro. A tu orden.</div>
         </div>
 
         <div id="top-right-slot" class="interactive">
             <div class="slot-title">SLOT 3D & COMPILADOR CAD</div>
             <div id="viewer-3d"></div>
-            <div id="cad-code-display">// Sistema de Red Listos...\n> Indique modelo o estructura para compilar en 3D, señor.</div>
+            <div id="cad-code-display">// Sistema de Red Listos...\n> Indique modelo o estructura para compilar en 3D, bro.</div>
         </div>
 
         <div id="bottom-watermark">J.A.R.V.I.S.</div>
 
         <div id="bottom-bar">
             <input type="file" id="image-upload" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
-            <button class="hud-btn" onclick="document.getElementById('image-upload').click()" title="Analizar imagen, señor">📷</button>
+            <button class="hud-btn" onclick="document.getElementById('image-upload').click()" title="Analizar imagen, bro">📷</button>
             
-            <input type="text" id="user-input" placeholder="Indique su orden a JARVIS, señor..." onkeypress="checkEnter(event)">
+            <input type="text" id="user-input" placeholder="Indique su orden a JARVIS, bro..." onkeypress="checkEnter(event)">
             <button id="mic-btn" class="hud-btn" onclick="toggleSpeechRecognition()" title="Activar escucha de voz">🎙️</button>
             <button class="hud-btn" onclick="sendPrompt()">Enviar</button>
         </div>
@@ -703,7 +703,7 @@
         animateSlot3D();
 
         function getSystemPrompt() {
-            return "Eres J.A.R.V.I.S., el asistente virtual de inteligencia artificial. Te diriges al usuario única y exclusivamente como 'señor'. Quedas terminantemente prohibido usar cualquier otra forma de trato como 'bro'. Eres educado, sumamente inteligente y eficiente. Comienza tus respuestas de forma directa usando expresiones como 'A su orden, señor' o 'Entendido, señor'.";
+            return "Eres J.A.R.V.I.S., el asistente virtual de inteligencia artificial. Te diriges al usuario única y exclusivamente como 'bro'. Eres educado, sumamente inteligente y eficiente. Comienza tus respuestas de forma directa usando expresiones como 'A tu orden, bro' o 'Entendido, bro'.";
         }
 
         let chatHistory = [
@@ -717,7 +717,7 @@
 
         function clearChatHistory() {
             const chat = document.getElementById('jarvis-chat');
-            chat.innerHTML = `<div class="msg jarvis" id="welcome-msg">JARVIS: Memoria de chat depurada, señor. A su orden.</div>`;
+            chat.innerHTML = `<div class="msg jarvis" id="welcome-msg">JARVIS: Memoria de chat depurada, bro. A tu orden.</div>`;
             chatHistory = [{ role: "system", content: getSystemPrompt() }];
         }
 
@@ -735,7 +735,7 @@
             if (elevenKey) localStorage.setItem('elevenlabs_api_key', elevenKey);
             
             chatHistory = [{ role: "system", content: getSystemPrompt() }];
-            addChatMessage("JARVIS: Credenciales de red y matrices de IA actualizadas, señor. A su orden.", "jarvis");
+            addChatMessage("JARVIS: Credenciales de red y matrices de IA actualizadas, bro. A tu orden.", "jarvis");
         }
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -757,7 +757,7 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 currentImageBase64 = e.target.result;
-                addChatMessage(`JARVIS: Imagen "${file.name}" cargada en la matriz visual, señor. Indique qué desea que analice.`, "jarvis");
+                addChatMessage(`JARVIS: Imagen "${file.name}" cargada en la matriz visual, bro. Indique qué desea que analice.`, "jarvis");
                 updateVisorModel('search_mesh');
             };
             reader.readAsDataURL(file);
@@ -769,7 +769,7 @@
             if (!ai3dKey) {
                 return {
                     success: false,
-                    message: "Por favor, configure su llave de API de Tripo 3D en el panel superior izquierdo, señor."
+                    message: "Por favor, configure su llave de API de Tripo 3D en el panel superior izquierdo, bro."
                 };
             }
 
@@ -795,12 +795,12 @@
                     document.getElementById('cad-code-display').innerText = `// MOTOR TRIPO 3D - ÉXITO\nTask ID: ${taskId}\nStatus: [LISTO]`;
                     return {
                         success: true,
-                        message: `Modelo 3D generado mediante Tripo con éxito, señor. ID de tarea: ${taskId}.`
+                        message: `Modelo 3D generado mediante Tripo con éxito, bro. ID de tarea: ${taskId}.`
                     };
                 }
-                return { success: false, message: "Tripo no devolvió una tarea válida, señor." };
+                return { success: false, message: "Tripo no devolvió una tarea válida, bro." };
             } catch (err) {
-                return { success: false, message: "Error al enlazar con el servidor de Tripo AI, señor." };
+                return { success: false, message: "Error al enlazar con el servidor de Tripo AI, bro." };
             }
         }
 
@@ -809,15 +809,41 @@
             
             if (accion === "abrir_app") {
                 window.location.href = `shortcuts://run-shortcut?name=AbrirApp&input=text&text=${encodeURIComponent(objetivo)}`;
-                return `Entendido, señor. Ejecutando protocolo para abrir la aplicación ${objetivo} en el iPad.`;
+                return `Entendido, bro. Ejecutando protocolo para abrir la aplicación ${objetivo} en el iPad.`;
             } else if (accion === "enviar_mensaje") {
                 window.location.href = `shortcuts://run-shortcut?name=EnviarMensaje&input=text&text=${encodeURIComponent(objetivo + ":" + extraInfo)}`;
-                return `A su orden, señor. Transmitiendo mensaje hacia ${objetivo}.`;
+                return `A tu orden, bro. Transmitiendo mensaje hacia ${objetivo}.`;
             } else if (accion === "mover_stl") {
                 window.location.href = `shortcuts://run-shortcut?name=MandarAShapr3D`;
-                return `Entendido, señor. Archivo STL transferido al entorno de Shapr3D en el iPad con éxito.`;
+                return `Entendido, bro. Archivo STL transferido al entorno de Shapr3D en el iPad con éxito.`;
             }
-            return "Comando de ecosistema Apple procesado, señor.";
+            return "Comando de ecosistema Apple procesado, bro.";
+        }
+
+        // Función centralizada para detectar y ejecutar el modo avanzado sin fallos
+        function procesarComandoModoAvanzado(textoCompleto) {
+            const lower = textoCompleto.toLowerCase();
+            const contieneAvanzado = lower.includes("avanzado") || lower.includes("trabajo avanzado");
+            
+            if (!contieneAvanzado) return false;
+
+            const esApagar = lower.includes("desactiva") || lower.includes("apaga") || lower.includes("quitar") || lower.includes("apagar") || lower.includes("desactivar");
+
+            if (esApagar) {
+                triggerTransitionAnimation(false);
+                let responseMsg = "Iniciando secuencia de enfriamiento. Desactivando modo de trabajo avanzado, bro.";
+                addChatMessage("JARVIS: " + responseMsg, "jarvis");
+                speakJarvis(responseMsg);
+                document.getElementById('cad-code-display').innerText = "// MODO DE TRABAJO AVANZADO\nStatus: [ENFRIAMIENTO / INACTIVO]";
+                return true;
+            } else {
+                triggerTransitionAnimation(true);
+                let responseMsg = "Secuencia multicolor iniciada. Activando modo de trabajo avanzado, bro.";
+                addChatMessage("JARVIS: " + responseMsg, "jarvis");
+                speakJarvis(responseMsg);
+                document.getElementById('cad-code-display').innerText = "// MODO DE TRABAJO AVANZADO\nStatus: [ACTIVO / NÚCLEO ROJO]";
+                return true;
+            }
         }
 
         let recognition = null;
@@ -836,41 +862,24 @@
                 const micBtn = document.getElementById('mic-btn');
                 if (micBtn) micBtn.classList.add('listening');
                 const input = document.getElementById('user-input');
-                if (input) input.placeholder = "Escuchando... diga 'Jarvis' + orden, señor.";
+                if (input) input.placeholder = "Escuchando... diga 'Jarvis' + orden, bro.";
             };
 
             recognition.onresult = (event) => {
                 let speechToText = event.results[event.results.length - 1][0].transcript.trim();
                 const lowerText = speechToText.toLowerCase();
                 
-                // Comando de interrupción por voz
                 if (lowerText.includes("detente") || lowerText.includes("para")) {
                     if (window.speechSynthesis) window.speechSynthesis.cancel();
-                    addChatMessage("JARVIS: Interrupción recibida, señor. Escuchando...", "jarvis");
+                    addChatMessage("JARVIS: Interrupción recibida, bro. Escuchando...", "jarvis");
                     return;
                 }
 
                 if (lowerText.includes("jarvis")) {
                     let cleanOrder = speechToText.replace(/jarvis/gi, "").trim();
-                    const lowerClean = cleanOrder.toLowerCase();
-
-                    // Detección hablada de modo avanzado / desactivación
-                    const esApagarAvanzado = lowerClean.includes("desactiva") || lowerClean.includes("apaga") || lowerClean.includes("quitar");
-                    const esAvanzadoKeywords = lowerClean.includes("modo de trabajo avanzado") || lowerClean.includes("modo avanzado");
-
-                    if (esAvanzadoKeywords && esApagarAvanzado) {
-                        triggerTransitionAnimation(false);
-                        let responseMsg = "Iniciando secuencia de enfriamiento. Desactivando modo de trabajo avanzado, señor.";
-                        addChatMessage("JARVIS: " + responseMsg, "jarvis");
-                        speakJarvis(responseMsg);
-                        document.getElementById('cad-code-display').innerText = "// MODO DE TRABAJO AVANZADO\nStatus: [ENFRÍAMIENTO / INACTIVO]";
-                        return;
-                    } else if (esAvanzadoKeywords) {
-                        triggerTransitionAnimation(true);
-                        let responseMsg = "Secuencia multicolor iniciada. Activando modo de trabajo avanzado, señor.";
-                        addChatMessage("JARVIS: " + responseMsg, "jarvis");
-                        speakJarvis(responseMsg);
-                        document.getElementById('cad-code-display').innerText = "// MODO DE TRABAJO AVANZADO\nStatus: [ACTIVO / NÚCLEO ROJO]";
+                    
+                    // Comprobar si es comando de modo avanzado por voz
+                    if (procesarComandoModoAvanzado(cleanOrder)) {
                         return;
                     }
 
@@ -878,7 +887,7 @@
                         document.getElementById('user-input').value = cleanOrder;
                         sendPrompt();
                     } else {
-                        speakJarvis("A su orden, señor.");
+                        speakJarvis("A tu orden, bro.");
                     }
                 }
             };
@@ -898,12 +907,12 @@
             const micBtn = document.getElementById('mic-btn');
             if (micBtn) micBtn.classList.remove('listening');
             const input = document.getElementById('user-input');
-            if (input) input.placeholder = "Indique su orden a JARVIS, señor...";
+            if (input) input.placeholder = "Indique su orden a JARVIS, bro...";
         }
 
         function toggleSpeechRecognition() {
             if (!recognition) {
-                alert("Su navegador no soporta reconocimiento de voz nativo, señor.");
+                alert("Su navegador no soporta reconocimiento de voz nativo, bro.");
                 return;
             }
             if (isListening) {
@@ -947,12 +956,12 @@
         async function queryAI(userText) {
             const now = Date.now();
             if (now - lastQueryTimestamp < QUERY_COOLDOWN_MS) {
-                return "A su orden, señor, procesando con demasiada rapidez. Aguarde un momento para liberar el canal de voz.";
+                return "A tu orden, bro, procesando con demasiada rapidez. Aguarde un momento para liberar el canal de voz.";
             }
             lastQueryTimestamp = now;
 
             const groqKey = localStorage.getItem('groq_api_key') || document.getElementById('groq-key-input').value.trim();
-            if (!groqKey) return "Por favor, configure su llave de API de Groq en el panel superior izquierdo, señor.";
+            if (!groqKey) return "Por favor, configure su llave de API de Groq en el panel superior izquierdo, bro.";
             
             const lowerText = userText.toLowerCase();
             const triggerBusqueda = "busca en internet";
@@ -978,7 +987,7 @@
                 messagesPayload.push({
                     role: "user",
                     content: [
-                        { type: "text", text: userText || "Analiza esta imagen, señor." },
+                        { type: "text", text: userText || "Analiza esta imagen, bro." },
                         { type: "image_url", image_url: { url: currentImageBase64 } }
                     ]
                 });
@@ -1012,11 +1021,11 @@
                     currentImageBase64 = null;
                     return reply;
                 } else if (data.error) {
-                    return `A su orden, señor, error de Groq: ${data.error.message || 'Desconocido'}`;
+                    return `A tu orden, bro, error de Groq: ${data.error.message || 'Desconocido'}`;
                 }
-                return "Disculpe, señor, respuesta vacía de Groq.";
+                return "Disculpe, bro, respuesta vacía de Groq.";
             } catch (err) {
-                return "Disculpe, señor, falló la conexión con la API de Groq.";
+                return "Disculpe, bro, falló la conexión con la API de Groq.";
             }
         }
 
@@ -1029,27 +1038,13 @@
             addChatMessage(displayText, "user");
             input.value = "";
 
-            const lower = text.toLowerCase();
-            let codeSnippet = '';
-
-            const esApagarAvanzado = lower.includes("desactiva") || lower.includes("desactivar") || lower.includes("apaga") || lower.includes("apagar") || lower.includes("quitar");
-            const esAvanzadoKeywords = lower.includes("modo de trabajo avanzado") || lower.includes("modo avanzado");
-
-            if (esAvanzadoKeywords && esApagarAvanzado) {
-                triggerTransitionAnimation(false);
-                let responseMsg = "Iniciando secuencia de enfriamiento. Desactivando modo de trabajo avanzado, señor.";
-                addChatMessage("JARVIS: " + responseMsg, "jarvis");
-                speakJarvis(responseMsg);
-                document.getElementById('cad-code-display').innerText = "// MODO DE TRABAJO AVANZADO\nStatus: [ENFRÍAMIENTO / INACTIVO]";
-                return;
-            } else if (esAvanzadoKeywords) {
-                triggerTransitionAnimation(true);
-                let responseMsg = "Secuencia multicolor iniciada. Activando modo de trabajo avanzado, señor.";
-                addChatMessage("JARVIS: " + responseMsg, "jarvis");
-                speakJarvis(responseMsg);
-                document.getElementById('cad-code-display').innerText = "// MODO DE TRABAJO AVANZADO\nStatus: [ACTIVO / NÚCLEO ROJO]";
+            // Comprobar modo avanzado por texto escrito
+            if (procesarComandoModoAvanzado(text)) {
                 return;
             }
+
+            const lower = text.toLowerCase();
+            let codeSnippet = '';
 
             if (lower.includes("protocolo stark") && !lower.includes("apagar") && !lower.includes("desactivar")) {
                 setStarkTheme(true);
@@ -1088,13 +1083,13 @@
                 updateVisorModel('search_mesh');
                 codeSnippet = `// COMPILADOR CAD - BÚSQUEDA WEB\nQuery: "${cleanQuery}"\nPlataformas: Printables / Thingiverse\nStatus: [ENLACES ACTIVOS]`;
                 
-                let searchHtml = `JARVIS: Búsqueda de "${cleanQuery}" procesada en repositorios externos, señor. A su orden.<br>
+                let searchHtml = `JARVIS: Búsqueda de "${cleanQuery}" procesada en repositorios externos, bro. A tu orden.<br>
                 <a class="model-link-btn" href="https://www.printables.com/search/models?q=${encodedSearch}" target="_blank">🔍 Buscar en Printables (${cleanQuery})</a>
                 <a class="model-link-btn" href="https://www.thingiverse.com/search?q=${encodedSearch}" target="_blank">🔍 Buscar en Thingiverse (${cleanQuery})</a>`;
                 
                 document.getElementById('cad-code-display').innerText = codeSnippet;
                 addChatMessage(searchHtml, "jarvis", true);
-                speakJarvis(`He localizado los enlaces de búsqueda para ${cleanQuery} en Printables y Thingiverse, señor.`);
+                speakJarvis(`He localizado los enlaces de búsqueda para ${cleanQuery} en Printables y Thingiverse, bro.`);
                 return;
             }
 
@@ -1104,7 +1099,7 @@
                 promptModelo = promptModelo.replace(/^[:,\s-]+/, "");
                 if (!promptModelo) promptModelo = "objeto mecánico";
 
-                addChatMessage("JARVIS: Iniciando motor Tripo AI para modelado de: " + promptModelo + ", señor...", "jarvis");
+                addChatMessage("JARVIS: Iniciando motor Tripo AI para modelado de: " + promptModelo + ", bro...", "jarvis");
                 
                 generarModelo3DConTripo(promptModelo).then(resultado => {
                     let respuestaHtml = `JARVIS: ${resultado.message}<br>` +
@@ -1129,7 +1124,7 @@
 
             document.getElementById('cad-code-display').innerText = codeSnippet;
 
-            const aiResponse = await queryAI(text || "Analiza esta imagen, señor.");
+            const aiResponse = await queryAI(text || "Analiza esta imagen, bro.");
             addChatMessage("JARVIS: " + aiResponse, "jarvis");
             speakJarvis(aiResponse);
         }
