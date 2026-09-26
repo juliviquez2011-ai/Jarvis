@@ -156,7 +156,6 @@
             100% { transform: scale(1.5); opacity: 0; stroke-width: 0.5; }
         }
 
-        /* Optimizados con will-change para fluidez total a 60fps */
         .rot-clockwise { transform-origin: 310px 310px; animation: spinClockwise 30s linear infinite; will-change: transform; }
         .rot-counter { transform-origin: 310px 310px; animation: spinCounter 22s linear infinite; will-change: transform; }
         .rot-fast { transform-origin: 310px 310px; animation: spinClockwise 14s linear infinite; will-change: transform; }
@@ -341,7 +340,7 @@
 
             if(svgCore) {
                 svgCore.classList.remove('transitioning-stark-on', 'transitioning-stark-off', 'accelerated-spin');
-                void svgCore.offsetWidth; // Forzar reflow para reiniciar la animación con éxito
+                void svgCore.offsetWidth; 
                 svgCore.classList.add('accelerated-spin');
                 svgCore.classList.add(active ? 'transitioning-stark-on' : 'transitioning-stark-off');
 
