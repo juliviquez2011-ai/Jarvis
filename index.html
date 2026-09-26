@@ -267,14 +267,14 @@
         .rot-reverse-fast { transform-origin: 310px 310px; animation: spinCounter 12s linear infinite; }
         .rot-extra-ring { transform-origin: 310px 310px; animation: spinClockwise 20s linear infinite; }
 
-        /* Clases de rotación rápida para Modo de Trabajo Avanzado */
+        /* Clases de rotación rápida para Modo de Trabajo Avanzado (Rojo final) */
         .advanced-active .rot-clockwise { animation: spinClockwise 4s linear infinite !important; }
         .advanced-active .rot-counter { animation: spinCounter 3s linear infinite !important; }
         .advanced-active .rot-fast { animation: spinClockwise 2s linear infinite !important; }
         .advanced-active .rot-reverse-fast { animation: spinCounter 1.5s linear infinite !important; }
         .advanced-active .rot-extra-ring { animation: spinClockwise 2.5s linear infinite !important; }
 
-        /* Secuencia de transición avanzada con giro total, profundidad z-axis y colores múltiples (sin naranja) */
+        /* Secuencia de transición avanzada: giro total, profundidad z-axis y colores dinámicos que terminan en ROJO */
         .transition-surge {
             animation: coreTransitionSequence 5s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
         }
@@ -289,12 +289,22 @@
             animation: svgFullSpinAndZoom 5s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
         }
 
+        .transition-surge circle, .transition-surge rect {
+            animation: ringColorCycle 5s ease forwards !important;
+        }
+
         .transition-surge #core-label-fixed {
-            animation: logoPulseColorMulti 0.5s ease infinite alternate !important;
+            animation: textTransitionColor 5s ease forwards !important;
         }
         
         .advanced-active #core-label-fixed {
-            animation: logoPulseColorMulti 2s ease infinite alternate;
+            fill: #ff3333 !important;
+            filter: drop-shadow(0 0 25px #ff3333) !important;
+        }
+
+        .advanced-active circle, .advanced-active rect {
+            stroke: #ff3333 !important;
+            fill: #ff3333 !important;
         }
 
         @keyframes coreTransitionSequence {
@@ -313,13 +323,20 @@
             100% { transform: perspective(800px) translateZ(0px) rotateZ(1080deg); }
         }
 
-        /* Secuencia multicolor avanzada (Cian -> Púrpura -> Verde Neón -> Azul Eléctrico -> Magenta) */
-        @keyframes logoPulseColorMulti {
-            0% { fill: #00f0ff; filter: drop-shadow(0 0 25px #00f0ff); }
+        @keyframes ringColorCycle {
+            0% { stroke: var(--theme-color); fill: transparent; }
+            25% { stroke: #9d00ff; fill: transparent; }
+            50% { stroke: #00ff66; fill: transparent; }
+            75% { stroke: #ff007f; fill: transparent; }
+            100% { stroke: #ff3333; fill: transparent; }
+        }
+
+        @keyframes textTransitionColor {
+            0% { fill: var(--theme-color); filter: drop-shadow(0 0 25px var(--theme-color)); }
             25% { fill: #9d00ff; filter: drop-shadow(0 0 30px #9d00ff); }
             50% { fill: #00ff66; filter: drop-shadow(0 0 30px #00ff66); }
-            75% { fill: #0044ff; filter: drop-shadow(0 0 30px #0044ff); }
-            100% { fill: #ff007f; filter: drop-shadow(0 0 30px #ff007f); }
+            75% { fill: #ff007f; filter: drop-shadow(0 0 30px #ff007f); }
+            100% { fill: #ff3333; filter: drop-shadow(0 0 35px #ff3333); }
         }
 
         @keyframes spinClockwise { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
@@ -504,22 +521,22 @@
         </div>
 
         <div id="jarvis-chat" class="interactive">
-            <div class="msg jarvis" id="welcome-msg">JARVIS: Núcleo GPT-OSS conectado, bro. A su orden.</div>
+            <div class="msg jarvis" id="welcome-msg">JARVIS: Núcleo GPT-OSS conectado, señor. A su orden.</div>
         </div>
 
         <div id="top-right-slot" class="interactive">
             <div class="slot-title">SLOT 3D & COMPILADOR CAD</div>
             <div id="viewer-3d"></div>
-            <div id="cad-code-display">// Sistema de Red Listos...\n> Indique modelo o estructura para compilar en 3D, bro.</div>
+            <div id="cad-code-display">// Sistema de Red Listos...\n> Indique modelo o estructura para compilar en 3D, señor.</div>
         </div>
 
         <div id="bottom-watermark">J.A.R.V.I.S.</div>
 
         <div id="bottom-bar">
             <input type="file" id="image-upload" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
-            <button class="hud-btn" onclick="document.getElementById('image-upload').click()" title="Analizar imagen, bro">📷</button>
+            <button class="hud-btn" onclick="document.getElementById('image-upload').click()" title="Analizar imagen, señor">📷</button>
             
-            <input type="text" id="user-input" placeholder="Indique su orden a JARVIS, bro..." onkeypress="checkEnter(event)">
+            <input type="text" id="user-input" placeholder="Indique su orden a JARVIS, señor..." onkeypress="checkEnter(event)">
             <button id="mic-btn" class="hud-btn" onclick="toggleSpeechRecognition()" title="Activar escucha de voz">🎙️</button>
             <button class="hud-btn" onclick="sendPrompt()">Enviar</button>
         </div>
@@ -602,37 +619,40 @@
             const svgCore = document.getElementById('svg-core-hud');
             const root = document.documentElement;
 
-            // Iniciar secuencia cinemática de sobrecarga multicolor
-            svgCoreWrapper.classList.add('transition-surge');
-            svgCoreWrapper.classList.remove('advanced-active');
+            if (targetActiveState) {
+                // Iniciar secuencia de transición multicolor hacia el ROJO final
+                svgCoreWrapper.classList.add('transition-surge');
+                svgCoreWrapper.classList.remove('advanced-active');
 
-            // Colores temporales de sobrecarga energética multicolor
-            root.style.setProperty('--theme-color', '#9d00ff');
-            root.style.setProperty('--theme-glow', 'rgba(157, 0, 255, 0.9)');
-            root.style.setProperty('--theme-bg', 'rgba(15, 2, 25, 0.95)');
-            particlesMat.color.setHex(0x9d00ff);
-            if(svgCore) svgCore.style.filter = "drop-shadow(0 0 40px #9d00ff) drop-shadow(0 0 80px rgba(157, 0, 255, 0.9))";
+                root.style.setProperty('--theme-color', '#9d00ff');
+                root.style.setProperty('--theme-glow', 'rgba(157, 0, 255, 0.9)');
+                root.style.setProperty('--theme-bg', 'rgba(15, 2, 25, 0.95)');
+                particlesMat.color.setHex(0x9d00ff);
+                if(svgCore) svgCore.style.filter = "drop-shadow(0 0 40px #9d00ff)";
 
-            setTimeout(() => {
-                svgCoreWrapper.classList.remove('transition-surge');
-                isAdvancedWorkMode = targetActiveState;
-
-                if (isAdvancedWorkMode) {
+                setTimeout(() => {
+                    svgCoreWrapper.classList.remove('transition-surge');
+                    isAdvancedWorkMode = true;
                     svgCoreWrapper.classList.add('advanced-active');
-                    root.style.setProperty('--theme-color', '#00ff66');
-                    root.style.setProperty('--theme-glow', 'rgba(0, 255, 102, 0.8)');
-                    root.style.setProperty('--theme-bg', 'rgba(2, 20, 10, 0.95)');
-                    particlesMat.color.setHex(0x00ff66);
-                    if(svgCore) svgCore.style.filter = "drop-shadow(0 0 35px #00ff66) drop-shadow(0 0 70px rgba(0, 255, 102, 0.8))";
-                } else {
-                    svgCoreWrapper.classList.remove('advanced-active');
-                    root.style.setProperty('--theme-color', isStarkMode ? '#ff3333' : '#00f0ff');
-                    root.style.setProperty('--theme-glow', isStarkMode ? 'rgba(255, 50, 50, 0.6)' : 'rgba(0, 240, 255, 0.6)');
-                    root.style.setProperty('--theme-bg', isStarkMode ? 'rgba(20, 2, 2, 0.95)' : 'rgba(2, 8, 19, 0.95)');
-                    particlesMat.color.setHex(isStarkMode ? 0xff3333 : 0x00f0ff);
-                    if(svgCore) svgCore.style.filter = isStarkMode ? "drop-shadow(0 0 25px #ff3333)" : "drop-shadow(0 0 25px #00f0ff)";
-                }
-            }, 5000);
+
+                    // Estado final rojo fijo con anillos girando
+                    root.style.setProperty('--theme-color', '#ff3333');
+                    root.style.setProperty('--theme-glow', 'rgba(255, 50, 50, 0.8)');
+                    root.style.setProperty('--theme-bg', 'rgba(25, 2, 2, 0.95)');
+                    particlesMat.color.setHex(0xff3333);
+                    if(svgCore) svgCore.style.filter = "drop-shadow(0 0 35px #ff3333) drop-shadow(0 0 70px rgba(255, 50, 50, 0.8))";
+                }, 5000);
+            } else {
+                svgCoreWrapper.classList.remove('transition-surge');
+                svgCoreWrapper.classList.remove('advanced-active');
+                isAdvancedWorkMode = false;
+
+                root.style.setProperty('--theme-color', isStarkMode ? '#ff3333' : '#00f0ff');
+                root.style.setProperty('--theme-glow', isStarkMode ? 'rgba(255, 50, 50, 0.6)' : 'rgba(0, 240, 255, 0.6)');
+                root.style.setProperty('--theme-bg', isStarkMode ? 'rgba(20, 2, 2, 0.95)' : 'rgba(2, 8, 19, 0.95)');
+                particlesMat.color.setHex(isStarkMode ? 0xff3333 : 0x00f0ff);
+                if(svgCore) svgCore.style.filter = isStarkMode ? "drop-shadow(0 0 25px #ff3333)" : "drop-shadow(0 0 25px #00f0ff)";
+            }
         }
 
         function updateVisorModel(type) {
@@ -684,7 +704,7 @@
         animateSlot3D();
 
         function getSystemPrompt() {
-            return "Eres J.A.R.V.I.S., el asistente virtual de inteligencia artificial. Te diriges al usuario estrictamente como 'bro'. Eres educado, sumamente inteligente y eficiente. Comienza tus respuestas de forma directa usando expresiones como 'A su orden, bro' o 'Entendido, bro'.";
+            return "Eres J.A.R.V.I.S., el asistente virtual de inteligencia artificial. Te diriges al usuario estrictamente como 'señor'. Eres educado, sumamente inteligente y eficiente. Comienza tus respuestas de forma directa usando expresiones como 'A su orden, señor' o 'Entendido, señor'.";
         }
 
         let chatHistory = [
@@ -698,7 +718,7 @@
 
         function clearChatHistory() {
             const chat = document.getElementById('jarvis-chat');
-            chat.innerHTML = `<div class="msg jarvis" id="welcome-msg">JARVIS: Memoria de chat depurada, bro. A su orden.</div>`;
+            chat.innerHTML = `<div class="msg jarvis" id="welcome-msg">JARVIS: Memoria de chat depurada, señor. A su orden.</div>`;
             chatHistory = [{ role: "system", content: getSystemPrompt() }];
         }
 
@@ -716,7 +736,7 @@
             if (elevenKey) localStorage.setItem('elevenlabs_api_key', elevenKey);
             
             chatHistory = [{ role: "system", content: getSystemPrompt() }];
-            addChatMessage("JARVIS: Credenciales de red y matrices de IA actualizadas, bro. A su orden.", "jarvis");
+            addChatMessage("JARVIS: Credenciales de red y matrices de IA actualizadas, señor. A su orden.", "jarvis");
         }
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -738,7 +758,7 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 currentImageBase64 = e.target.result;
-                addChatMessage(`JARVIS: Imagen "${file.name}" cargada en la matriz visual, bro. Indique qué desea que analice.`, "jarvis");
+                addChatMessage(`JARVIS: Imagen "${file.name}" cargada en la matriz visual, señor. Indique qué desea que analice.`, "jarvis");
                 updateVisorModel('search_mesh');
             };
             reader.readAsDataURL(file);
@@ -750,7 +770,7 @@
             if (!ai3dKey) {
                 return {
                     success: false,
-                    message: "Por favor, configure su llave de API de Tripo 3D en el panel superior izquierdo, bro."
+                    message: "Por favor, configure su llave de API de Tripo 3D en el panel superior izquierdo, señor."
                 };
             }
 
@@ -776,12 +796,12 @@
                     document.getElementById('cad-code-display').innerText = `// MOTOR TRIPO 3D - ÉXITO\nTask ID: ${taskId}\nStatus: [LISTO]`;
                     return {
                         success: true,
-                        message: `Modelo 3D generado mediante Tripo con éxito, bro. ID de tarea: ${taskId}.`
+                        message: `Modelo 3D generado mediante Tripo con éxito, señor. ID de tarea: ${taskId}.`
                     };
                 }
-                return { success: false, message: "Tripo no devolvió una tarea válida, bro." };
+                return { success: false, message: "Tripo no devolvió una tarea válida, señor." };
             } catch (err) {
-                return { success: false, message: "Error al enlazar con el servidor de Tripo AI, bro." };
+                return { success: false, message: "Error al enlazar con el servidor de Tripo AI, señor." };
             }
         }
 
@@ -790,15 +810,15 @@
             
             if (accion === "abrir_app") {
                 window.location.href = `shortcuts://run-shortcut?name=AbrirApp&input=text&text=${encodeURIComponent(objetivo)}`;
-                return `Entendido, bro. Ejecutando protocolo para abrir la aplicación ${objetivo} en el iPad.`;
+                return `Entendido, señor. Ejecutando protocolo para abrir la aplicación ${objetivo} en el iPad.`;
             } else if (accion === "enviar_mensaje") {
                 window.location.href = `shortcuts://run-shortcut?name=EnviarMensaje&input=text&text=${encodeURIComponent(objetivo + ":" + extraInfo)}`;
-                return `A su orden, bro. Transmitiendo mensaje hacia ${objetivo}.`;
+                return `A su orden, señor. Transmitiendo mensaje hacia ${objetivo}.`;
             } else if (accion === "mover_stl") {
                 window.location.href = `shortcuts://run-shortcut?name=MandarAShapr3D`;
-                return `Entendido, bro. Archivo STL transferido al entorno de Shapr3D en el iPad con éxito.`;
+                return `Entendido, señor. Archivo STL transferido al entorno de Shapr3D en el iPad con éxito.`;
             }
-            return "Comando de ecosistema Apple procesado, bro.";
+            return "Comando de ecosistema Apple procesado, señor.";
         }
 
         let recognition = null;
@@ -817,7 +837,7 @@
                 const micBtn = document.getElementById('mic-btn');
                 if (micBtn) micBtn.classList.add('listening');
                 const input = document.getElementById('user-input');
-                if (input) input.placeholder = "Escuchando... diga 'Jarvis' + orden, bro.";
+                if (input) input.placeholder = "Escuchando... diga 'Jarvis' + orden, señor.";
             };
 
             recognition.onresult = (event) => {
@@ -830,7 +850,7 @@
                         document.getElementById('user-input').value = cleanOrder;
                         sendPrompt();
                     } else {
-                        speakJarvis("A su orden, bro.");
+                        speakJarvis("A su orden, señor.");
                     }
                 }
             };
@@ -850,12 +870,12 @@
             const micBtn = document.getElementById('mic-btn');
             if (micBtn) micBtn.classList.remove('listening');
             const input = document.getElementById('user-input');
-            if (input) input.placeholder = "Indique su orden a JARVIS, bro...";
+            if (input) input.placeholder = "Indique su orden a JARVIS, señor...";
         }
 
         function toggleSpeechRecognition() {
             if (!recognition) {
-                alert("Su navegador no soporta reconocimiento de voz nativo, bro.");
+                alert("Su navegador no soporta reconocimiento de voz nativo, señor.");
                 return;
             }
             if (isListening) {
@@ -899,12 +919,12 @@
         async function queryAI(userText) {
             const now = Date.now();
             if (now - lastQueryTimestamp < QUERY_COOLDOWN_MS) {
-                return "A su orden, bro, procesando con demasiada rapidez. Aguarde un momento para liberar el canal de voz.";
+                return "A su orden, señor, procesando con demasiada rapidez. Aguarde un momento para liberar el canal de voz.";
             }
             lastQueryTimestamp = now;
 
             const groqKey = localStorage.getItem('groq_api_key') || document.getElementById('groq-key-input').value.trim();
-            if (!groqKey) return "Por favor, configure su llave de API de Groq en el panel superior izquierdo, bro.";
+            if (!groqKey) return "Por favor, configure su llave de API de Groq en el panel superior izquierdo, señor.";
             
             const lowerText = userText.toLowerCase();
             const triggerBusqueda = "busca en internet";
@@ -930,7 +950,7 @@
                 messagesPayload.push({
                     role: "user",
                     content: [
-                        { type: "text", text: userText || "Analiza esta imagen, bro." },
+                        { type: "text", text: userText || "Analiza esta imagen, señor." },
                         { type: "image_url", image_url: { url: currentImageBase64 } }
                     ]
                 });
@@ -964,11 +984,11 @@
                     currentImageBase64 = null;
                     return reply;
                 } else if (data.error) {
-                    return `A su orden, bro, error de Groq: ${data.error.message || 'Desconocido'}`;
+                    return `A su orden, señor, error de Groq: ${data.error.message || 'Desconocido'}`;
                 }
-                return "Disculpe, bro, respuesta vacía de Groq.";
+                return "Disculpe, señor, respuesta vacía de Groq.";
             } catch (err) {
-                return "Disculpe, bro, falló la conexión con la API de Groq.";
+                return "Disculpe, señor, falló la conexión con la API de Groq.";
             }
         }
 
@@ -984,23 +1004,23 @@
             const lower = text.toLowerCase();
             let codeSnippet = '';
 
-            // --- LÓGICA DE TRANSICIÓN MULTICOLOR PARA MODO AVANZADO ---
+            // --- LÓGICA DE TRANSICIÓN HACIA ROJO FINAL PARA MODO AVANZADO ---
             const esApagarAvanzado = lower.includes("desactiva") || lower.includes("desactivar") || lower.includes("apaga") || lower.includes("apagar") || lower.includes("quitar");
             const esAvanzadoKeywords = lower.includes("modo de trabajo avanzado") || lower.includes("modo avanzado");
 
             if (esAvanzadoKeywords && esApagarAvanzado) {
                 triggerTransitionAnimation(false);
-                let responseMsg = "Iniciando secuencia de enfriamiento y giro del núcleo. Desactivando modo de trabajo avanzado, bro.";
+                let responseMsg = "Iniciando secuencia de enfriamiento. Desactivando modo de trabajo avanzado, señor.";
                 addChatMessage("JARVIS: " + responseMsg, "jarvis");
                 speakJarvis(responseMsg);
                 document.getElementById('cad-code-display').innerText = "// MODO DE TRABAJO AVANZADO\nStatus: [ENFRIAMIENTO / INACTIVO]";
                 return;
             } else if (esAvanzadoKeywords) {
                 triggerTransitionAnimation(true);
-                let responseMsg = "Iniciando secuencia cinemática multicolor. Activando modo de trabajo avanzado, bro.";
+                let responseMsg = "Secuencia multicolor iniciada. Activando modo de trabajo avanzado, señor.";
                 addChatMessage("JARVIS: " + responseMsg, "jarvis");
                 speakJarvis(responseMsg);
-                document.getElementById('cad-code-display').innerText = "// MODO DE TRABAJO AVANZADO\nStatus: [MULTICOLOR / MÁXIMA VELOCIDAD]";
+                document.getElementById('cad-code-display').innerText = "// MODO DE TRABAJO AVANZADO\nStatus: [ACTIVO / NÚCLEO ROJO]";
                 return;
             }
 
@@ -1041,13 +1061,13 @@
                 updateVisorModel('search_mesh');
                 codeSnippet = `// COMPILADOR CAD - BÚSQUEDA WEB\nQuery: "${cleanQuery}"\nPlataformas: Printables / Thingiverse\nStatus: [ENLACES ACTIVOS]`;
                 
-                let searchHtml = `JARVIS: Búsqueda de "${cleanQuery}" procesada en repositorios externos, bro. A su orden.<br>
+                let searchHtml = `JARVIS: Búsqueda de "${cleanQuery}" procesada en repositorios externos, señor. A su orden.<br>
                 <a class="model-link-btn" href="https://www.printables.com/search/models?q=${encodedSearch}" target="_blank">🔍 Buscar en Printables (${cleanQuery})</a>
                 <a class="model-link-btn" href="https://www.thingiverse.com/search?q=${encodedSearch}" target="_blank">🔍 Buscar en Thingiverse (${cleanQuery})</a>`;
                 
                 document.getElementById('cad-code-display').innerText = codeSnippet;
                 addChatMessage(searchHtml, "jarvis", true);
-                speakJarvis(`He localizado los enlaces de búsqueda para ${cleanQuery} en Printables y Thingiverse, bro.`);
+                speakJarvis(`He localizado los enlaces de búsqueda para ${cleanQuery} en Printables y Thingiverse, señor.`);
                 return;
             }
 
@@ -1057,7 +1077,7 @@
                 promptModelo = promptModelo.replace(/^[:,\s-]+/, "");
                 if (!promptModelo) promptModelo = "objeto mecánico";
 
-                addChatMessage("JARVIS: Iniciando motor Tripo AI para modelado de: " + promptModelo + ", bro...", "jarvis");
+                addChatMessage("JARVIS: Iniciando motor Tripo AI para modelado de: " + promptModelo + ", señor...", "jarvis");
                 
                 generarModelo3DConTripo(promptModelo).then(resultado => {
                     let respuestaHtml = `JARVIS: ${resultado.message}<br>` +
@@ -1082,7 +1102,7 @@
 
             document.getElementById('cad-code-display').innerText = codeSnippet;
 
-            const aiResponse = await queryAI(text || "Analiza esta imagen, bro.");
+            const aiResponse = await queryAI(text || "Analiza esta imagen, señor.");
             addChatMessage("JARVIS: " + aiResponse, "jarvis");
             speakJarvis(aiResponse);
         }
