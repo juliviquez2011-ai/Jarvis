@@ -273,7 +273,6 @@
         .advanced-active .rot-reverse-fast { animation: spinCounter 1.5s linear infinite !important; }
         .advanced-active .rot-extra-ring { animation: spinClockwise 2.5s linear infinite !important; }
         
-        /* Animación especial de transición para el logo central al activar modo avanzado */
         .advanced-active #core-label-fixed {
             animation: logoColorShift 1.5s ease infinite alternate;
         }
@@ -559,7 +558,6 @@
             }
         }
 
-        // --- Función para activar / desactivar Modo de Trabajo Avanzado ---
         function setAdvancedWorkMode(active) {
             isAdvancedWorkMode = active;
             const root = document.documentElement;
@@ -932,20 +930,23 @@
             const lower = text.toLowerCase();
             let codeSnippet = '';
 
-            // --- Comandos de Control para el Modo de Trabajo Avanzado ---
-            if (lower.includes("activa modo de trabajo avanzado") || lower.includes("activar modo de trabajo avanzado")) {
-                setAdvancedWorkMode(true);
-                let responseMsg = "Modo de trabajo avanzado activado, señor. Núcleo neural operando a máxima capacidad.";
-                addChatMessage("JARVIS: " + responseMsg, "jarvis");
-                speakJarvis(responseMsg);
-                document.getElementById('cad-code-display').innerText = "// MODO DE TRABAJO AVANZADO\nStatus: [ACTIVO / MÁXIMA VELOCIDAD]";
-                return;
-            } else if (lower.includes("desactiva modo de trabajo avanzado") || lower.includes("apagar modo de trabajo avanzado") || lower.includes("desactivar modo de trabajo avanzado")) {
+            // --- LÓGICA CORREGIDA PARA ACTIVAR Y APAGAR MODO DE TRABAJO AVANZADO ---
+            const esApagarAvanzado = lower.includes("desactiva") || lower.includes("desactivar") || lower.includes("apaga") || lower.includes("apagar") || lower.includes("quitar");
+            const esAvanzadoKeywords = lower.includes("modo de trabajo avanzado") || lower.includes("modo avanzado");
+
+            if (esAvanzadoKeywords && esApagarAvanzado) {
                 setAdvancedWorkMode(false);
                 let responseMsg = "Modo de trabajo avanzado desactivado, señor. Sistemas retornando a parámetros normales.";
                 addChatMessage("JARVIS: " + responseMsg, "jarvis");
                 speakJarvis(responseMsg);
                 document.getElementById('cad-code-display').innerText = "// MODO DE TRABAJO AVANZADO\nStatus: [INACTIVO]";
+                return;
+            } else if (esAvanzadoKeywords) {
+                setAdvancedWorkMode(true);
+                let responseMsg = "Modo de trabajo avanzado activado, señor. Núcleo neural operando a máxima capacidad.";
+                addChatMessage("JARVIS: " + responseMsg, "jarvis");
+                speakJarvis(responseMsg);
+                document.getElementById('cad-code-display').innerText = "// MODO DE TRABAJO AVANZADO\nStatus: [ACTIVO / MÁXIMA VELOCIDAD]";
                 return;
             }
 
