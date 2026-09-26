@@ -24,32 +24,22 @@
 
         @keyframes ignitionStarkRedAdvanced {
             0% { 
-                filter: hue-rotate(0deg) brightness(1) blur(0px) drop-shadow(0 0 30px var(--theme-color)); 
+                filter: hue-rotate(0deg) brightness(1) drop-shadow(0 0 30px var(--theme-color)); 
                 transform: translate(-50%, -50%) scale(1) rotate(0deg); 
                 opacity: 1; 
             }
-            15% { 
-                filter: hue-rotate(40deg) brightness(2.2) blur(2px) drop-shadow(0 0 50px #ffffff); 
-                transform: translate(-50%, -50%) scale(0.65) rotate(-90deg); 
+            40% { 
+                filter: hue-rotate(90deg) brightness(1.6) drop-shadow(0 0 70px #ff5500); 
+                transform: translate(-50%, -50%) scale(0.9) rotate(-180deg); 
                 opacity: 0.8; 
             }
-            40% { 
-                filter: hue-rotate(90deg) brightness(1.6) blur(4px) drop-shadow(0 0 70px #ff5500); 
-                transform: translate(-50%, -50%) scale(0.4) rotate(-180deg); 
-                opacity: 0.5; 
-            }
-            65% { 
-                filter: hue-rotate(-20deg) brightness(2.8) blur(2px) drop-shadow(0 0 80px #ff0033); 
-                transform: translate(-50%, -50%) scale(1.15) rotate(180deg); 
-                opacity: 0.85; 
-            }
-            85% { 
-                filter: hue-rotate(0deg) brightness(1.4) blur(0px) drop-shadow(0 0 45px #ff3333); 
-                transform: translate(-50%, -50%) scale(0.96) rotate(360deg); 
-                opacity: 1; 
+            70% { 
+                filter: hue-rotate(-20deg) brightness(2.2) drop-shadow(0 0 80px #ff0033); 
+                transform: translate(-50%, -50%) scale(1.05) rotate(180deg); 
+                opacity: 0.9; 
             }
             100% { 
-                filter: hue-rotate(0deg) brightness(1) blur(0px) drop-shadow(0 0 30px var(--theme-color)); 
+                filter: hue-rotate(0deg) brightness(1) drop-shadow(0 0 30px var(--theme-color)); 
                 transform: translate(-50%, -50%) scale(1) rotate(360deg); 
                 opacity: 1; 
             }
@@ -57,34 +47,24 @@
 
         @keyframes shutdownStarkBlueAdvanced {
             0% { 
-                filter: hue-rotate(0deg) brightness(1) blur(0px) drop-shadow(0 0 30px var(--theme-color)); 
+                filter: hue-rotate(0deg) brightness(1) drop-shadow(0 0 30px var(--theme-color)); 
                 transform: translate(-50%, -50%) scale(1) rotate(0deg); 
                 opacity: 1;
             }
-            20% { 
-                filter: hue-rotate(45deg) brightness(2.5) blur(0px) drop-shadow(0 0 60px #ffffff); 
-                transform: translate(-50%, -50%) scale(1.08) rotate(60deg); 
-                opacity: 1;
-            }
             50% { 
-                filter: hue-rotate(80deg) brightness(1.2) blur(3px) drop-shadow(0 0 35px var(--theme-color)); 
-                transform: translate(-50%, -50%) scale(0.5) rotate(200deg); 
-                opacity: 0.4;
-            }
-            80% { 
-                filter: hue-rotate(100deg) brightness(0.4) blur(6px) drop-shadow(0 0 15px #000); 
-                transform: translate(-50%, -50%) scale(0.7) rotate(320deg); 
-                opacity: 0.15;
+                filter: hue-rotate(180deg) brightness(1.8) drop-shadow(0 0 50px #00f0ff); 
+                transform: translate(-50%, -50%) scale(1.05) rotate(180deg); 
+                opacity: 0.9;
             }
             100% { 
-                filter: hue-rotate(0deg) brightness(1) blur(0px) drop-shadow(0 0 30px var(--theme-color)); 
+                filter: hue-rotate(0deg) brightness(1) drop-shadow(0 0 30px var(--theme-color)); 
                 transform: translate(-50%, -50%) scale(1) rotate(360deg); 
                 opacity: 1; 
             }
         }
 
-        .transitioning-stark-on { animation: ignitionStarkRedAdvanced 6.5s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
-        .transitioning-stark-off { animation: shutdownStarkBlueAdvanced 6.5s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+        .transitioning-stark-on { animation: ignitionStarkRedAdvanced 4s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+        .transitioning-stark-off { animation: shutdownStarkBlueAdvanced 4s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
 
         #hud-container {
             position: relative; width: 100vw; height: 100vh;
@@ -102,7 +82,7 @@
             padding: 6px 22px; border-radius: 20px; font-family: monospace;
             color: var(--theme-color); font-size: 14px; backdrop-filter: blur(5px);
             z-index: 100; box-shadow: 0 0 15px var(--theme-glow);
-            transition: all 6.5s cubic-bezier(0.25, 1, 0.5, 1);
+            transition: all 4s ease;
         }
 
         #api-config-panel {
@@ -163,6 +143,7 @@
             width: 100%; height: 100%; position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%); transform-origin: center;
             filter: drop-shadow(0 0 25px var(--theme-color)) drop-shadow(0 0 50px var(--theme-glow));
+            will-change: transform, filter;
         }
         .audio-wave-ring { fill: none; stroke: var(--theme-color); stroke-width: 3; opacity: 0; transform-origin: center; }
         
@@ -175,17 +156,18 @@
             100% { transform: scale(1.5); opacity: 0; stroke-width: 0.5; }
         }
 
-        .rot-clockwise { transform-origin: 310px 310px; animation: spinClockwise 35s linear infinite; }
-        .rot-counter { transform-origin: 310px 310px; animation: spinCounter 25s linear infinite; }
-        .rot-fast { transform-origin: 310px 310px; animation: spinClockwise 16s linear infinite; }
-        .rot-reverse-fast { transform-origin: 310px 310px; animation: spinCounter 12s linear infinite; }
-        .rot-extra-ring { transform-origin: 310px 310px; animation: spinClockwise 20s linear infinite; }
+        /* Optimizados con will-change para fluidez total a 60fps */
+        .rot-clockwise { transform-origin: 310px 310px; animation: spinClockwise 30s linear infinite; will-change: transform; }
+        .rot-counter { transform-origin: 310px 310px; animation: spinCounter 22s linear infinite; will-change: transform; }
+        .rot-fast { transform-origin: 310px 310px; animation: spinClockwise 14s linear infinite; will-change: transform; }
+        .rot-reverse-fast { transform-origin: 310px 310px; animation: spinCounter 10s linear infinite; will-change: transform; }
+        .rot-extra-ring { transform-origin: 310px 310px; animation: spinClockwise 18s linear infinite; will-change: transform; }
 
-        .accelerated-spin .rot-clockwise { animation-duration: 4s !important; }
-        .accelerated-spin .rot-counter { animation-duration: 3s !important; }
-        .accelerated-spin .rot-fast { animation-duration: 2s !important; }
-        .accelerated-spin .rot-reverse-fast { animation-duration: 1.5s !important; }
-        .accelerated-spin .rot-extra-ring { animation-duration: 2.5s !important; }
+        .accelerated-spin .rot-clockwise { animation-duration: 3s !important; }
+        .accelerated-spin .rot-counter { animation-duration: 2.2s !important; }
+        .accelerated-spin .rot-fast { animation-duration: 1.5s !important; }
+        .accelerated-spin .rot-reverse-fast { animation-duration: 1s !important; }
+        .accelerated-spin .rot-extra-ring { animation-duration: 2s !important; }
 
         @keyframes spinClockwise { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes spinCounter { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
@@ -287,7 +269,7 @@
         </div>
 
         <div id="jarvis-chat" class="interactive">
-            <div class="msg jarvis" id="welcome-msg">JARVIS: Núcleo conectado con gpt-oss-120b, señor. A su orden.</div>
+            <div class="msg jarvis" id="welcome-msg">JARVIS: Núcleo conectado con llama-3.3-70b-versatile, señor. A su orden.</div>
         </div>
 
         <div id="top-right-slot" class="interactive">
@@ -358,14 +340,14 @@
             const svgCore = document.getElementById('svg-core-hud');
 
             if(svgCore) {
-                svgCore.classList.remove('transitioning-stark-on', 'transitioning-stark-off');
+                svgCore.classList.remove('transitioning-stark-on', 'transitioning-stark-off', 'accelerated-spin');
+                void svgCore.offsetWidth; // Forzar reflow para reiniciar la animación con éxito
                 svgCore.classList.add('accelerated-spin');
-                void svgCore.offsetWidth;
                 svgCore.classList.add(active ? 'transitioning-stark-on' : 'transitioning-stark-off');
 
                 setTimeout(() => {
                     svgCore.classList.remove('transitioning-stark-on', 'transitioning-stark-off', 'accelerated-spin');
-                }, 6500);
+                }, 4000);
             }
 
             if (active) {
@@ -577,8 +559,8 @@
             }
 
             try {
-                // Modelos actualizados según tu captura de pantalla de la consola de Groq
-                const modelToUse = currentImageBase64 ? "gpt-oss-120b" : "gpt-oss-120b";
+                // Modelo estable actualizado en Groq
+                const modelToUse = "llama-3.3-70b-versatile";
 
                 const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                     method: "POST",
@@ -607,7 +589,7 @@
             input.value = "";
 
             const lower = text.toLowerCase();
-            if (lower.includes("apaga protocolo stark") || lower.includes("desactivar stark")) {
+            if (lower.includes("apaga protocolo stark") || lower.includes("desactivar stark") || lower.includes("apaga modo trabajo avanzado")) {
                 setStarkTheme(false);
             } else if (lower.includes("protocolo stark") || lower.includes("modo trabajo avanzado")) {
                 setStarkTheme(true);
