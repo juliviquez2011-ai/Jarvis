@@ -22,7 +22,7 @@
             --theme-bg: rgba(2, 8, 19, 0.95);
         }
 
-        /* --- Animaciones Cinemáticas de 6.5s con Desplazamiento en Profundidad y Transición de Color --- */
+        /* --- Animaciones Cinemáticas de 6.5s con Desplazamiento y Control de Cierre Limpio --- */
         @keyframes ignitionStarkRedAdvanced {
             0% { 
                 filter: hue-rotate(0deg) brightness(1) blur(0px) drop-shadow(0 0 30px var(--theme-color)); 
@@ -30,25 +30,21 @@
                 opacity: 1; 
             }
             15% { 
-                /* Se retira hacia el fondo de manera fluida y gana brillo intenso */
                 filter: hue-rotate(40deg) brightness(2.2) blur(2px) drop-shadow(0 0 50px #ffffff); 
                 transform: translate(-50%, -50%) scale(0.65) rotate(-90deg); 
                 opacity: 0.8; 
             }
             40% { 
-                /* Zona de transformación cromática profunda en el fondo */
                 filter: hue-rotate(90deg) brightness(1.6) blur(4px) drop-shadow(0 0 70px #ff5500); 
                 transform: translate(-50%, -50%) scale(0.4) rotate(-180deg); 
                 opacity: 0.5; 
             }
             65% { 
-                /* Comienza el retorno al primer plano adoptando el espectro rojo Stark */
                 filter: hue-rotate(-20deg) brightness(2.8) blur(2px) drop-shadow(0 0 80px #ff0033); 
                 transform: translate(-50%, -50%) scale(1.15) rotate(180deg); 
                 opacity: 0.85; 
             }
             85% { 
-                /* Leve rebote de asentamiento */
                 filter: hue-rotate(0deg) brightness(1.4) blur(0px) drop-shadow(0 0 45px #ff3333); 
                 transform: translate(-50%, -50%) scale(0.96) rotate(360deg); 
                 opacity: 1; 
@@ -67,13 +63,11 @@
                 opacity: 1;
             }
             20% { 
-                /* Expansión magnética inicial antes de la retracción */
                 filter: hue-rotate(45deg) brightness(2.5) blur(0px) drop-shadow(0 0 60px #ffffff); 
                 transform: translate(-50%, -50%) scale(1.08) rotate(60deg); 
                 opacity: 1;
             }
             50% { 
-                /* Se retira hacia el fondo perdiendo opacidad y desenfocándose lentamente */
                 filter: hue-rotate(80deg) brightness(1.2) blur(3px) drop-shadow(0 0 35px var(--theme-color)); 
                 transform: translate(-50%, -50%) scale(0.5) rotate(200deg); 
                 opacity: 0.4;
@@ -84,9 +78,10 @@
                 opacity: 0.15;
             }
             100% { 
-                filter: hue-rotate(0deg) brightness(0) blur(10px) drop-shadow(0 0 0px transparent); 
-                transform: translate(-50%, -50%) scale(0.9) rotate(360deg); 
-                opacity: 0; 
+                /* Se mantiene la opacidad en 0 y escala contenida para evitar el salto de color azul repentino */
+                filter: hue-rotate(0deg) brightness(1) blur(0px) drop-shadow(0 0 30px var(--theme-color)); 
+                transform: translate(-50%, -50%) scale(1) rotate(360deg); 
+                opacity: 1; 
             }
         }
 
@@ -348,11 +343,19 @@
             100% { transform: scale(1.5); opacity: 0; stroke-width: 0.5; }
         }
 
+        /* --- Velocidades base y de aceleración para los anillos --- */
         .rot-clockwise { transform-origin: 310px 310px; animation: spinClockwise 35s linear infinite; }
         .rot-counter { transform-origin: 310px 310px; animation: spinCounter 25s linear infinite; }
         .rot-fast { transform-origin: 310px 310px; animation: spinClockwise 16s linear infinite; }
         .rot-reverse-fast { transform-origin: 310px 310px; animation: spinCounter 12s linear infinite; }
         .rot-extra-ring { transform-origin: 310px 310px; animation: spinClockwise 20s linear infinite; }
+
+        /* Clases de sobrecarga temporal de velocidad durante la transición */
+        .accelerated-spin .rot-clockwise { animation-duration: 4s !important; }
+        .accelerated-spin .rot-counter { animation-duration: 3s !important; }
+        .accelerated-spin .rot-fast { animation-duration: 2s !important; }
+        .accelerated-spin .rot-reverse-fast { animation-duration: 1.5s !important; }
+        .accelerated-spin .rot-extra-ring { animation-duration: 2.5s !important; }
 
         @keyframes spinClockwise { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes spinCounter { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
@@ -616,6 +619,7 @@
 
             if(svgCore) {
                 svgCore.classList.remove('transitioning-stark-on', 'transitioning-stark-off');
+                svgCore.classList.add('accelerated-spin'); // Activa el giro rápido en anillos
                 void svgCore.offsetWidth; // Trigger reflow
 
                 if (active) {
@@ -624,9 +628,10 @@
                     svgCore.classList.add('transitioning-stark-off');
                 }
 
-                // Sincronizado a los 6.5 segundos de animación con retracción 3D profunda
+                // Sincronizado a los 6.5 segundos de animación con limpieza gradual de clases
                 setTimeout(() => {
                     svgCore.classList.remove('transitioning-stark-on', 'transitioning-stark-off');
+                    svgCore.classList.remove('accelerated-spin'); // Vuelve a la velocidad normal de giro
                 }, 6500);
             }
 
@@ -794,7 +799,7 @@
         }
 
         function ejecutarComandoIPad(accion, objetivo, extraInfo = "") {
-            document.getElementById('cad-code-display').innerText = `// PUENTE IPAD / SHAPR3D\nAcción: ${accion}\nObjetivo: ${objetivo}\nStatus: [DISPARANDO ATAJO]`;
+            document.getElementById('cad-code-display').innerText = `// PUENTE IPAD / SHAPR3D\nAcción: ${accion}\nObjetivo:${objetivo}\nStatus: [DISPARANDO ATAJO]`;
             
             if (accion === "abrir_app") {
                 window.location.href = `shortcuts://run-shortcut?name=AbrirApp&input=text&text=${encodeURIComponent(objetivo)}`;
@@ -1068,7 +1073,7 @@
                 updateVisorModel('sphere');
                 codeSnippet = '// Geometría Esférica\nGeometry.createSphere();\nRadio: 0.9m\nStatus: [OK]';
             } else if (codeSnippet === '') {
-                codeSnippet = `// ORDEN RECIBIDA: "${displayText}"\nEjecutando procesamiento neural...\nStatus: [OK]`;
+                codeSnippet = `// ORDEN RECIBIDA: "${displayText}"\nEjecutando procesamiento neural...\nStatus: [OK]';
             }
 
             document.getElementById('cad-code-display').innerText = codeSnippet;
