@@ -999,18 +999,23 @@
             chat.scrollTop = chat.scrollHeight;
         }
 
-        // CONTROL GLOBAL DE AUDIO PARA EVITAR INTERFERENCIA DE APPLE
+        // BLOQUEO ABSOLUTO DE LA VOZ NATIVA DE APPLE Y GESTIÓN ELEVENLABS
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            window.speechSynthesis.speak = function() {
+                console.warn("Intento de usar voz nativa bloqueado por el núcleo J.A.R.V.I.S., señor.");
+            };
+        }
+
         let currentElevenLabsAudio = null;
 
         async function speakJarvis(text) {
             const waveGroup = document.getElementById('voice-waves');
             
-            // 1. MATAR CUALQUIER INTENTO DE VOZ NATIVA DE APPLE AL INSTANTE
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
             }
 
-            // 2. DETENER AUDIO PREVIO DE ELEVENLABS SI ESTABA SONANDO
             if (currentElevenLabsAudio) {
                 currentElevenLabsAudio.pause();
                 currentElevenLabsAudio.currentTime = 0;
@@ -1024,7 +1029,8 @@
             const selectedVoiceId = document.getElementById('eleven-voice-select').value || "nPczCjzI2devNBz1zQrb";
 
             if (!elevenKey) {
-                fallbackBrowserSpeech(cleanText, waveGroup);
+                console.error("Falta configurar la llave de ElevenLabs, señor.");
+                if (waveGroup) waveGroup.classList.remove('speaking-active');
                 return;
             }
 
@@ -1060,30 +1066,12 @@
                         currentElevenLabsAudio = null;
                     };
                     
-                    currentElevenLabsAudio.play().catch(error => {
-                        console.error("Bloqueo de reproducción automática:", error);
-                        fallbackBrowserSpeech(cleanText, waveGroup);
-                    });
+                    await currentElevenLabsAudio.play();
                 } else {
-                    fallbackBrowserSpeech(cleanText, waveGroup);
+                    if (waveGroup) waveGroup.classList.remove('speaking-active');
                 }
             } catch (e) {
-                fallbackBrowserSpeech(cleanText, waveGroup);
-            }
-        }
-
-        function fallbackBrowserSpeech(text, waveGroup) {
-            // Solo se ejecuta si ElevenLabs falla o no hay clave configurada
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'es-ES';
-                utterance.rate = 1.0;
-                utterance.pitch = 0.9;
-                utterance.onend = () => { if (waveGroup) waveGroup.classList.remove('speaking-active'); };
-                utterance.onerror = () => { if (waveGroup) waveGroup.classList.remove('speaking-active'); };
-                window.speechSynthesis.speak(utterance);
-            } else {
+                console.error("Error reproduciendo ElevenLabs:", e);
                 if (waveGroup) waveGroup.classList.remove('speaking-active');
             }
         }
