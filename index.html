@@ -1029,7 +1029,7 @@
             const selectedVoiceId = document.getElementById('eleven-voice-select').value || "nPczCjzI2devNBz1zQrb";
 
             if (!elevenKey) {
-                console.error("Falta configurar la llave de ElevenLabs, señor.");
+                addChatMessage("JARVIS: Advertencia, señor. No se detectó clave de API de ElevenLabs configurada.", "jarvis");
                 if (waveGroup) waveGroup.classList.remove('speaking-active');
                 return;
             }
@@ -1061,17 +1061,21 @@
                         if (waveGroup) waveGroup.classList.remove('speaking-active'); 
                         currentElevenLabsAudio = null;
                     };
-                    currentElevenLabsAudio.onerror = () => { 
+                    currentElevenLabsAudio.onerror = (e) => { 
+                        console.error("Error en elemento de audio:", e);
                         if (waveGroup) waveGroup.classList.remove('speaking-active'); 
                         currentElevenLabsAudio = null;
                     };
                     
                     await currentElevenLabsAudio.play();
                 } else {
+                    const errData = await response.json();
+                    console.error("Error de ElevenLabs API:", errData);
+                    addChatMessage(`JARVIS: Error en la síntesis de ElevenLabs, señor. Verifique sus créditos o clave.`, "jarvis");
                     if (waveGroup) waveGroup.classList.remove('speaking-active');
                 }
             } catch (e) {
-                console.error("Error reproduciendo ElevenLabs:", e);
+                console.error("Fallo de red con ElevenLabs:", e);
                 if (waveGroup) waveGroup.classList.remove('speaking-active');
             }
         }
