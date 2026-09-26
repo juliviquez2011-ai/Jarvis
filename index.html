@@ -495,7 +495,7 @@
             <h3>PANEL DE CONFIGURACIÓN J.A.R.V.I.S.</h3>
             
             <div class="setting-group">
-                <label>Voz Neuronal ElevenLabs (IA Masculina Jarvis):</label>
+                <label>Voz Neuronal ElevenLabs:</label>
                 <select id="eleven-voice-select">
                     <option value="nPczCjzI2devNBz1zQrb">Brian (Serio, Elegante / Estilo Jarvis)</option>
                     <option value="JBFqnCBsd6RMkjVDRZzb">George (Voz británica clásica, formal)</option>
@@ -537,7 +537,8 @@
     <script>
         function actualizarReloj() {
             const now = new Date();
-            document.getElementById('header-time').innerText = now.toLocaleTimeString();
+            const timeEl = document.getElementById('header-time');
+            if (timeEl) timeEl.innerText = now.toLocaleTimeString();
         }
         setInterval(actualizarReloj, 1000);
         actualizarReloj();
@@ -712,12 +713,12 @@
 
         function toggleSettingsMenu() {
             const modal = document.getElementById('settings-modal');
-            modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+            if (modal) modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
         }
 
         function clearChatHistory() {
             const chat = document.getElementById('jarvis-chat');
-            chat.innerHTML = `<div class="msg jarvis" id="welcome-msg">JARVIS: Memoria de chat depurada, señor. A su orden.</div>`;
+            if (chat) chat.innerHTML = `<div class="msg jarvis" id="welcome-msg">JARVIS: Memoria de chat depurada, señor. A su orden.</div>`;
             chatHistory = [{ role: "system", content: getSystemPrompt() }];
         }
 
@@ -744,10 +745,10 @@
             const savedAi3D = localStorage.getItem('ai3d_api_key');
             const savedEleven = localStorage.getItem('elevenlabs_api_key');
 
-            if (savedGroq) document.getElementById('groq-key-input').value = savedGroq;
-            if (savedTavily) document.getElementById('tavily-key-input').value = savedTavily;
-            if (savedAi3D) document.getElementById('ai3d-key-input').value = savedAi3D;
-            if (savedEleven) document.getElementById('eleven-key-input').value = savedEleven;
+            if (savedGroq && document.getElementById('groq-key-input')) document.getElementById('groq-key-input').value = savedGroq;
+            if (savedTavily && document.getElementById('tavily-key-input')) document.getElementById('tavily-key-input').value = savedTavily;
+            if (savedAi3D && document.getElementById('ai3d-key-input')) document.getElementById('ai3d-key-input').value = savedAi3D;
+            if (savedEleven && document.getElementById('eleven-key-input')) document.getElementById('eleven-key-input').value = savedEleven;
         });
 
         function handleImageUpload(event) {
@@ -773,7 +774,8 @@
                 };
             }
 
-            document.getElementById('cad-code-display').innerText = `// MOTOR TRIPO 3D - GENERANDO...\nPrompt: "${promptTexto}"\nStatus: [PROCESANDO RED NEURONAL]`;
+            const cadDisplay = document.getElementById('cad-code-display');
+            if (cadDisplay) cadDisplay.innerText = `// MOTOR TRIPO 3D - GENERANDO...\nPrompt: "${promptTexto}"\nStatus: [PROCESANDO RED NEURONAL]`;
             updateVisorModel('search_mesh');
 
             try {
@@ -792,7 +794,7 @@
                 const data = await response.json();
                 if (data && data.data && data.data.task_id) {
                     const taskId = data.data.task_id;
-                    document.getElementById('cad-code-display').innerText = `// MOTOR TRIPO 3D - ÉXITO\nTask ID: ${taskId}\nStatus: [LISTO]`;
+                    if (cadDisplay) cadDisplay.innerText = `// MOTOR TRIPO 3D - ÉXITO\nTask ID: ${taskId}\nStatus: [LISTO]`;
                     return {
                         success: true,
                         message: `Modelo 3D generado mediante Tripo con éxito, señor. ID de tarea: ${taskId}.`
@@ -805,7 +807,8 @@
         }
 
         function ejecutarComandoIPad(accion, objetivo, extraInfo = "") {
-            document.getElementById('cad-code-display').innerText = `// PUENTE IPAD / SHAPR3D\nAcción: ${accion}\nObjetivo: ${objetivo}\nStatus: [DISPARANDO ATAJO]`;
+            const cadDisplay = document.getElementById('cad-code-display');
+            if (cadDisplay) cadDisplay.innerText = `// PUENTE IPAD / SHAPR3D\nAcción: ${accion}\nObjetivo: ${objetivo}\nStatus: [DISPARANDO ATAJO]`;
             
             if (accion === "abrir_app") {
                 window.location.href = `shortcuts://run-shortcut?name=AbrirApp&input=text&text=${encodeURIComponent(objetivo)}`;
@@ -846,7 +849,8 @@
                 if (lowerText.includes("jarvis")) {
                     let cleanOrder = speechToText.replace(/jarvis/gi, "").trim();
                     if (cleanOrder.length > 0) {
-                        document.getElementById('user-input').value = cleanOrder;
+                        const input = document.getElementById('user-input');
+                        if (input) input.value = cleanOrder;
                         sendPrompt();
                     } else {
                         speakJarvis("A su orden, señor.");
@@ -874,7 +878,7 @@
 
         function toggleSpeechRecognition() {
             if (!recognition) {
-                alert("Su navegador no soporta reconocimiento de voz nativo, señor.");
+                addChatMessage("JARVIS: Su navegador no soporta reconocimiento de voz nativo, señor.", "jarvis");
                 return;
             }
             if (isListening) {
@@ -993,6 +997,7 @@
 
         async function sendPrompt() {
             const input = document.getElementById('user-input');
+            if (!input) return;
             const text = input.value.trim();
             if (!text && !currentImageBase64) return;
 
@@ -1002,6 +1007,7 @@
 
             const lower = text.toLowerCase();
             let codeSnippet = '';
+            const cadDisplay = document.getElementById('cad-code-display');
 
             const esApagarAvanzado = lower.includes("desactiva") || lower.includes("desactivar") || lower.includes("apaga") || lower.includes("apagar") || lower.includes("quitar");
             const esAvanzadoKeywords = lower.includes("modo de trabajo avanzado") || lower.includes("modo avanzado");
@@ -1011,14 +1017,14 @@
                 let responseMsg = "Iniciando secuencia de enfriamiento. Desactivando modo de trabajo avanzado, señor.";
                 addChatMessage("JARVIS: " + responseMsg, "jarvis");
                 speakJarvis(responseMsg);
-                document.getElementById('cad-code-display').innerText = "// MODO DE TRABAJO AVANZADO\nStatus: [ENFRÍAMIENTO / INACTIVO]";
+                if (cadDisplay) cadDisplay.innerText = "// MODO DE TRABAJO AVANZADO\nStatus: [ENFRÍAMIENTO / INACTIVO]";
                 return;
             } else if (esAvanzadoKeywords) {
                 triggerTransitionAnimation(true);
                 let responseMsg = "Secuencia multicolor iniciada. Activando modo de trabajo avanzado, señor.";
                 addChatMessage("JARVIS: " + responseMsg, "jarvis");
                 speakJarvis(responseMsg);
-                document.getElementById('cad-code-display').innerText = "// MODO DE TRABAJO AVANZADO\nStatus: [ACTIVO / NÚCLEO ROJO]";
+                if (cadDisplay) cadDisplay.innerText = "// MODO DE TRABAJO AVANZADO\nStatus: [ACTIVO / NÚCLEO ROJO]";
                 return;
             }
 
@@ -1063,7 +1069,7 @@
                 <a class="model-link-btn" href="https://www.printables.com/search/models?q=${encodedSearch}" target="_blank">🔍 Buscar en Printables (${cleanQuery})</a>
                 <a class="model-link-btn" href="https://www.thingiverse.com/search?q=${encodedSearch}" target="_blank">🔍 Buscar en Thingiverse (${cleanQuery})</a>`;
                 
-                document.getElementById('cad-code-display').innerText = codeSnippet;
+                if (cadDisplay) cadDisplay.innerText = codeSnippet;
                 addChatMessage(searchHtml, "jarvis", true);
                 speakJarvis(`He localizado los enlaces de búsqueda para ${cleanQuery} en Printables y Thingiverse, señor.`);
                 return;
@@ -1098,7 +1104,7 @@
                 codeSnippet = `// ORDEN RECIBIDA: "${displayText}"\nEjecutando procesamiento neural...\nStatus: [OK]`;
             }
 
-            document.getElementById('cad-code-display').innerText = codeSnippet;
+            if (cadDisplay) cadDisplay.innerText = codeSnippet;
 
             const aiResponse = await queryAI(text || "Analiza esta imagen, señor.");
             addChatMessage("JARVIS: " + aiResponse, "jarvis");
@@ -1111,6 +1117,7 @@
 
         function addChatMessage(text, sender, isHtml = false) {
             const chat = document.getElementById('jarvis-chat');
+            if (!chat) return;
             const div = document.createElement('div');
             div.className = `msg ${sender}`;
             if (isHtml) { div.innerHTML = text; } else { div.innerText = text; }
