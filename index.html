@@ -272,6 +272,17 @@
         .advanced-active .rot-fast { animation: spinClockwise 2s linear infinite !important; }
         .advanced-active .rot-reverse-fast { animation: spinCounter 1.5s linear infinite !important; }
         .advanced-active .rot-extra-ring { animation: spinClockwise 2.5s linear infinite !important; }
+
+        /* Animación temporal de transición (sobrecarga de 5 segundos) */
+        .transition-surge .rot-clockwise { animation: spinClockwise 0.8s linear infinite !important; }
+        .transition-surge .rot-counter { animation: spinCounter 0.7s linear infinite !important; }
+        .transition-surge .rot-fast { animation: spinClockwise 0.5s linear infinite !important; }
+        .transition-surge .rot-reverse-fast { animation: spinCounter 0.4s linear infinite !important; }
+        .transition-surge .rot-extra-ring { animation: spinClockwise 0.6s linear infinite !important; }
+
+        .transition-surge #core-label-fixed {
+            animation: logoColorShift 0.4s ease infinite alternate !important;
+        }
         
         .advanced-active #core-label-fixed {
             animation: logoColorShift 1.5s ease infinite alternate;
@@ -558,27 +569,42 @@
             }
         }
 
-        function setAdvancedWorkMode(active) {
-            isAdvancedWorkMode = active;
-            const root = document.documentElement;
+        function triggerTransitionAnimation(targetActiveState) {
             const svgCoreWrapper = document.getElementById('core-hud-wrapper');
             const svgCore = document.getElementById('svg-core-hud');
+            const root = document.documentElement;
 
-            if (active) {
-                svgCoreWrapper.classList.add('advanced-active');
-                root.style.setProperty('--theme-color', '#ff0000');
-                root.style.setProperty('--theme-glow', 'rgba(255, 0, 0, 0.8)');
-                root.style.setProperty('--theme-bg', 'rgba(25, 2, 2, 0.95)');
-                particlesMat.color.setHex(0xff0000);
-                if(svgCore) svgCore.style.filter = "drop-shadow(0 0 35px #ff0000) drop-shadow(0 0 70px rgba(255, 0, 0, 0.8))";
-            } else {
-                svgCoreWrapper.classList.remove('advanced-active');
-                root.style.setProperty('--theme-color', isStarkMode ? '#ff3333' : '#00f0ff');
-                root.style.setProperty('--theme-glow', isStarkMode ? 'rgba(255, 50, 50, 0.6)' : 'rgba(0, 240, 255, 0.6)');
-                root.style.setProperty('--theme-bg', isStarkMode ? 'rgba(20, 2, 2, 0.95)' : 'rgba(2, 8, 19, 0.95)');
-                particlesMat.color.setHex(isStarkMode ? 0xff3333 : 0x00f0ff);
-                if(svgCore) svgCore.style.filter = isStarkMode ? "drop-shadow(0 0 25px #ff3333)" : "drop-shadow(0 0 25px #00f0ff)";
-            }
+            // Iniciar sobrecarga de 5 segundos con anillos rápidos y pulso de colores
+            svgCoreWrapper.classList.add('transition-surge');
+            svgCoreWrapper.classList.remove('advanced-active');
+
+            // Colores temporales de sobrecarga energética
+            root.style.setProperty('--theme-color', '#ff3300');
+            root.style.setProperty('--theme-glow', 'rgba(255, 100, 0, 0.9)');
+            root.style.setProperty('--theme-bg', 'rgba(25, 5, 2, 0.95)');
+            particlesMat.color.setHex(0xff3300);
+            if(svgCore) svgCore.style.filter = "drop-shadow(0 0 40px #ff3300) drop-shadow(0 0 80px rgba(255, 100, 0, 0.9))";
+
+            setTimeout(() => {
+                svgCoreWrapper.classList.remove('transition-surge');
+                isAdvancedWorkMode = targetActiveState;
+
+                if (isAdvancedWorkMode) {
+                    svgCoreWrapper.classList.add('advanced-active');
+                    root.style.setProperty('--theme-color', '#ff0000');
+                    root.style.setProperty('--theme-glow', 'rgba(255, 0, 0, 0.8)');
+                    root.style.setProperty('--theme-bg', 'rgba(25, 2, 2, 0.95)');
+                    particlesMat.color.setHex(0xff0000);
+                    if(svgCore) svgCore.style.filter = "drop-shadow(0 0 35px #ff0000) drop-shadow(0 0 70px rgba(255, 0, 0, 0.8))";
+                } else {
+                    svgCoreWrapper.classList.remove('advanced-active');
+                    root.style.setProperty('--theme-color', isStarkMode ? '#ff3333' : '#00f0ff');
+                    root.style.setProperty('--theme-glow', isStarkMode ? 'rgba(255, 50, 50, 0.6)' : 'rgba(0, 240, 255, 0.6)');
+                    root.style.setProperty('--theme-bg', isStarkMode ? 'rgba(20, 2, 2, 0.95)' : 'rgba(2, 8, 19, 0.95)');
+                    particlesMat.color.setHex(isStarkMode ? 0xff3333 : 0x00f0ff);
+                    if(svgCore) svgCore.style.filter = isStarkMode ? "drop-shadow(0 0 25px #ff3333)" : "drop-shadow(0 0 25px #00f0ff)";
+                }
+            }, 5000);
         }
 
         function updateVisorModel(type) {
@@ -930,23 +956,23 @@
             const lower = text.toLowerCase();
             let codeSnippet = '';
 
-            // --- LÓGICA CORREGIDA PARA ACTIVAR Y APAGAR MODO DE TRABAJO AVANZADO ---
+            // --- LÓGICA DE TRANSICIÓN PARA MODO DE TRABAJO AVANZADO ---
             const esApagarAvanzado = lower.includes("desactiva") || lower.includes("desactivar") || lower.includes("apaga") || lower.includes("apagar") || lower.includes("quitar");
             const esAvanzadoKeywords = lower.includes("modo de trabajo avanzado") || lower.includes("modo avanzado");
 
             if (esAvanzadoKeywords && esApagarAvanzado) {
-                setAdvancedWorkMode(false);
-                let responseMsg = "Modo de trabajo avanzado desactivado, señor. Sistemas retornando a parámetros normales.";
+                triggerTransitionAnimation(false);
+                let responseMsg = "Iniciando secuencia de enfriamiento. Desactivando modo de trabajo avanzado, señor.";
                 addChatMessage("JARVIS: " + responseMsg, "jarvis");
                 speakJarvis(responseMsg);
-                document.getElementById('cad-code-display').innerText = "// MODO DE TRABAJO AVANZADO\nStatus: [INACTIVO]";
+                document.getElementById('cad-code-display').innerText = "// MODO DE TRABAJO AVANZADO\nStatus: [ENFRIAMIENTO / INACTIVO]";
                 return;
             } else if (esAvanzadoKeywords) {
-                setAdvancedWorkMode(true);
-                let responseMsg = "Modo de trabajo avanzado activado, señor. Núcleo neural operando a máxima capacidad.";
+                triggerTransitionAnimation(true);
+                let responseMsg = "Iniciando secuencia de sobrecarga. Activando modo de trabajo avanzado, señor.";
                 addChatMessage("JARVIS: " + responseMsg, "jarvis");
                 speakJarvis(responseMsg);
-                document.getElementById('cad-code-display').innerText = "// MODO DE TRABAJO AVANZADO\nStatus: [ACTIVO / MÁXIMA VELOCIDAD]";
+                document.getElementById('cad-code-display').innerText = "// MODO DE TRABAJO AVANZADO\nStatus: [SOBRECARGA / MÁXIMA VELOCIDAD]";
                 return;
             }
 
