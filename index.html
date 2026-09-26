@@ -58,6 +58,7 @@
             font-size: 14px;
             z-index: 100;
             box-shadow: 0 0 15px var(--theme-glow);
+            transition: all 0.5s ease;
         }
 
         #api-config-panel {
@@ -233,7 +234,7 @@
             top: 0;
             left: 0;
             transform-origin: center;
-            filter: drop-shadow(0 0 25px var(--theme-color)) drop-shadow(0 0 50px var(--theme-glow));
+            transition: filter 0.8s ease;
         }
 
         .audio-wave-ring {
@@ -254,7 +255,7 @@
             100% { transform: scale(1.5); opacity: 0; stroke-width: 0.5; }
         }
 
-        /* Animaciones base optimizadas (sin filtros pesados en los SVG directos) */
+        /* Animaciones base fluidas (60fps optimizado) */
         .rot-clockwise { transform-origin: 310px 310px; animation: spinClockwise 35s linear infinite; }
         .rot-counter { transform-origin: 310px 310px; animation: spinCounter 25s linear infinite; }
         .rot-fast { transform-origin: 310px 310px; animation: spinClockwise 16s linear infinite; }
@@ -264,24 +265,34 @@
         @keyframes spinClockwise { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes spinCounter { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
 
-        /* --- MODO DE TRABAJO AVANZADO (TRANSICIÓN + GIRO RÁPIDO Y CAMBIO DE COLOR) --- */
+        /* --- MODO DE TRABAJO AVANZADO --- */
         body.advanced-work-mode #core-hud-wrapper {
             transform: translate(-120%, -50%) scale(0.65);
-            opacity: 0.9;
+            opacity: 0.95;
         }
         body.advanced-work-mode .rot-clockwise { animation: spinClockwise 4s linear infinite; }
         body.advanced-work-mode .rot-counter { animation: spinCounter 3s linear infinite; }
         body.advanced-work-mode .rot-fast { animation: spinClockwise 2s linear infinite; }
         body.advanced-work-mode .rot-reverse-fast { animation: spinCounter 1.5s linear infinite; }
         body.advanced-work-mode .rot-extra-ring { animation: spinClockwise 2.5s linear infinite; }
+        
         body.advanced-work-mode #svg-core-hud {
-            animation: coreColorShift 1.2s forwards;
+            animation: coreAdvancedAnim 2.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
-        @keyframes coreColorShift {
-            0% { filter: drop-shadow(0 0 25px #00f0ff) drop-shadow(0 0 50px rgba(0, 240, 255, 0.8)); }
-            50% { filter: drop-shadow(0 0 40px #ffea00) drop-shadow(0 0 80px rgba(255, 234, 0, 0.9)); transform: rotate(180deg) scale(1.05); }
-            100% { filter: drop-shadow(0 0 25px #ff3333) drop-shadow(0 0 50px rgba(255, 50, 50, 0.8)); transform: rotate(360deg) scale(1); }
+        @keyframes coreAdvancedAnim {
+            0% { 
+                filter: drop-shadow(0 0 25px #00f0ff) drop-shadow(0 0 50px rgba(0, 240, 255, 0.8)); 
+                transform: rotate(0deg) scale(1);
+            }
+            40% { 
+                filter: drop-shadow(0 0 45px #ffea00) drop-shadow(0 0 90px rgba(255, 234, 0, 0.9)); 
+                transform: rotate(180deg) scale(1.08); 
+            }
+            100% { 
+                filter: drop-shadow(0 0 30px #ff3333) drop-shadow(0 0 60px rgba(255, 50, 50, 0.85)); 
+                transform: rotate(360deg) scale(1); 
+            }
         }
 
         body.advanced-work-mode #jarvis-chat {
@@ -341,6 +352,7 @@
             box-shadow: 0 0 20px var(--theme-glow);
             z-index: 9999;
             pointer-events: auto;
+            transition: all 0.5s ease;
         }
 
         #bottom-bar input[type="text"] {
@@ -503,13 +515,13 @@
         const canvas = document.getElementById('bg-canvas');
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: false }); // Optimizado para 60fps
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: false });
         
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         camera.position.z = 6;
 
-        const particlesCount = 150; // Reducido para evitar lag en dispositivos
+        const particlesCount = 150;
         const particlesGeo = new THREE.BufferGeometry();
         const positions = new Float32Array(particlesCount * 3);
         for(let i=0; i<particlesCount*3; i+=3) {
@@ -540,23 +552,14 @@
         scene3D.add(activeMeshGroup);
         camera3D.position.z = 3.2;
 
-        let isStarkMode = false;
         let currentImageBase64 = null;
 
-        function setStarkTheme(active) {
-            isStarkMode = active;
+        function setThemeColor(colorHex, glowRgba, bgRgba) {
             const root = document.documentElement;
-            if (active) {
-                root.style.setProperty('--theme-color', '#ff3333');
-                root.style.setProperty('--theme-glow', 'rgba(255, 50, 50, 0.6)');
-                root.style.setProperty('--theme-bg', 'rgba(20, 2, 2, 0.95)');
-                particlesMat.color.setHex(0xff3333);
-            } else {
-                root.style.setProperty('--theme-color', '#00f0ff');
-                root.style.setProperty('--theme-glow', 'rgba(0, 240, 255, 0.6)');
-                root.style.setProperty('--theme-bg', 'rgba(2, 8, 19, 0.95)');
-                particlesMat.color.setHex(0x00f0ff);
-            }
+            root.style.setProperty('--theme-color', colorHex);
+            root.style.setProperty('--theme-glow', glowRgba);
+            root.style.setProperty('--theme-bg', bgRgba);
+            particlesMat.color.setHex(colorHex);
         }
 
         function updateVisorModel(type) {
@@ -568,7 +571,7 @@
             }
 
             if (type === 'armor') {
-                setStarkTheme(true);
+                setThemeColor(0xff3333, 'rgba(255, 50, 50, 0.6)', 'rgba(20, 2, 2, 0.95)');
                 const matGold = new THREE.MeshBasicMaterial({ color: 0xffaa00, wireframe: true });
                 const matRed = new THREE.MeshBasicMaterial({ color: 0xff0033, wireframe: true });
                 const chestBox = new THREE.Mesh(new THREE.BoxGeometry(0.9, 1.1, 0.5), matRed);
@@ -577,7 +580,7 @@
                 activeMeshGroup.add(chestBox);
                 activeMeshGroup.add(helmetBox);
             } else if (type === 'robot_arm' || type === 'search_mesh') {
-                setStarkTheme(false);
+                setThemeColor(0x00f0ff, 'rgba(0, 240, 255, 0.6)', 'rgba(2, 8, 19, 0.95)');
                 const matCyan = new THREE.MeshBasicMaterial({ color: 0x00ffaa, wireframe: true });
                 const baseCyl = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.8, 0.3, 16), matCyan);
                 baseCyl.position.set(0, -0.8, 0);
@@ -588,7 +591,7 @@
                 activeMeshGroup.add(armJoint);
                 activeMeshGroup.add(armClaw);
             } else {
-                setStarkTheme(false);
+                setThemeColor(0x00f0ff, 'rgba(0, 240, 255, 0.6)', 'rgba(2, 8, 19, 0.95)');
                 let geom = (type === 'sphere') ? new THREE.SphereGeometry(0.9, 16, 16) : new THREE.BoxGeometry(1.0, 1.0, 1.0);
                 let mat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, wireframe: true });
                 activeMeshGroup.add(new THREE.Mesh(geom, mat));
@@ -723,14 +726,12 @@
 
             recognition.onresult = (event) => {
                 let speechToText = event.results[event.results.length - 1][0].transcript.trim();
-                if (speechToText.toLowerCase().includes("jarvis")) {
-                    let cleanOrder = speechToText.replace(/jarvis/gi, "").trim();
-                    if (cleanOrder.length > 0) {
-                        document.getElementById('user-input').value = cleanOrder;
-                        sendPrompt();
-                    } else {
-                        speakJarvis("A su orden, señor.");
-                    }
+                let cleanOrder = speechToText.replace(/jarvis/gi, "").trim();
+                if (cleanOrder.length > 0) {
+                    document.getElementById('user-input').value = cleanOrder;
+                    sendPrompt();
+                } else {
+                    speakJarvis("A su orden, señor.");
                 }
             };
 
@@ -817,28 +818,39 @@
             addChatMessage(text || "[Imagen adjunta]", "user");
             input.value = "";
 
-            const lower = text.toLowerCase();
+            const lower = text.toLowerCase().trim();
             let codeSnippet = '';
 
-            // MODO DE TRABAJO AVANZADO (Animación de giro rápido, cambio de color a rojo e interfaz reorganizada)
-            if (lower.includes("modo de trabajo avanzado") || lower.includes("activar modo trabajo")) {
-                document.body.classList.add('advanced-work-mode');
-                setStarkTheme(true);
-                addChatMessage("JARVIS: Modo de trabajo avanzado activado, reconfigurando núcleo y paneles, señor.", "jarvis");
-                speakJarvis("Modo de trabajo avanzado activado, señor.");
-                return;
-            } else if (lower.includes("apagar modo de trabajo avanzado") || lower.includes("desactivar modo trabajo") || lower.includes("salir de modo avanzado")) {
+            // DETECCIÓN DE APAGADO DE MODO AVANZADO
+            if (lower.includes("apaga modo trabajo avanzado") || lower.includes("desactiva modo trabajo avanzado") || lower.includes("apagar modo trabajo avanzado") || lower.includes("salir de modo avanzado")) {
                 document.body.classList.remove('advanced-work-mode');
-                setStarkTheme(false);
-                addChatMessage("JARVIS: Modo de trabajo avanzado desactivado, restableciendo interfaz, señor.", "jarvis");
+                // Forzar reinicio de animación limpiando el elemento SVG momentáneamente
+                const svgCore = document.getElementById('svg-core-hud');
+                svgCore.style.animation = 'none';
+                svgCore.offsetHeight; // trigger reflow
+                svgCore.style.animation = '';
+
+                setThemeColor(0x00f0ff, 'rgba(0, 240, 255, 0.6)', 'rgba(2, 8, 19, 0.95)');
+                addChatMessage("JARVIS: Modo de trabajo avanzado desactivado, restableciendo interfaz y posición inicial, señor.", "jarvis");
                 speakJarvis("Modo de trabajo avanzado desactivado, señor.");
                 return;
             }
 
-            if (lower.includes("protocolo stark") && !lower.includes("apagar")) {
-                setStarkTheme(true);
-            } else if (lower.includes("apagar protocolo stark") || lower.includes("desactivar protocolo stark")) {
-                setStarkTheme(false);
+            // DETECCIÓN DE ACTIVACIÓN DE MODO AVANZADO
+            if (lower.includes("activa modo trabajo avanzado") || lower.includes("activar modo trabajo avanzado") || lower.includes("modo de trabajo avanzado")) {
+                document.body.classList.add('advanced-work-mode');
+                const svgCore = document.getElementById('svg-core-hud');
+                svgCore.style.animation = 'none';
+                svgCore.offsetHeight; // trigger reflow
+                svgCore.style.animation = 'coreAdvancedAnim 2.5s cubic-bezier(0.4, 0, 0.2, 1) forwards';
+
+                setTimeout(() => {
+                    setThemeColor(0xff3333, 'rgba(255, 50, 50, 0.6)', 'rgba(20, 2, 2, 0.95)');
+                }, 2500);
+
+                addChatMessage("JARVIS: Modo de trabajo avanzado activado, reconfigurando núcleo y paneles, señor.", "jarvis");
+                speakJarvis("Modo de trabajo avanzado activado, señor.");
+                return;
             }
 
             if (lower.includes("abre la app")) {
@@ -885,7 +897,7 @@
 
             if (lower.includes("armadura") || lower.includes("traje")) {
                 updateVisorModel('armor');
-                codeSnippet = '// PROTOCOLO STARK\nAssembly.loadArmorMatrix();\nStatus: [OK]';
+                codeSnippet = '// MÓDULO ARMADURA\nAssembly.loadArmorMatrix();\nStatus: [OK]';
             } else if (lower.includes("esfera")) {
                 updateVisorModel('sphere');
                 codeSnippet = '// Geometría Esférica\nGeometry.createSphere();\nStatus: [OK]';
