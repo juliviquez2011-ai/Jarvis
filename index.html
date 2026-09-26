@@ -999,8 +999,24 @@
             chat.scrollTop = chat.scrollHeight;
         }
 
+        // CONTROL GLOBAL DE AUDIO PARA EVITAR INTERFERENCIA DE APPLE
+        let currentElevenLabsAudio = null;
+
         async function speakJarvis(text) {
             const waveGroup = document.getElementById('voice-waves');
+            
+            // 1. MATAR CUALQUIER INTENTO DE VOZ NATIVA DE APPLE AL INSTANTE
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+
+            // 2. DETENER AUDIO PREVIO DE ELEVENLABS SI ESTABA SONANDO
+            if (currentElevenLabsAudio) {
+                currentElevenLabsAudio.pause();
+                currentElevenLabsAudio.currentTime = 0;
+                currentElevenLabsAudio = null;
+            }
+
             if (waveGroup) waveGroup.classList.add('speaking-active');
 
             const cleanText = text.replace(/<[^>]*>?/gm, '').replace(/["'«»\[\]]/g, '');
@@ -1031,10 +1047,23 @@
 
                 if (response.ok) {
                     const blob = await response.blob();
-                    const audio = new Audio(URL.createObjectURL(blob));
-                    audio.onended = () => { if (waveGroup) waveGroup.classList.remove('speaking-active'); };
-                    audio.onerror = () => { if (waveGroup) waveGroup.classList.remove('speaking-active'); };
-                    audio.play();
+                    const audioUrl = URL.createObjectURL(blob);
+                    
+                    currentElevenLabsAudio = new Audio(audioUrl);
+                    
+                    currentElevenLabsAudio.onended = () => { 
+                        if (waveGroup) waveGroup.classList.remove('speaking-active'); 
+                        currentElevenLabsAudio = null;
+                    };
+                    currentElevenLabsAudio.onerror = () => { 
+                        if (waveGroup) waveGroup.classList.remove('speaking-active'); 
+                        currentElevenLabsAudio = null;
+                    };
+                    
+                    currentElevenLabsAudio.play().catch(error => {
+                        console.error("Bloqueo de reproducción automática:", error);
+                        fallbackBrowserSpeech(cleanText, waveGroup);
+                    });
                 } else {
                     fallbackBrowserSpeech(cleanText, waveGroup);
                 }
@@ -1044,6 +1073,7 @@
         }
 
         function fallbackBrowserSpeech(text, waveGroup) {
+            // Solo se ejecuta si ElevenLabs falla o no hay clave configurada
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(text);
