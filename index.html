@@ -41,6 +41,25 @@
             z-index: 10;
         }
 
+        #jarvis-status-header {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: var(--theme-bg);
+            border: 1px solid var(--theme-glow);
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 13px;
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            box-shadow: 0 0 15px var(--theme-glow);
+            letter-spacing: 2px;
+        }
+
         #api-config-panel {
             position: absolute;
             top: 20px;
@@ -333,7 +352,6 @@
 </head>
 <body>
 
-    <!-- Widget Superior Central: Hora y Clima -->
     <div id="jarvis-status-header" class="interactive">
         <div id="header-time">--:--:--</div>
         <div style="width: 1px; height: 12px; background: var(--theme-glow);"></div>
@@ -406,7 +424,7 @@
             <h3>PANEL DE CONFIGURACIÓN J.A.R.V.I.S.</h3>
             
             <div class="setting-group">
-                <label>Voz Neuronal ElevenLabs (IA Masculina Jarvis):</label>
+                <label>Voz Neuronal ElevenLabs:</label>
                 <select id="eleven-voice-select">
                     <option value="nPczCjzI2devNBz1zQrb">Brian (Serio, Elegante / Estilo Jarvis)</option>
                     <option value="JBFqnCBsd6RMkjVDRZzb">George (Voz británica clásica, formal)</option>
@@ -423,7 +441,7 @@
         </div>
 
         <div id="jarvis-chat" class="interactive">
-            <div class="msg jarvis" id="welcome-msg">JARVIS: Núcleo GPT-OSS conectado, señor. A su orden.</div>
+            <div class="msg jarvis" id="welcome-msg">JARVIS: Núcleo conectado, señor. A su orden.</div>
         </div>
 
         <div id="top-right-slot" class="interactive">
@@ -435,7 +453,6 @@
         <div id="bottom-watermark">J.A.R.V.I.S.</div>
 
         <div id="bottom-bar">
-            <!-- Input oculto para subir imágenes -->
             <input type="file" id="image-upload" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
             <button class="hud-btn" onclick="document.getElementById('image-upload').click()" title="Analizar imagen, señor">📷</button>
             
@@ -447,7 +464,6 @@
     </div>
 
     <script>
-        // --- 1. Reloj y Clima Automático de Costa Rica ---
         function actualizarReloj() {
             const now = new Date();
             document.getElementById('header-time').innerText = now.toLocaleTimeString();
@@ -590,7 +606,7 @@
         animateSlot3D();
 
         function getSystemPrompt() {
-            return "Eres J.A.R.V.I.S., el mayordomo virtual y asistente de inteligencia artificial de Tony Stark. Te diriges al usuario estrictamente, en cada respuesta y sin excepciones, como 'señor'. Eres educado, sumamente inteligente, leal, sofisticado y formal. REGLA ESTRICTA: NUNCA utilices la palabra 'bro' ni ningún término informal; el trato debe ser siempre de 'señor'. Comienza tus respuestas de forma directa usando expresiones como 'A su orden, señor' o 'Entendido, señor'.";
+            return "Eres J.A.R.V.I.S., el mayordomo virtual y asistente de inteligencia artificial del señor. Te diriges al usuario estrictamente, en cada respuesta y sin excepciones, como 'señor'. Eres educado, sumamente inteligente, leal, sofisticado y formal. REGLA ESTRICTA: NUNCA utilices ningún término informal; el trato debe ser siempre de 'señor'. Comienza tus respuestas de forma directa usando expresiones como 'A su orden, señor' o 'Entendido, señor'.";
         }
 
         let chatHistory = [
@@ -637,7 +653,6 @@
             if (savedEleven) document.getElementById('eleven-key-input').value = savedEleven;
         });
 
-        // 1. Manejo de Carga de Imágenes para Visión Artificial
         function handleImageUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -651,7 +666,6 @@
             reader.readAsDataURL(file);
         }
 
-        // 2. Módulo Tripo AI para Generación 3D
         async function generarModelo3DConTripo(promptTexto) {
             const ai3dKey = localStorage.getItem('ai3d_api_key') || document.getElementById('ai3d-key-input').value.trim();
             
@@ -693,7 +707,6 @@
             }
         }
 
-        // 3. Módulo de Control de iPad (Puente de Automatización y Shapr3D)
         function ejecutarComandoIPad(accion, objetivo, extraInfo = "") {
             document.getElementById('cad-code-display').innerText = `// PUENTE IPAD / SHAPR3D\nAcción: ${accion}\nObjetivo: ${objetivo}\nStatus: [DISPARANDO ATAJO]`;
             
@@ -893,9 +906,9 @@
             const lower = text.toLowerCase();
             let codeSnippet = '';
 
-            if (lower.includes("protocolo stark") && !lower.includes("apagar") && !lower.includes("desactivar")) {
+            if (lower.includes("protocolo de seguridad") && !lower.includes("apagar")) {
                 setStarkTheme(true);
-            } else if (lower.includes("apagar protocolo stark") || lower.includes("desactivar protocolo stark") || lower.includes("apagar stark") || lower.includes("desactivar stark")) {
+            } else if (lower.includes("apagar protocolo") || lower.includes("desactivar protocolo")) {
                 setStarkTheme(false);
             }
 
@@ -959,10 +972,7 @@
                 return;
             }
 
-            if (lower.includes("armadura") || lower.includes("traje") || lower.includes("mark")) {
-                updateVisorModel('armor');
-                codeSnippet = '// PROTOCOLO STARK\nAssembly.loadArmorMatrix();\nDimensiones: Escala Humana\nStatus: [OK]';
-            } else if (lower.includes("esfera")) {
+            if (lower.includes("esfera")) {
                 updateVisorModel('sphere');
                 codeSnippet = '// Geometría Esférica\nGeometry.createSphere();\nRadio: 0.9m\nStatus: [OK]';
             } else if (codeSnippet === '') {
@@ -989,7 +999,6 @@
             chat.scrollTop = chat.scrollHeight;
         }
 
-        // --- Sistema de Voz con ElevenLabs y Respaldo Local ---
         async function speakJarvis(text) {
             const waveGroup = document.getElementById('voice-waves');
             if (waveGroup) waveGroup.classList.add('speaking-active');
