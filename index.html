@@ -30,11 +30,34 @@
             100% { filter: hue-rotate(0deg) brightness(1) drop-shadow(0 0 30px var(--theme-color)); transform: scale(1); }
         }
 
+        /* Animación de apagado mejorada: más larga (3.5s), fluida y detallada (con destello, escala y blur) */
         @keyframes shutdownStarkBlue {
-            0% { filter: hue-rotate(0deg) brightness(1) drop-shadow(0 0 30px #ff0033); transform: scale(1); }
-            40% { filter: hue-rotate(90deg) brightness(2.5) drop-shadow(0 0 60px #00ffaa); transform: scale(1.04); }
-            80% { filter: hue-rotate(45deg) brightness(1.8) drop-shadow(0 0 40px #00aaff); transform: scale(0.98); }
-            100% { filter: hue-rotate(0deg) brightness(1) drop-shadow(0 0 25px var(--theme-color)); transform: scale(1); }
+            0% { 
+                filter: hue-rotate(0deg) brightness(1) blur(0px) drop-shadow(0 0 30px var(--theme-color)); 
+                transform: scale(1); 
+                opacity: 1;
+            }
+            20% { 
+                /* Destello inicial y leve expansión antes del apagado */
+                filter: hue-rotate(30deg) brightness(2.2) blur(0px) drop-shadow(0 0 50px #ffffff); 
+                transform: scale(1.02); 
+                opacity: 1;
+            }
+            50% { 
+                filter: hue-rotate(70deg) brightness(1.5) blur(1px) drop-shadow(0 0 30px var(--theme-color)); 
+                transform: scale(0.98); 
+                opacity: 0.7;
+            }
+            85% { 
+                filter: hue-rotate(90deg) brightness(0.5) blur(3px) drop-shadow(0 0 10px #000); 
+                transform: scale(0.92); 
+                opacity: 0.2;
+            }
+            100% { 
+                filter: hue-rotate(0deg) brightness(0) blur(6px) drop-shadow(0 0 0px transparent); 
+                transform: scale(0.85); 
+                opacity: 0; 
+            }
         }
 
         .transitioning-stark-on {
@@ -42,7 +65,7 @@
         }
 
         .transitioning-stark-off {
-            animation: shutdownStarkBlue 2.2s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: shutdownStarkBlue 3.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
 
         #hud-container {
@@ -561,7 +584,6 @@
             const svgCore = document.getElementById('svg-core-hud');
 
             if(svgCore) {
-                // Removemos clases anteriores para reiniciar la animación limpia
                 svgCore.classList.remove('transitioning-stark-on', 'transitioning-stark-off');
                 void svgCore.offsetWidth; // Trigger reflow
 
@@ -571,9 +593,10 @@
                     svgCore.classList.add('transitioning-stark-off');
                 }
 
+                // Ajustado al nuevo tiempo de duración de la animación (3.5s)
                 setTimeout(() => {
                     svgCore.classList.remove('transitioning-stark-on', 'transitioning-stark-off');
-                }, 2200);
+                }, 3500);
             }
 
             if (active) {
