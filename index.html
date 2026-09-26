@@ -228,6 +228,7 @@
             justify-content: center;
             align-items: center;
             z-index: 2;
+            transform-style: preserve-3d;
         }
 
         #svg-core-hud {
@@ -273,25 +274,48 @@
         .advanced-active .rot-reverse-fast { animation: spinCounter 1.5s linear infinite !important; }
         .advanced-active .rot-extra-ring { animation: spinClockwise 2.5s linear infinite !important; }
 
-        /* Animación temporal de transición (sobrecarga de 5 segundos) */
-        .transition-surge .rot-clockwise { animation: spinClockwise 0.8s linear infinite !important; }
-        .transition-surge .rot-counter { animation: spinCounter 0.7s linear infinite !important; }
-        .transition-surge .rot-fast { animation: spinClockwise 0.5s linear infinite !important; }
-        .transition-surge .rot-reverse-fast { animation: spinCounter 0.4s linear infinite !important; }
-        .transition-surge .rot-extra-ring { animation: spinClockwise 0.6s linear infinite !important; }
+        /* Secuencia de transición avanzada de 5 segundos con giro total, profundidad (z-axis) y colores intensos (sin naranja) */
+        .transition-surge {
+            animation: coreTransitionSequence 5s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
+        }
+
+        .transition-surge .rot-clockwise { animation: spinClockwise 0.6s linear infinite !important; }
+        .transition-surge .rot-counter { animation: spinCounter 0.5s linear infinite !important; }
+        .transition-surge .rot-fast { animation: spinClockwise 0.4s linear infinite !important; }
+        .transition-surge .rot-reverse-fast { animation: spinCounter 0.3s linear infinite !important; }
+        .transition-surge .rot-extra-ring { animation: spinClockwise 0.5s linear infinite !important; }
+
+        .transition-surge #svg-core-hud {
+            animation: svgFullSpinAndZoom 5s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
+        }
 
         .transition-surge #core-label-fixed {
-            animation: logoColorShift 0.4s ease infinite alternate !important;
+            animation: logoPulseColorIntense 0.4s ease infinite alternate !important;
         }
         
         .advanced-active #core-label-fixed {
-            animation: logoColorShift 1.5s ease infinite alternate;
+            animation: logoPulseColorIntense 1.5s ease infinite alternate;
         }
 
-        @keyframes logoColorShift {
-            0% { fill: #ff0000; filter: drop-shadow(0 0 15px #ff0000); }
-            50% { fill: #ffea00; filter: drop-shadow(0 0 25px #ffea00); }
-            100% { fill: #ff3333; filter: drop-shadow(0 0 20px #ff3333); }
+        @keyframes coreTransitionSequence {
+            0% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+            20% { transform: translate(-50%, -50%) scale(1.2) rotate(180deg); }
+            50% { transform: translate(-50%, -50%) scale(0.85) rotate(540deg); }
+            80% { transform: translate(-50%, -50%) scale(1.1) rotate(900deg); }
+            100% { transform: translate(-50%, -50%) scale(1) rotate(1080deg); }
+        }
+
+        @keyframes svgFullSpinAndZoom {
+            0% { transform: perspective(800px) translateZ(0px) rotateZ(0deg); }
+            30% { transform: perspective(800px) translateZ(120px) rotateZ(360deg); }
+            60% { transform: perspective(800px) translateZ(-80px) rotateZ(720deg); }
+            100% { transform: perspective(800px) translateZ(0px) rotateZ(1080deg); }
+        }
+
+        @keyframes logoPulseColorIntense {
+            0% { fill: #ff0055; filter: drop-shadow(0 0 20px #ff0055); }
+            50% { fill: #00ffff; filter: drop-shadow(0 0 30px #00ffff); }
+            100% { fill: #ff0033; filter: drop-shadow(0 0 25px #ff0033); }
         }
 
         @keyframes spinClockwise { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
@@ -574,16 +598,16 @@
             const svgCore = document.getElementById('svg-core-hud');
             const root = document.documentElement;
 
-            // Iniciar sobrecarga de 5 segundos con anillos rápidos y pulso de colores
+            // Iniciar sobrecarga de 5 segundos con rotación 3D completa, acercamientos y colores intensos
             svgCoreWrapper.classList.add('transition-surge');
             svgCoreWrapper.classList.remove('advanced-active');
 
-            // Colores temporales de sobrecarga energética
-            root.style.setProperty('--theme-color', '#ff3300');
-            root.style.setProperty('--theme-glow', 'rgba(255, 100, 0, 0.9)');
-            root.style.setProperty('--theme-bg', 'rgba(25, 5, 2, 0.95)');
-            particlesMat.color.setHex(0xff3300);
-            if(svgCore) svgCore.style.filter = "drop-shadow(0 0 40px #ff3300) drop-shadow(0 0 80px rgba(255, 100, 0, 0.9))";
+            // Colores temporales de sobrecarga energética (Magenta / Cian neón intenso, sin naranja)
+            root.style.setProperty('--theme-color', '#ff0055');
+            root.style.setProperty('--theme-glow', 'rgba(255, 0, 120, 0.9)');
+            root.style.setProperty('--theme-bg', 'rgba(25, 2, 15, 0.95)');
+            particlesMat.color.setHex(0xff0055);
+            if(svgCore) svgCore.style.filter = "drop-shadow(0 0 40px #ff0055) drop-shadow(0 0 80px rgba(255, 0, 120, 0.9))";
 
             setTimeout(() => {
                 svgCoreWrapper.classList.remove('transition-surge');
@@ -962,14 +986,14 @@
 
             if (esAvanzadoKeywords && esApagarAvanzado) {
                 triggerTransitionAnimation(false);
-                let responseMsg = "Iniciando secuencia de enfriamiento. Desactivando modo de trabajo avanzado, señor.";
+                let responseMsg = "Iniciando secuencia de enfriamiento y giro del núcleo. Desactivando modo de trabajo avanzado, señor.";
                 addChatMessage("JARVIS: " + responseMsg, "jarvis");
                 speakJarvis(responseMsg);
                 document.getElementById('cad-code-display').innerText = "// MODO DE TRABAJO AVANZADO\nStatus: [ENFRIAMIENTO / INACTIVO]";
                 return;
             } else if (esAvanzadoKeywords) {
                 triggerTransitionAnimation(true);
-                let responseMsg = "Iniciando secuencia de sobrecarga. Activando modo de trabajo avanzado, señor.";
+                let responseMsg = "Iniciando secuencia cinemática de sobrecarga. Activando modo de trabajo avanzado, señor.";
                 addChatMessage("JARVIS: " + responseMsg, "jarvis");
                 speakJarvis(responseMsg);
                 document.getElementById('cad-code-display').innerText = "// MODO DE TRABAJO AVANZADO\nStatus: [SOBRECARGA / MÁXIMA VELOCIDAD]";
