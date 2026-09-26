@@ -268,7 +268,7 @@
         </div>
 
         <div id="jarvis-chat" class="interactive">
-            <div class="msg jarvis" id="welcome-msg">JARVIS: Núcleo conectado con llama-3.3-70b-versatile, señor. A su orden.</div>
+            <div class="msg jarvis" id="welcome-msg">JARVIS: Núcleo conectado con gpt-oss-120b, señor. A su orden.</div>
         </div>
 
         <div id="top-right-slot" class="interactive">
@@ -558,8 +558,8 @@
             }
 
             try {
-                // Modelo estable actualizado en Groq
-                const modelToUse = "llama-3.3-70b-versatile";
+                // Modelo configurado a gpt-oss-120b según solicitud
+                const modelToUse = "gpt-oss-120b";
 
                 const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                     method: "POST",
