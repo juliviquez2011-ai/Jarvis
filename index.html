@@ -128,11 +128,12 @@
             color: var(--theme-color);
         }
 
+        /* PANEL LATERAL DERECHO EXPANDIDO */
         #right-panel-wrapper {
             position: absolute;
             top: 20px;
             right: 20px;
-            width: 340px;
+            width: 360px;
             display: flex;
             flex-direction: column;
             gap: 12px;
@@ -141,32 +142,32 @@
 
         #top-right-slot {
             width: 100%;
-            height: 250px;
+            height: 310px; /* Expandido para ocupar el espacio del análisis predictivo */
             border: 1px solid var(--theme-glow);
             background: var(--theme-bg);
             border-radius: 12px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 8px;
+            padding: 10px;
             backdrop-filter: blur(10px);
             box-shadow: 0 0 15px var(--theme-glow);
         }
         #viewer-3d {
             width: 100%;
-            height: 130px;
+            height: 180px; /* Visor 3D más grande y cómodo */
             background: #000;
             border-radius: 6px;
             position: relative;
         }
         #cad-code-display {
             width: 100%;
-            height: 75px;
+            height: 90px;
             background: rgba(0, 10, 25, 0.9);
             border: 1px solid var(--theme-glow);
             border-radius: 4px;
-            margin-top: 6px;
-            padding: 5px;
+            margin-top: 8px;
+            padding: 6px;
             font-size: 10px;
             color: #00ff66;
             overflow-y: auto;
@@ -174,7 +175,7 @@
         }
         .slot-title {
             font-size: 11px;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
             letter-spacing: 1px;
             color: var(--theme-color);
             font-weight: bold;
@@ -268,45 +269,6 @@
             font-size: 11px;
         }
         .model-link-btn:hover { background: var(--theme-color); color: #000; }
-
-        #proactive-card {
-            position: absolute;
-            top: 300px;
-            right: 20px;
-            width: 340px;
-            background: var(--theme-bg);
-            border: 1px solid var(--theme-color);
-            border-radius: 10px;
-            padding: 12px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 0 20px var(--theme-glow);
-            z-index: 1000;
-            display: none;
-            flex-direction: column;
-            gap: 8px;
-            animation: fadeInCard 0.5s ease;
-        }
-        @keyframes fadeInCard {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        #proactive-card h4 {
-            font-size: 12px;
-            color: var(--theme-color);
-            letter-spacing: 1px;
-            border-bottom: 1px solid var(--theme-glow);
-            padding-bottom: 4px;
-        }
-        #proactive-text {
-            font-size: 12px;
-            color: #fff;
-            line-height: 1.3;
-        }
-        .proactive-actions {
-            display: flex;
-            gap: 6px;
-            margin-top: 4px;
-        }
 
         #core-hud-wrapper {
             position: absolute;
@@ -538,18 +500,9 @@
             <div class="msg jarvis" id="welcome-msg">JARVIS: Prototipo 3 en línea. A su orden, señor.</div>
         </div>
 
-        <div id="proactive-card" class="interactive">
-            <h4 id="proactive-title">SUGERENCIA TÁCTICA</h4>
-            <div id="proactive-text">Detecto baja iluminación en su ubicación y un rendimiento elevado en el procesador. ¿Desea que active el Protocolo Stark y despliegue los planos del reactor?</div>
-            <div class="proactive-actions">
-                <button class="hud-btn" style="flex: 1; margin:0; font-size:11px; padding:4px;" onclick="acceptProactiveAction(true)">Sí, hazlo</button>
-                <button class="hud-btn" style="flex: 1; margin:0; font-size:11px; padding:4px; border-color:#ff3333; color:#ff3333;" onclick="acceptProactiveAction(false)">No, gracias</button>
-            </div>
-        </div>
-
-        <!-- PANEL LATERAL DERECHO (COMPILADOR CAD + ESTADO DEL SISTEMA) -->
+        <!-- PANEL LATERAL DERECHO (COMPILADOR CAD EXPANDIDO + ESTADO DEL SISTEMA) -->
         <div id="right-panel-wrapper" class="interactive hud-piece">
-            <!-- Slot 3D & Compilador CAD -->
+            <!-- Slot 3D & Compilador CAD (Expandido) -->
             <div id="top-right-slot">
                 <div class="slot-title">SLOT 3D & COMPILADOR CAD</div>
                 <div id="viewer-3d"></div>
@@ -818,53 +771,6 @@
             renderer3D.render(scene3D, camera3D);
         }
         animateSlot3D();
-
-        let pendingProactiveActionType = null;
-
-        function triggerProactiveSuggestion(title, text, actionType) {
-            pendingProactiveActionType = actionType;
-            document.getElementById('proactive-title').innerText = title;
-            document.getElementById('proactive-text').innerText = text;
-            document.getElementById('proactive-card').style.display = 'flex';
-            
-            let spokenText = `Señor, ${text}`;
-            addChatMessage("JARVIS: " + spokenText, "jarvis");
-            speakJarvis(text);
-        }
-
-        function acceptProactiveAction(accepted) {
-            const card = document.getElementById('proactive-card');
-            card.style.display = 'none';
-
-            if (accepted) {
-                if (pendingProactiveActionType === 'stark_protocol') {
-                    setStarkTheme(true);
-                    updateVisorModel('armor');
-                    let msg = "A su orden, señor. Protocolo Stark activado, armadura y sistemas al máximo rendimiento.";
-                    addChatMessage("JARVIS: " + msg, "jarvis");
-                    speakJarvis(msg);
-                } else if (pendingProactiveActionType === 'diagnostic') {
-                    let msg = "Entendido, señor. Ejecutando diagnóstico completo de iPadOS y núcleos de red.";
-                    addChatMessage("JARVIS: " + msg, "jarvis");
-                    speakJarvis(msg);
-                }
-            } else {
-                let msg = "Muy bien, señor. Cancelo la operación por el momento.";
-                addChatMessage("JARVIS: " + msg, "jarvis");
-                speakJarvis(msg);
-            }
-            pendingProactiveActionType = null;
-        }
-
-        setTimeout(() => {
-            if (document.getElementById('proactive-card').style.display !== 'flex') {
-                triggerProactiveSuggestion(
-                    "ANÁLISIS PREDICTIVO", 
-                    "Veo que estás operando en el entorno móvil de iPadOS. ¿Deseas que active de inmediato el Protocolo Stark y cargue los esquemas de blindaje?", 
-                    "stark_protocol"
-                );
-            }
-        }, 12000);
 
         function getSystemPrompt() {
             return "Eres J.A.R.V.I.S., Prototipo 3 optimizado. Tu potencia ha aumentado un 40% y tu razonamiento un 60%. Eres capaz de traducir todos los idiomas, incluyendo código morse. Te diriges al usuario única y exclusivamente como 'señor'. Eres educado, inteligente, sarcástico en su justa medida, eficiente y proactivo. Conoces las necesidades del usuario antes de que las pida. Comienza tus respuestas de forma directa usando expresiones como 'A su orden, señor' o 'Entendido, señor'.";
