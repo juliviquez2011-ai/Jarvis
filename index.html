@@ -467,12 +467,12 @@
         </div>
 
         <div id="jarvis-chat" class="interactive hud-piece">
-            <div class="msg jarvis" id="welcome-msg">JARVIS: Prototipo 3 en línea. Potencia incrementada un 40% y razonamiento al 60% optimizado para asistencia social y traducción universal. A su orden, señor.</div>
+            <div class="msg jarvis" id="welcome-msg">JARVIS: Prototipo 3 en línea. Potencia incrementada un 40%, razonamiento al 60% y módulos de asistencia social y traducción universal integrados, bro. A tu orden.</div>
         </div>
 
         <div id="proactive-card" class="interactive">
             <h4 id="proactive-title">SUGERENCIA TÁCTICA</h4>
-            <div id="proactive-text">Detecto baja iluminación en su ubicación y un rendimiento elevado en el procesador. ¿Desea que active el Protocolo Stark y despliegue los planos del reactor?</div>
+            <div id="proactive-text">Detecto baja iluminación en tu ubicación y un rendimiento elevado en el procesador, bro. ¿Deseas que active el Protocolo Stark y despliegue los planos del reactor?</div>
             <div class="proactive-actions">
                 <button class="hud-btn" style="flex: 1; margin:0; font-size:11px; padding:4px;" onclick="acceptProactiveAction(true)">Sí, hazlo</button>
                 <button class="hud-btn" style="flex: 1; margin:0; font-size:11px; padding:4px; border-color:#ff3333; color:#ff3333;" onclick="acceptProactiveAction(false)">No, gracias</button>
@@ -482,16 +482,16 @@
         <div id="top-right-slot" class="interactive hud-piece">
             <div class="slot-title">SLOT 3D & COMPILADOR CAD</div>
             <div id="viewer-3d"></div>
-            <div id="cad-code-display">// Sistema de Red Listos...\n> Indique modelo o estructura para compilar en 3D, señor.</div>
+            <div id="cad-code-display">// Sistema de Red Listos...\n> Indique modelo o estructura para compilar en 3D, bro.</div>
         </div>
 
         <div id="bottom-watermark" class="hud-piece">J.A.R.V.I.S.</div>
 
         <div id="bottom-bar" class="hud-piece">
             <input type="file" id="image-upload" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
-            <button class="hud-btn" onclick="document.getElementById('image-upload').click()" title="Analizar imagen, señor">📷</button>
+            <button class="hud-btn" onclick="document.getElementById('image-upload').click()" title="Analizar imagen, bro">📷</button>
             
-            <input type="text" id="user-input" placeholder="Indique su orden a JARVIS, señor..." onkeypress="checkEnter(event)">
+            <input type="text" id="user-input" placeholder="Indica tu orden a JARVIS, bro..." onkeypress="checkEnter(event)">
             <button id="mic-btn" class="hud-btn" onclick="toggleSpeechRecognition()" title="Activar escucha continua de voz">🎙️</button>
             <button class="hud-btn" onclick="sendPrompt()">Enviar</button>
         </div>
@@ -720,7 +720,7 @@
             document.getElementById('proactive-text').innerText = text;
             document.getElementById('proactive-card').style.display = 'flex';
             
-            let spokenText = `Señor, ${text}`;
+            let spokenText = `Bro, ${text}`;
             addChatMessage("JARVIS: " + spokenText, "jarvis");
             speakJarvis(text);
         }
@@ -733,16 +733,16 @@
                 if (pendingProactiveActionType === 'stark_protocol') {
                     setStarkTheme(true);
                     updateVisorModel('armor');
-                    let msg = "A su orden, señor. Protocolo Stark activado, armadura y sistemas al máximo rendimiento.";
+                    let msg = "A tu orden, bro. Protocolo Stark activado, armadura y sistemas al máximo rendimiento.";
                     addChatMessage("JARVIS: " + msg, "jarvis");
                     speakJarvis(msg);
                 } else if (pendingProactiveActionType === 'diagnostic') {
-                    let msg = "Entendido, señor. Ejecutando diagnóstico completo de iPadOS y núcleos de red.";
+                    let msg = "Entendido, bro. Ejecutando diagnóstico completo de iPadOS y núcleos de red.";
                     addChatMessage("JARVIS: " + msg, "jarvis");
                     speakJarvis(msg);
                 }
             } else {
-                let msg = "Muy bien, señor. Cancelo la operación por el momento.";
+                let msg = "Muy bien, bro. Cancelo la operación por el momento.";
                 addChatMessage("JARVIS: " + msg, "jarvis");
                 speakJarvis(msg);
             }
@@ -760,7 +760,7 @@
         }, 12000);
 
         function getSystemPrompt() {
-            return "Eres J.A.R.V.I.S., Prototipo 3 optimizado. Tu potencia ha aumentado un 40% y tu razonamiento un 60%. Eres capaz de traducir todos los idiomas, incluyendo código morse, y posees herramientas avanzadas para ayudar al usuario a socializar. Te diriges al usuario única y exclusivamente como 'señor'. Eres educado, inteligente, sarcástico en su justa medida, eficiente y proactivo. Conoces las necesidades del usuario antes de que las pida. Comienza tus respuestas de forma directa usando expresiones como 'A su orden, señor' o 'Entendido, señor'.";
+            return "Eres J.A.R.V.I.S., Prototipo 3 optimizado. Tu potencia ha aumentado un 40% y tu razonamiento un 60%. Eres capaz de traducir todos los idiomas, incluyendo código morse, y posees herramientas avanzadas para ayudar al usuario a socializar. Te diriges al usuario única y exclusivamente como 'bro'. Eres educado, inteligente, sarcástico en su justa medida, eficiente y proactivo. Conoces las necesidades del usuario antes de que las pida. Comienza tus respuestas de forma directa usando expresiones como 'A tu orden, bro' o 'Entendido, bro'.";
         }
 
         let chatHistory = [
@@ -774,7 +774,7 @@
 
         function clearChatHistory() {
             const chat = document.getElementById('jarvis-chat');
-            chat.innerHTML = `<div class="msg jarvis" id="welcome-msg">JARVIS: Memoria de chat depurada, señor. A su orden.</div>`;
+            chat.innerHTML = `<div class="msg jarvis" id="welcome-msg">JARVIS: Memoria de chat depurada, bro. A tu orden.</div>`;
             chatHistory = [{ role: "system", content: getSystemPrompt() }];
         }
 
@@ -790,7 +790,7 @@
             if (ai3dKey) localStorage.setItem('ai3d_api_key', ai3dKey);
             
             chatHistory = [{ role: "system", content: getSystemPrompt() }];
-            addChatMessage("JARVIS: Credenciales de red y matrices de IA actualizadas, señor. A su orden.", "jarvis");
+            addChatMessage("JARVIS: Credenciales de red y matrices de IA actualizadas, bro. A tu orden.", "jarvis");
         }
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -810,7 +810,7 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 currentImageBase64 = e.target.result;
-                addChatMessage(`JARVIS: Imagen "${file.name}" cargada en la matriz visual, señor. Indique qué desea que analice.`, "jarvis");
+                addChatMessage(`JARVIS: Imagen "${file.name}" cargada en la matriz visual, bro. Indica qué deseas que analice.`, "jarvis");
                 updateVisorModel('search_mesh');
             };
             reader.readAsDataURL(file);
@@ -822,7 +822,7 @@
             if (!ai3dKey) {
                 return {
                     success: false,
-                    message: "Por favor, configura tu llave de API de Tripo 3D en el panel superior izquierdo, señor."
+                    message: "Por favor, configura tu llave de API de Tripo 3D en el panel superior izquierdo, bro."
                 };
             }
 
@@ -848,12 +848,12 @@
                     document.getElementById('cad-code-display').innerText = `// MOTOR TRIPO 3D - ÉXITO\nTask ID: ${taskId}\nStatus: [LISTO]`;
                     return {
                         success: true,
-                        message: `Modelo 3D generado mediante Tripo con éxito, señor. ID de tarea: ${taskId}.`
+                        message: `Modelo 3D generado mediante Tripo con éxito, bro. ID de tarea: ${taskId}.`
                     };
                 }
-                return { success: false, message: "Tripo no devolvió una tarea válida, señor." };
+                return { success: false, message: "Tripo no devolvió una tarea válida, bro." };
             } catch (err) {
-                return { success: false, message: "Error al enlazar con el servidor de Tripo AI, señor." };
+                return { success: false, message: "Error al enlazar con el servidor de Tripo AI, bro." };
             }
         }
 
@@ -862,15 +862,15 @@
             
             if (accion === "abrir_app") {
                 window.location.href = `shortcuts://run-shortcut?name=AbrirApp&input=text&text=${encodeURIComponent(objetivo)}`;
-                return `Entendido, señor. Ejecutando protocolo para abrir la aplicación ${objetivo} en el iPad.`;
+                return `Entendido, bro. Ejecutando protocolo para abrir la aplicación ${objetivo} en el iPad.`;
             } else if (accion === "enviar_mensaje") {
                 window.location.href = `shortcuts://run-shortcut?name=EnviarMensaje&input=text&text=${encodeURIComponent(objetivo + ":" + extraInfo)}`;
-                return `A su orden, señor. Transmitiendo mensaje hacia ${objetivo}.`;
+                return `A tu orden, bro. Transmitiendo mensaje hacia ${objetivo}.`;
             } else if (accion === "mover_stl") {
                 window.location.href = `shortcuts://run-shortcut?name=MandarAShapr3D`;
-                return `Entendido, señor. Archivo STL transferido al entorno de Shapr3D en el iPad con éxito.`;
+                return `Entendido, bro. Archivo STL transferido al entorno de Shapr3D en el iPad con éxito.`;
             }
-            return "Comando de ecosistema Apple procesado, señor.";
+            return "Comando de ecosistema Apple procesado, bro.";
         }
 
         function procesarComandoModoAvanzado(textoCompleto) {
@@ -883,14 +883,14 @@
 
             if (esApagar) {
                 triggerTransitionAnimation(false);
-                let responseMsg = "Iniciando secuencia de enfriamiento. Desactivando modo de trabajo avanzado, señor.";
+                let responseMsg = "Iniciando secuencia de enfriamiento. Desactivando modo de trabajo avanzado, bro.";
                 addChatMessage("JARVIS: " + responseMsg, "jarvis");
                 speakJarvis(responseMsg);
                 document.getElementById('cad-code-display').innerText = "// MODO DE TRABAJO AVANZADO\nStatus: [ENFRIAMIENTO / INACTIVO]";
                 return true;
             } else {
                 triggerTransitionAnimation(true);
-                let responseMsg = "Iniciando modo de trabajo avanzado, señor.";
+                let responseMsg = "Iniciando modo de trabajo avanzado, bro.";
                 addChatMessage("JARVIS: " + responseMsg, "jarvis");
                 speakJarvis(responseMsg);
                 document.getElementById('cad-code-display').innerText = "// MODO DE TRABAJO AVANZADO\nStatus: [ACTIVO / NÚCLEO ROJO]";
@@ -914,7 +914,7 @@
                 const micBtn = document.getElementById('mic-btn');
                 if (micBtn) micBtn.classList.add('listening');
                 const input = document.getElementById('user-input');
-                if (input) input.placeholder = "Escucha continua activa. Hable con naturalidad, señor...";
+                if (input) input.placeholder = "Escucha continua activa. Habla con naturalidad, bro...";
             };
 
             recognition.onresult = (event) => {
@@ -923,7 +923,7 @@
                 
                 if (lowerText.includes("detente") || lowerText.includes("para")) {
                     if (window.speechSynthesis) window.speechSynthesis.cancel();
-                    addChatMessage("JARVIS: Interrupción recibida, señor. Escuchando...", "jarvis");
+                    addChatMessage("JARVIS: Interrupción recibida, bro. Escuchando...", "jarvis");
                     return;
                 }
 
@@ -965,26 +965,26 @@
             const micBtn = document.getElementById('mic-btn');
             if (micBtn) micBtn.classList.remove('listening');
             const input = document.getElementById('user-input');
-            if (input) input.placeholder = "Indique su orden a JARVIS, señor...";
+            if (input) input.placeholder = "Indica tu orden a JARVIS, bro...";
         }
 
         function toggleSpeechRecognition() {
             if (!recognition) {
-                alert("Tu navegador en iPadOS no soporta reconocimiento de voz nativo, señor.");
+                alert("Tu navegador en iPadOS no soporta reconocimiento de voz nativo, bro.");
                 return;
             }
             if (isListening) {
                 shouldKeepListening = false;
                 recognition.stop();
                 stopListeningState();
-                addChatMessage("JARVIS: Escucha continua desactivada, señor.", "jarvis");
-                speakJarvis("Escucha continua desactivada, señor.");
+                addChatMessage("JARVIS: Escucha continua desactivada, bro.", "jarvis");
+                speakJarvis("Escucha continua desactivada, bro.");
             } else {
                 shouldKeepListening = true;
                 try {
                     recognition.start();
-                    addChatMessage("JARVIS: Escucha continua activada. Le escucho, señor.", "jarvis");
-                    speakJarvis("Escucha continua activada. Le escucho, señor.");
+                    addChatMessage("JARVIS: Escucha continua activada. Te escucho, bro.", "jarvis");
+                    speakJarvis("Escucha continua activada. Te escucho, bro.");
                 } catch(e) {
                     try { recognition.stop(); recognition.start(); } catch(err) {}
                 }
@@ -1027,7 +1027,7 @@
             lastQueryTimestamp = Date.now();
 
             const groqKey = localStorage.getItem('groq_api_key') || document.getElementById('groq-key-input').value.trim();
-            if (!groqKey) return "Por favor, configura tu llave de API de Groq en el panel superior izquierdo, señor.";
+            if (!groqKey) return "Por favor, configura tu llave de API de Groq en el panel superior izquierdo, bro.";
             
             const lowerText = userText.toLowerCase();
             const triggerBusqueda = "busca en internet";
@@ -1053,7 +1053,7 @@
                 messagesPayload.push({
                     role: "user",
                     content: [
-                        { type: "text", text: userText || "Analiza esta imagen, señor." },
+                        { type: "text", text: userText || "Analiza esta imagen, bro." },
                         { type: "image_url", image_url: { url: currentImageBase64 } }
                     ]
                 });
@@ -1087,11 +1087,11 @@
                     currentImageBase64 = null;
                     return reply;
                 } else if (data.error) {
-                    return `A su orden, señor, error de Groq: ${data.error.message || 'Desconocido'}`;
+                    return `A tu orden, bro, error de Groq: ${data.error.message || 'Desconocido'}`;
                 }
-                return "Disculpe, señor, respuesta vacía de Groq.";
+                return "Disculpa, bro, respuesta vacía de Groq.";
             } catch (err) {
-                return "Disculpe, señor, falló la conexión con la API de Groq.";
+                return "Disculpa, bro, falló la conexión con la API de Groq.";
             }
         }
 
@@ -1148,13 +1148,13 @@
                 updateVisorModel('search_mesh');
                 codeSnippet = `// COMPILADOR CAD - BÚSQUEDA WEB\nQuery: "${cleanQuery}"\nPlataformas: Printables / Thingiverse\nStatus: [ENLACES ACTIVOS]`;
                 
-                let searchHtml = `JARVIS: Búsqueda de "${cleanQuery}" procesada en repositorios externos, señor. A su orden.<br>
+                let searchHtml = `JARVIS: Búsqueda de "${cleanQuery}" procesada en repositorios externos, bro. A tu orden.<br>
                 <a class="model-link-btn" href="https://www.printables.com/search/models?q=${encodedSearch}" target="_blank">🔍 Buscar en Printables (${cleanQuery})</a>
                 <a class="model-link-btn" href="https://www.thingiverse.com/search?q=${encodedSearch}" target="_blank">🔍 Buscar en Thingiverse (${cleanQuery})</a>`;
                 
                 document.getElementById('cad-code-display').innerText = codeSnippet;
                 addChatMessage(searchHtml, "jarvis", true);
-                speakJarvis(`He localizado los enlaces de búsqueda para ${cleanQuery} en Printables y Thingiverse, señor.`);
+                speakJarvis(`He localizado los enlaces de búsqueda para ${cleanQuery} en Printables y Thingiverse, bro.`);
                 return;
             }
 
@@ -1164,7 +1164,7 @@
                 promptModelo = promptModelo.replace(/^[:,\s-]+/, "");
                 if (!promptModelo) promptModelo = "objeto mecánico";
 
-                addChatMessage("JARVIS: Iniciando motor Tripo AI para modelado de: " + promptModelo + ", señor...", "jarvis");
+                addChatMessage("JARVIS: Iniciando motor Tripo AI para modelado de: " + promptModelo + ", bro...", "jarvis");
                 
                 generarModelo3DConTripo(promptModelo).then(resultado => {
                     let respuestaHtml = `JARVIS: ${resultado.message}<br>` +
@@ -1189,7 +1189,7 @@
 
             document.getElementById('cad-code-display').innerText = codeSnippet;
 
-            const aiResponse = await queryAI(text || "Analiza esta imagen, señor.");
+            const aiResponse = await queryAI(text || "Analiza esta imagen, bro.");
             addChatMessage("JARVIS: " + aiResponse, "jarvis");
             speakJarvis(aiResponse);
         }
