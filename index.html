@@ -522,7 +522,7 @@
             }
         }
 
-        // Animación corregida: limpieza absoluta de estilos en línea al terminar para restaurar la posición original exacta (img2)
+        // Animación corregida: limpieza absoluta de estilos en línea al terminar tanto al encender como al apagar
         function triggerTransitionAnimation(targetActiveState) {
             const svgCoreWrapper = document.getElementById('core-hud-wrapper');
             const svgCore = document.getElementById('svg-core-hud');
@@ -564,8 +564,8 @@
                             piece.style.opacity = '0';
                             
                             setTimeout(() => {
-                                piece.style.transform = 'translateX(0)';
-                                piece.style.opacity = '1';
+                                piece.style.transform = '';
+                                piece.style.opacity = '';
                             }, index * 100 + 50);
                         }
                     });
@@ -604,7 +604,7 @@
                             piece.style.opacity = '0';
                             
                             setTimeout(() => {
-                                // LIMPIEZA CRÍTICA: Se eliminan los estilos en línea para que recuperen su posición CSS original idéntica a img2
+                                // LIMPIEZA CRÍTICA: Se eliminan los estilos en línea para que recuperen su posición CSS original
                                 piece.style.transform = '';
                                 piece.style.opacity = '';
                             }, index * 100 + 50);
