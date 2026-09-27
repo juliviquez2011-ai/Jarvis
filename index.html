@@ -477,13 +477,17 @@
             positions[i+2] = (Math.random() - 0.5) * 20;
         }
         particlesGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        const particlesMat = new THREE.PointsMaterial({ size: 0.03, color: 0x00f0ff, transparent: true, opacity: 0.3 });
+        const particlesMat = new THREE.PointsMaterial({ size: 0.03, color: 0x00f0ff, transparent: true, opacity: 0.4 });
         const particleSystem = new THREE.Points(particlesGeo, particlesMat);
         scene.add(particleSystem);
 
+        let isAdvancedWorkMode = false;
+
         function animateBg() {
             requestAnimationFrame(animateBg);
-            particleSystem.rotation.y += 0.0005;
+            // Velocidad dinámica según el modo activo (lenta para modo normal, media para avanzado)
+            const rotationSpeed = isAdvancedWorkMode ? 0.0018 : 0.0004;
+            particleSystem.rotation.y += rotationSpeed;
             renderer.render(scene, camera);
         }
         animateBg();
@@ -500,7 +504,6 @@
         camera3D.position.z = 3.2;
 
         let isStarkMode = false;
-        let isAdvancedWorkMode = false;
         let currentImageBase64 = null;
 
         function setStarkTheme(active) {
@@ -511,7 +514,7 @@
                 root.style.setProperty('--theme-color', '#ff3333');
                 root.style.setProperty('--theme-glow', 'rgba(255, 50, 50, 0.6)');
                 root.style.setProperty('--theme-bg', 'rgba(20, 2, 2, 0.95)');
-                particlesMat.color.setHex(0xff3333);
+                if(!isAdvancedWorkMode) particlesMat.color.setHex(0xff3333);
                 if(svgCore) svgCore.style.filter = "drop-shadow(0 0 25px #ff3333) drop-shadow(0 0 50px rgba(255, 50, 50, 0.6))";
             } else if (!isAdvancedWorkMode) {
                 root.style.setProperty('--theme-color', '#00f0ff');
@@ -522,7 +525,7 @@
             }
         }
 
-        // Animación corregida: limpieza absoluta de estilos en línea al terminar tanto al encender como al apagar
+        // Animación de transición con control dinámico del color y velocidad de las partículas de fondo
         function triggerTransitionAnimation(targetActiveState) {
             const svgCoreWrapper = document.getElementById('core-hud-wrapper');
             const svgCore = document.getElementById('svg-core-hud');
@@ -549,13 +552,17 @@
                     }
                 });
 
-                // 2. ENTRADA DE PIEZAS ROJAS AVANZADAS
+                // 2. ENTRADA DE PIEZAS ROJAS AVANZADAS Y PARTÍCULAS ROJAS / MEDIA VELOCIDAD
                 setTimeout(() => {
                     svgCoreWrapper.classList.remove('advanced-active');
                     root.style.setProperty('--theme-color', '#ff3333');
                     root.style.setProperty('--theme-glow', 'rgba(255, 50, 50, 0.8)');
                     root.style.setProperty('--theme-bg', 'rgba(25, 2, 2, 0.95)');
+                    
+                    // Ajuste de partículas a rojas y velocidad media
                     particlesMat.color.setHex(0xff3333);
+                    isAdvancedWorkMode = true;
+
                     if(svgCore) svgCore.style.filter = "drop-shadow(0 0 35px #ff3333)";
 
                     pieces.forEach((piece, index) => {
@@ -571,14 +578,13 @@
                     });
 
                     setTimeout(() => {
-                        isAdvancedWorkMode = true;
                         svgCoreWrapper.classList.add('advanced-active');
                     }, pieces.length * 100 + 200);
 
                 }, 1200);
 
             } else {
-                // SALIDA HACIA LA DERECHA ANTES DE VOLVER AL MODO NORMAL
+                // SALIDA HACIA LA DERECHA ANTES DE VOLVER AL MODO NORMAL Y PARTÍCULAS AZULES / LENTAS
                 pieces.forEach((piece, index) => {
                     if (piece) {
                         setTimeout(() => {
@@ -595,7 +601,10 @@
                     root.style.setProperty('--theme-color', isStarkMode ? '#ff3333' : '#00f0ff');
                     root.style.setProperty('--theme-glow', isStarkMode ? 'rgba(255, 50, 50, 0.6)' : 'rgba(0, 240, 255, 0.6)');
                     root.style.setProperty('--theme-bg', isStarkMode ? 'rgba(20, 2, 2, 0.95)' : 'rgba(2, 8, 19, 0.95)');
+                    
+                    // Ajuste de partículas a azules y velocidad lenta
                     particlesMat.color.setHex(isStarkMode ? 0xff3333 : 0x00f0ff);
+
                     if(svgCore) svgCore.style.filter = isStarkMode ? "drop-shadow(0 0 25px #ff3333)" : "drop-shadow(0 0 25px #00f0ff)";
 
                     pieces.forEach((piece, index) => {
@@ -604,7 +613,6 @@
                             piece.style.opacity = '0';
                             
                             setTimeout(() => {
-                                // LIMPIEZA CRÍTICA: Se eliminan los estilos en línea para que recuperen su posición CSS original
                                 piece.style.transform = '';
                                 piece.style.opacity = '';
                             }, index * 100 + 50);
@@ -970,7 +978,6 @@
 
         async function callGroqAPI(key, payloadMessages) {
             try {
-                // Modelo oficial corregido: openai/gpt-oss-120b
                 const modelToUse = "openai/gpt-oss-120b";
 
                 const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
