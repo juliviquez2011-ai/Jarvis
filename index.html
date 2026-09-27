@@ -128,12 +128,11 @@
             color: var(--theme-color);
         }
 
-        /* CONTENEDOR DERECHO: TAMAÑO ORIGINAL PERO CON SLOT CAD Y TELEMETRÍA MÁS COMPACTOS */
         #right-panel-wrapper {
             position: absolute;
             top: 20px;
             right: 20px;
-            width: 340px; /* Ancho original mantenido */
+            width: 340px;
             display: flex;
             flex-direction: column;
             gap: 12px;
@@ -142,7 +141,7 @@
 
         #top-right-slot {
             width: 100%;
-            height: 185px; /* Altura compacta solicitada solo para el slot 3D y compilador */
+            height: 185px;
             border: 1px solid var(--theme-glow);
             background: var(--theme-bg);
             border-radius: 10px;
@@ -155,14 +154,14 @@
         }
         #viewer-3d {
             width: 100%;
-            height: 95px; /* Visor 3D compacto */
+            height: 95px;
             background: #000;
             border-radius: 6px;
             position: relative;
         }
         #cad-code-display {
             width: 100%;
-            height: 52px; /* Compilador CAD compacto */
+            height: 52px;
             background: rgba(0, 10, 25, 0.9);
             border: 1px solid var(--theme-glow);
             border-radius: 4px;
@@ -181,7 +180,6 @@
             font-weight: bold;
         }
 
-        /* PANEL DE TELEMETRÍA Y POTENCIA COMPACTO */
         #system-telemetry-panel {
             width: 100%;
             background: var(--theme-bg);
@@ -275,7 +273,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 580px; /* Tamaño original del núcleo */
+            width: 580px;
             height: 580px;
             pointer-events: none;
             display: flex;
@@ -498,16 +496,13 @@
             <div class="msg jarvis" id="welcome-msg">JARVIS: Prototipo 3 en línea. A su orden, señor.</div>
         </div>
 
-        <!-- PANEL DERECHO CON SLOT 3D Y COMPILADOR REDUCIDOS -->
         <div id="right-panel-wrapper" class="interactive hud-piece">
-            <!-- Slot 3D & Compilador CAD compacto -->
             <div id="top-right-slot">
                 <div class="slot-title">SLOT 3D & COMPILADOR CAD</div>
                 <div id="viewer-3d"></div>
                 <div id="cad-code-display">// Listo...\n> Indique modelo en 3D, señor.</div>
             </div>
 
-            <!-- Telemetría y Estado Compacto -->
             <div id="system-telemetry-panel">
                 <h4>ESTADO & POTENCIA</h4>
                 
@@ -932,7 +927,6 @@
                 const lowerText = speechToText.toLowerCase();
                 
                 if (lowerText.includes("detente") || lowerText.includes("para")) {
-                    if (window.speechSynthesis) window.speechSynthesis.cancel();
                     addChatMessage("JARVIS: Interrupción recibida, señor.", "jarvis");
                     return;
                 }
@@ -1200,28 +1194,19 @@
             chat.scrollTop = chat.scrollHeight;
         }
 
+        // FUNCIÓN TEXT-TO-SPEECH ACTUALIZADA: 100% gratuita, sin tarjetas ni llaves con StreamElements
         function speakJarvis(text) {
-            if (!('speechSynthesis' in window)) return;
-            window.speechSynthesis.cancel();
-
+            if (!text) return;
             const cleanText = text.replace(/<[^>]*>?/gm, '');
-            const utterance = new SpeechSynthesisUtterance(cleanText);
-            utterance.lang = 'es-ES';
-            utterance.rate = 1.0;
-            utterance.pitch = 0.85;
+            const encodedText = encodeURIComponent(cleanText);
+            const audioUrl = `https://api.streamelements.com/kappa/v2/speech?voice=es-ES-AlvaroNeural&text=${encodedText}`;
 
-            const voices = window.speechSynthesis.getVoices();
-            const spanishVoices = voices.filter(v => v.lang.startsWith('es'));
-            const maleVoice = spanishVoices.find(v => 
-                v.name.toLowerCase().includes('jorge') || 
-                v.name.toLowerCase().includes('juan') || 
-                v.name.toLowerCase().includes('pablo') ||
-                v.name.toLowerCase().includes('carlos') ||
-                v.name.toLowerCase().includes('male')
-            ) || spanishVoices[0];
+            const audio = new Audio(audioUrl);
+            audio.playbackRate = 1.05;
 
-            if (maleVoice) utterance.voice = maleVoice;
-            window.speechSynthesis.speak(utterance);
+            audio.play().catch(err => {
+                console.warn("Error reproduciendo audio libre de StreamElements:", err);
+            });
         }
     </script>
 </body>
