@@ -123,24 +123,6 @@
             letter-spacing: 1px;
             color: var(--theme-color);
         }
-        .setting-group {
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-            font-size: 11px;
-        }
-        .setting-group label {
-            color: var(--theme-color);
-        }
-        .setting-group select {
-            background: #000;
-            border: 1px solid var(--theme-color);
-            color: #00ff66;
-            padding: 5px;
-            border-radius: 4px;
-            font-size: 11px;
-            outline: none;
-        }
 
         #top-right-slot {
             position: absolute;
@@ -482,10 +464,6 @@
                 <span style="width: 65px;">AI 3D:</span>
                 <input type="password" id="ai3d-key-input" placeholder="tripo_..." onchange="saveKeys()">
             </div>
-            <div class="api-row">
-                <span style="width: 65px;">ElevenLabs:</span>
-                <input type="password" id="eleven-key-input" placeholder="xi-api-key..." onchange="saveKeys()">
-            </div>
             <button class="hud-btn" style="padding: 3px 8px; font-size: 10px; margin-left: 0;" onclick="saveKeys()">Guardar Credencial</button>
         </div>
 
@@ -494,15 +472,6 @@
         <div id="settings-modal" class="interactive">
             <h3>PANEL DE CONFIGURACIÓN J.A.R.V.I.S.</h3>
             
-            <div class="setting-group">
-                <label>Voz Neuronal ElevenLabs (IA Masculina Jarvis):</label>
-                <select id="eleven-voice-select">
-                    <option value="nPczCjzI2devNBz1zQrb">Brian (Serio, Elegante / Estilo Jarvis)</option>
-                    <option value="JBFqnCBsd6RMkjVDRZzb">George (Voz británica clásica, formal)</option>
-                    <option value="VR6AewLTigWG4xSOukaG">Arnold (Firme, autoritario)</option>
-                </select>
-            </div>
-
             <div style="display: flex; gap: 6px; margin-top: 5px;">
                 <button class="hud-btn" style="flex: 1; margin: 0; font-size: 10px; padding: 5px;" onclick="clearChatHistory()">Limpiar Chat</button>
                 <button class="hud-btn" style="flex: 1; margin: 0; font-size: 10px; padding: 5px; border-color: #00ff88; color: #00ff88;" onclick="restartSystem()">🔄 Reiniciar</button>
@@ -727,12 +696,10 @@
             const groqKey = document.getElementById('groq-key-input').value.trim();
             const tavilyKey = document.getElementById('tavily-key-input').value.trim();
             const ai3dKey = document.getElementById('ai3d-key-input').value.trim();
-            const elevenKey = document.getElementById('eleven-key-input').value.trim();
 
             if (groqKey) localStorage.setItem('groq_api_key', groqKey);
             if (tavilyKey) localStorage.setItem('tavily_api_key', tavilyKey);
             if (ai3dKey) localStorage.setItem('ai3d_api_key', ai3dKey);
-            if (elevenKey) localStorage.setItem('elevenlabs_api_key', elevenKey);
             
             chatHistory = [{ role: "system", content: getSystemPrompt() }];
             addChatMessage("JARVIS: Credenciales de red y matrices de IA actualizadas, señor. A su orden.", "jarvis");
@@ -742,12 +709,10 @@
             const savedGroq = localStorage.getItem('groq_api_key');
             const savedTavily = localStorage.getItem('tavily_api_key');
             const savedAi3D = localStorage.getItem('ai3d_api_key');
-            const savedEleven = localStorage.getItem('elevenlabs_api_key');
 
             if (savedGroq) document.getElementById('groq-key-input').value = savedGroq;
             if (savedTavily) document.getElementById('tavily-key-input').value = savedTavily;
             if (savedAi3D) document.getElementById('ai3d-key-input').value = savedAi3D;
-            if (savedEleven) document.getElementById('eleven-key-input').value = savedEleven;
         });
 
         function handleImageUpload(event) {
@@ -1154,41 +1119,43 @@
             chat.scrollTop = chat.scrollHeight;
         }
 
-        // Nueva función speakJarvis conectada a API de síntesis externa gratuita mediante fetch
-        async function speakJarvis(text) {
-            try {
-                const cleanText = text.replace(/<[^>]*>?/gm, '');
-                const response = await fetch('https://freetts.org/api/tts', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        text: cleanText,
-                        voice: 'es-ES-AlvaroNeural' // Voz masculina formal en español
-                    })
-                });
-
-                if (!response.ok) throw new Error('Fallo en la red del servicio de voz');
-
-                const data = await response.json();
-                if (data && data.audioUrl) {
-                    const audio = new Audio(data.audioUrl);
-                    audio.play();
-                } else {
-                    throw new Error('Respuesta de audio inválida');
-                }
-            } catch (error) {
-                console.warn("Fallo el servicio externo de voz, usando respaldo local del navegador:", error);
-                if (!window.speechSynthesis) return;
-                window.speechSynthesis.cancel();
-                const cleanText = text.replace(/<[^>]*>?/gm, '');
-                const utterance = new SpeechSynthesisUtterance(cleanText);
-                utterance.lang = 'es-ES';
-                utterance.rate = 1.0;
-                utterance.pitch = 0.8;
-                window.speechSynthesis.speak(utterance);
+        // Función nativa de síntesis de voz en el navegador con filtro de voz masculina y tono grave
+        function speakJarvis(text) {
+            if (!('speechSynthesis' in window)) {
+                console.warn("Tu navegador no soporta síntesis de voz nativa.");
+                return;
             }
+
+            window.speechSynthesis.cancel();
+
+            const cleanText = text.replace(/<[^>]*>?/gm, '');
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+            utterance.lang = 'es-ES';
+            utterance.rate = 1.0;
+            utterance.pitch = 0.85; // Tono más grave para simular voz masculina
+
+            const voices = window.speechSynthesis.getVoices();
+            const spanishVoices = voices.filter(v => v.lang.startsWith('es'));
+            
+            const maleVoice = spanishVoices.find(v => 
+                v.name.toLowerCase().includes('jorge') || 
+                v.name.toLowerCase().includes('juan') || 
+                v.name.toLowerCase().includes('pablo') ||
+                v.name.toLowerCase().includes('carlos') ||
+                v.name.toLowerCase().includes('male')
+            ) || spanishVoices[0];
+
+            if (maleVoice) {
+                utterance.voice = maleVoice;
+            }
+
+            window.speechSynthesis.speak(utterance);
+        }
+
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = () => {
+                window.speechSynthesis.getVoices();
+            };
         }
     </script>
 </body>
