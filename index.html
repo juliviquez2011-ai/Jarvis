@@ -41,6 +41,13 @@
             z-index: 10;
         }
 
+        /* Clases base para la animación pieza por pieza (con transformaciones limpias) */
+        .hud-piece {
+            transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1), opacity 1.2s ease !important;
+            transform: translateX(0);
+            opacity: 1;
+        }
+
         #jarvis-status-header {
             position: absolute;
             top: 15px;
@@ -59,7 +66,7 @@
             backdrop-filter: blur(5px);
             z-index: 100;
             box-shadow: 0 0 15px var(--theme-glow);
-            transition: all 0.5s ease;
+            transition: all 0.5s ease, transform 1.2s cubic-bezier(0.25, 1, 0.5, 1), opacity 1.2s ease;
         }
 
         #api-config-panel {
@@ -76,6 +83,7 @@
             gap: 8px;
             backdrop-filter: blur(5px);
             z-index: 100;
+            transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1), opacity 1.2s ease;
         }
         .api-row {
             display: flex;
@@ -98,6 +106,7 @@
             bottom: 25px;
             right: 25px;
             z-index: 10000;
+            transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1), opacity 1.2s ease;
         }
 
         #settings-modal {
@@ -138,7 +147,7 @@
             align-items: center;
             padding: 8px;
             backdrop-filter: blur(10px);
-            transition: all 0.5s ease;
+            transition: all 0.5s ease, transform 1.2s cubic-bezier(0.25, 1, 0.5, 1), opacity 1.2s ease;
         }
         #viewer-3d {
             width: 100%;
@@ -180,7 +189,7 @@
             font-size: 13px;
             border-radius: 0 8px 8px 0;
             backdrop-filter: blur(5px);
-            transition: border-color 0.5s ease;
+            transition: border-color 0.5s ease, transform 1.2s cubic-bezier(0.25, 1, 0.5, 1), opacity 1.2s ease;
         }
         .msg { margin-bottom: 12px; line-height: 1.4; }
         .msg.jarvis { color: var(--theme-color); }
@@ -211,6 +220,7 @@
             align-items: center;
             z-index: 2;
             transform-style: preserve-3d;
+            transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1), opacity 1.2s ease;
         }
 
         #svg-core-hud {
@@ -339,7 +349,7 @@
             z-index: 5;
             pointer-events: none;
             font-weight: bold;
-            transition: color 0.5s ease, text-shadow 0.5s ease;
+            transition: color 0.5s ease, text-shadow 0.5s ease, transform 1.2s cubic-bezier(0.25, 1, 0.5, 1), opacity 1.2s ease;
         }
 
         #bottom-bar {
@@ -358,7 +368,7 @@
             box-shadow: 0 0 20px var(--theme-glow);
             z-index: 9999;
             pointer-events: auto;
-            transition: all 0.5s ease;
+            transition: all 0.5s ease, transform 1.2s cubic-bezier(0.25, 1, 0.5, 1), opacity 1.2s ease;
         }
 
         #bottom-bar input[type="text"] {
@@ -407,13 +417,13 @@
 </head>
 <body>
 
-    <div id="jarvis-status-header" class="interactive">
+    <div id="jarvis-status-header" class="interactive hud-piece">
         <div id="header-time">--:--:--</div>
     </div>
 
     <canvas id="bg-canvas"></canvas>
     
-    <div id="core-hud-wrapper">
+    <div id="core-hud-wrapper" class="hud-piece">
         <svg id="svg-core-hud" viewBox="0 0 620 620">
             <g id="voice-waves" class="">
                 <circle class="audio-wave-ring wave-1" cx="310" cy="310" r="235"></circle>
@@ -451,7 +461,7 @@
 
     <div id="hud-container">
         
-        <div id="api-config-panel" class="interactive">
+        <div id="api-config-panel" class="interactive hud-piece">
             <div class="api-row">
                 <span style="width: 65px;">Groq:</span>
                 <input type="password" id="groq-key-input" placeholder="gsk_..." onchange="saveKeys()">
@@ -467,7 +477,7 @@
             <button class="hud-btn" style="padding: 3px 8px; font-size: 10px; margin-left: 0;" onclick="saveKeys()">Guardar Credencial</button>
         </div>
 
-        <button id="settings-toggle-btn" class="hud-btn interactive" style="padding: 8px 12px; font-size: 13px;" onclick="toggleSettingsMenu()">⚙️ Config</button>
+        <button id="settings-toggle-btn" class="hud-btn interactive hud-piece" style="padding: 8px 12px; font-size: 13px;" onclick="toggleSettingsMenu()">⚙️ Config</button>
 
         <div id="settings-modal" class="interactive">
             <h3>PANEL DE CONFIGURACIÓN J.A.R.V.I.S.</h3>
@@ -480,19 +490,19 @@
             <button class="hud-btn" style="margin-left: 0; margin-top: 2px; text-align: center; font-size: 11px;" onclick="toggleSettingsMenu()">Cerrar Panel</button>
         </div>
 
-        <div id="jarvis-chat" class="interactive">
+        <div id="jarvis-chat" class="interactive hud-piece">
             <div class="msg jarvis" id="welcome-msg">JARVIS: Núcleo neuronal conectado, señor. A su entera disposición.</div>
         </div>
 
-        <div id="top-right-slot" class="interactive">
+        <div id="top-right-slot" class="interactive hud-piece">
             <div class="slot-title">SLOT 3D & COMPILADOR CAD</div>
             <div id="viewer-3d"></div>
             <div id="cad-code-display">// Sistema de Red Listos...\n> Indique modelo o estructura para compilar en 3D, señor.</div>
         </div>
 
-        <div id="bottom-watermark">J.A.R.V.I.S.</div>
+        <div id="bottom-watermark" class="hud-piece">J.A.R.V.I.S.</div>
 
-        <div id="bottom-bar">
+        <div id="bottom-bar" class="hud-piece">
             <input type="file" id="image-upload" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
             <button class="hud-btn" onclick="document.getElementById('image-upload').click()" title="Analizar imagen, señor">📷</button>
             
@@ -574,52 +584,93 @@
             }
         }
 
+        // Animación pieza por pieza secuencial corregida
         function triggerTransitionAnimation(targetActiveState) {
             const svgCoreWrapper = document.getElementById('core-hud-wrapper');
             const svgCore = document.getElementById('svg-core-hud');
             const root = document.documentElement;
 
+            const pieces = [
+                document.getElementById('api-config-panel'),
+                document.getElementById('jarvis-chat'),
+                document.getElementById('jarvis-status-header'),
+                document.getElementById('core-hud-wrapper'),
+                document.getElementById('top-right-slot'),
+                document.getElementById('bottom-watermark'),
+                document.getElementById('bottom-bar')
+            ];
+
             if (targetActiveState) {
-                svgCoreWrapper.classList.add('transition-surge');
-                svgCoreWrapper.classList.remove('advanced-active');
+                // 1. SALIDA PIEZA POR PIEZA A LA DERECHA (más lenta, fluida y escalonada)
+                pieces.forEach((piece, index) => {
+                    if (piece) {
+                        setTimeout(() => {
+                            piece.style.transform = 'translateX(120vw)';
+                            piece.style.opacity = '0';
+                        }, index * 120);
+                    }
+                });
 
-                root.style.setProperty('--theme-color', '#ff9900');
-                root.style.setProperty('--theme-glow', 'rgba(255, 153, 0, 0.9)');
-                root.style.setProperty('--theme-bg', 'rgba(25, 12, 2, 0.95)');
-                particlesMat.color.setHex(0xff9900);
-                if(svgCore) svgCore.style.filter = "drop-shadow(0 0 40px #ff9900)";
-
+                // 2. 1 SEGUNDO DESPUÉS: ENTRAN LAS PIEZAS ROJAS DESDE LA DERECHA PIEZA POR PIEZA
                 setTimeout(() => {
-                    svgCoreWrapper.classList.remove('transition-surge');
-                    isAdvancedWorkMode = true;
-                    svgCoreWrapper.classList.add('advanced-active');
-
+                    svgCoreWrapper.classList.remove('advanced-active');
                     root.style.setProperty('--theme-color', '#ff3333');
                     root.style.setProperty('--theme-glow', 'rgba(255, 50, 50, 0.8)');
                     root.style.setProperty('--theme-bg', 'rgba(25, 2, 2, 0.95)');
                     particlesMat.color.setHex(0xff3333);
-                    if(svgCore) svgCore.style.filter = "drop-shadow(0 0 35px #ff3333) drop-shadow(0 0 70px rgba(255, 50, 50, 0.8))";
-                }, 5000);
-            } else {
-                svgCoreWrapper.classList.add('transition-surge');
-                svgCoreWrapper.classList.remove('advanced-active');
-                isAdvancedWorkMode = false;
+                    if(svgCore) svgCore.style.filter = "drop-shadow(0 0 35px #ff3333)";
 
-                root.style.setProperty('--theme-color', '#ff9900');
-                root.style.setProperty('--theme-glow', 'rgba(255, 153, 0, 0.9)');
-                root.style.setProperty('--theme-bg', 'rgba(25, 12, 2, 0.95)');
-                particlesMat.color.setHex(0xff9900);
-                if(svgCore) svgCore.style.filter = "drop-shadow(0 0 40px #ff9900)";
+                    pieces.forEach((piece, index) => {
+                        if (piece) {
+                            piece.style.transform = 'translateX(100vw)';
+                            piece.style.opacity = '0';
+                            setTimeout(() => {
+                                piece.style.transform = 'translateX(0)';
+                                piece.style.opacity = '1';
+                            }, index * 140);
+                        }
+                    });
+
+                    setTimeout(() => {
+                        isAdvancedWorkMode = true;
+                        svgCoreWrapper.classList.add('advanced-active');
+                    }, pieces.length * 140 + 200);
+
+                }, 1200);
+
+            } else {
+                // APAGADO: Colores invertidos (sale rojo izquierdo y entra azul derecha)
+                pieces.forEach((piece, index) => {
+                    if (piece) {
+                        setTimeout(() => {
+                            piece.style.transform = 'translateX(-120vw)';
+                            piece.style.opacity = '0';
+                        }, index * 120);
+                    }
+                });
 
                 setTimeout(() => {
-                    svgCoreWrapper.classList.remove('transition-surge');
+                    svgCoreWrapper.classList.remove('advanced-active');
+                    isAdvancedWorkMode = false;
 
                     root.style.setProperty('--theme-color', isStarkMode ? '#ff3333' : '#00f0ff');
                     root.style.setProperty('--theme-glow', isStarkMode ? 'rgba(255, 50, 50, 0.6)' : 'rgba(0, 240, 255, 0.6)');
                     root.style.setProperty('--theme-bg', isStarkMode ? 'rgba(20, 2, 2, 0.95)' : 'rgba(2, 8, 19, 0.95)');
                     particlesMat.color.setHex(isStarkMode ? 0xff3333 : 0x00f0ff);
                     if(svgCore) svgCore.style.filter = isStarkMode ? "drop-shadow(0 0 25px #ff3333)" : "drop-shadow(0 0 25px #00f0ff)";
-                }, 5000);
+
+                    pieces.forEach((piece, index) => {
+                        if (piece) {
+                            piece.style.transform = 'translateX(100vw)';
+                            piece.style.opacity = '0';
+                            setTimeout(() => {
+                                piece.style.transform = 'translateX(0)';
+                                piece.style.opacity = '1';
+                            }, index * 140);
+                        }
+                    });
+
+                }, 1200);
             }
         }
 
@@ -978,7 +1029,7 @@
 
         async function callGroqAPI(key, payloadMessages) {
             try {
-                const modelToUse = currentImageBase64 ? "llama-3.2-11b-vision-preview" : "openai/gpt-oss-120b";
+                const modelToUse = currentImageBase64 ? "llama-3.2-11b-vision-preview" : "llama-3.3-70b-versatile";
 
                 const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                     method: "POST",
