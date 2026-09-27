@@ -41,11 +41,9 @@
             z-index: 10;
         }
 
-        /* Clase unificada para conservar dimensiones, posición y transiciones exactas de elementos */
+        /* Clase para animación fluida de entrada y salida */
         .hud-piece {
             transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1), opacity 1.2s ease !important;
-            transform: translateX(0);
-            opacity: 1;
             will-change: transform, opacity;
         }
 
@@ -524,7 +522,7 @@
             }
         }
 
-        // Animación corregida pieza por pieza: posiciones ordenadas al entrar y salir limpiamente a la derecha sin desorden
+        // Animación corregida: limpieza absoluta de estilos en línea al terminar para restaurar la posición original exacta (img2)
         function triggerTransitionAnimation(targetActiveState) {
             const svgCoreWrapper = document.getElementById('core-hud-wrapper');
             const svgCore = document.getElementById('svg-core-hud');
@@ -541,7 +539,7 @@
             ];
 
             if (targetActiveState) {
-                // 1. SALIDA PIEZA POR PIEZA A LA DERECHA (limpia y fluida)
+                // 1. SALIDA PIEZA POR PIEZA A LA DERECHA
                 pieces.forEach((piece, index) => {
                     if (piece) {
                         setTimeout(() => {
@@ -551,7 +549,7 @@
                     }
                 });
 
-                // 2. 1 SEGUNDO DESPUÉS: ENTRAN LAS PIEZAS ROJAS DESDE LA DERECHA EN ORDEN PERFECTO
+                // 2. ENTRADA DE PIEZAS ROJAS AVANZADAS
                 setTimeout(() => {
                     svgCoreWrapper.classList.remove('advanced-active');
                     root.style.setProperty('--theme-color', '#ff3333');
@@ -562,12 +560,10 @@
 
                     pieces.forEach((piece, index) => {
                         if (piece) {
-                            // Se posicionan previamente a la derecha fuera de pantalla
                             piece.style.transform = 'translateX(120vw)';
                             piece.style.opacity = '0';
                             
                             setTimeout(() => {
-                                // Transición fluida de entrada a su sitio (translateX(0)) conservando el layout original
                                 piece.style.transform = 'translateX(0)';
                                 piece.style.opacity = '1';
                             }, index * 100 + 50);
@@ -582,7 +578,7 @@
                 }, 1200);
 
             } else {
-                // APAGADO: Salida ordenada hacia la derecha
+                // SALIDA HACIA LA DERECHA ANTES DE VOLVER AL MODO NORMAL
                 pieces.forEach((piece, index) => {
                     if (piece) {
                         setTimeout(() => {
@@ -608,8 +604,9 @@
                             piece.style.opacity = '0';
                             
                             setTimeout(() => {
-                                piece.style.transform = 'translateX(0)';
-                                piece.style.opacity = '1';
+                                // LIMPIEZA CRÍTICA: Se eliminan los estilos en línea para que recuperen su posición CSS original idéntica a img2
+                                piece.style.transform = '';
+                                piece.style.opacity = '';
                             }, index * 100 + 50);
                         }
                     });
@@ -973,8 +970,8 @@
 
         async function callGroqAPI(key, payloadMessages) {
             try {
-                // Modelo oficial corregido según su consola: openai/gpt-oss-120b para texto e inteligencia general
-                const modelToUse = currentImageBase64 ? "openai/gpt-oss-120b" : "openai/gpt-oss-120b";
+                // Modelo oficial corregido: openai/gpt-oss-120b
+                const modelToUse = "openai/gpt-oss-120b";
 
                 const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                     method: "POST",
