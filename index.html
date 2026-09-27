@@ -41,11 +41,12 @@
             z-index: 10;
         }
 
-        /* Clases base para la animación pieza por pieza (con transformaciones limpias) */
+        /* Clase unificada para conservar dimensiones, posición y transiciones exactas de elementos */
         .hud-piece {
             transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1), opacity 1.2s ease !important;
             transform: translateX(0);
             opacity: 1;
+            will-change: transform, opacity;
         }
 
         #jarvis-status-header {
@@ -66,7 +67,6 @@
             backdrop-filter: blur(5px);
             z-index: 100;
             box-shadow: 0 0 15px var(--theme-glow);
-            transition: all 0.5s ease, transform 1.2s cubic-bezier(0.25, 1, 0.5, 1), opacity 1.2s ease;
         }
 
         #api-config-panel {
@@ -83,7 +83,6 @@
             gap: 8px;
             backdrop-filter: blur(5px);
             z-index: 100;
-            transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1), opacity 1.2s ease;
         }
         .api-row {
             display: flex;
@@ -106,7 +105,6 @@
             bottom: 25px;
             right: 25px;
             z-index: 10000;
-            transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1), opacity 1.2s ease;
         }
 
         #settings-modal {
@@ -147,7 +145,6 @@
             align-items: center;
             padding: 8px;
             backdrop-filter: blur(10px);
-            transition: all 0.5s ease, transform 1.2s cubic-bezier(0.25, 1, 0.5, 1), opacity 1.2s ease;
         }
         #viewer-3d {
             width: 100%;
@@ -220,7 +217,6 @@
             align-items: center;
             z-index: 2;
             transform-style: preserve-3d;
-            transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1), opacity 1.2s ease;
         }
 
         #svg-core-hud {
@@ -255,28 +251,6 @@
         .advanced-active .rot-reverse-fast { animation: spinCounter 1.5s linear infinite !important; }
         .advanced-active .rot-extra-ring { animation: spinClockwise 2.5s linear infinite !important; }
 
-        .transition-surge {
-            animation: coreTransitionSequence 5s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
-        }
-
-        .transition-surge .rot-clockwise { animation: spinClockwise 0.6s linear infinite !important; }
-        .transition-surge .rot-counter { animation: spinCounter 0.5s linear infinite !important; }
-        .transition-surge .rot-fast { animation: spinClockwise 0.4s linear infinite !important; }
-        .transition-surge .rot-reverse-fast { animation: spinCounter 0.3s linear infinite !important; }
-        .transition-surge .rot-extra-ring { animation: spinClockwise 0.5s linear infinite !important; }
-
-        .transition-surge #svg-core-hud {
-            animation: svgFullSpinAndZoom 5s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
-        }
-
-        .transition-surge circle:not(#core-center-bg), .transition-surge rect {
-            animation: ringColorCycle 5s ease forwards !important;
-        }
-
-        .transition-surge #core-label-fixed {
-            animation: textTransitionColor 5s ease forwards !important;
-        }
-        
         .advanced-active #core-label-fixed {
             fill: #ff3333 !important;
             filter: drop-shadow(0 0 25px #ff3333) !important;
@@ -288,38 +262,6 @@
         .advanced-active #core-center-bg {
             fill: var(--theme-bg) !important;
             stroke: #ff3333 !important;
-        }
-
-        @keyframes coreTransitionSequence {
-            0% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
-            20% { transform: translate(-50%, -50%) scale(1.25) rotate(180deg); }
-            50% { transform: translate(-50%, -50%) scale(0.8) rotate(540deg); }
-            80% { transform: translate(-50%, -50%) scale(1.15) rotate(900deg); }
-            100% { transform: translate(-50%, -50%) scale(1) rotate(1080deg); }
-        }
-
-        @keyframes svgFullSpinAndZoom {
-            0% { transform: perspective(800px) translateZ(0px) rotateZ(0deg); }
-            25% { transform: perspective(800px) translateZ(140px) rotateZ(360deg); }
-            50% { transform: perspective(800px) translateZ(-100px) rotateZ(720deg); }
-            75% { transform: perspective(800px) translateZ(80px) rotateZ(900deg); }
-            100% { transform: perspective(800px) translateZ(0px) rotateZ(1080deg); }
-        }
-
-        @keyframes ringColorCycle {
-            0% { stroke: var(--theme-color); }
-            25% { stroke: #ff9900; }
-            50% { stroke: #ff5500; }
-            75% { stroke: #ffcc00; }
-            100% { stroke: #ff3333; }
-        }
-
-        @keyframes textTransitionColor {
-            0% { fill: var(--theme-color); filter: drop-shadow(0 0 25px var(--theme-color)); }
-            25% { fill: #ff9900; filter: drop-shadow(0 0 30px #ff9900); }
-            50% { fill: #ff5500; filter: drop-shadow(0 0 30px #ff5500); }
-            75% { fill: #ffcc00; filter: drop-shadow(0 0 30px #ffcc00); }
-            100% { fill: #ff3333; filter: drop-shadow(0 0 35px #ff3333); }
         }
 
         @keyframes spinClockwise { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
@@ -349,7 +291,6 @@
             z-index: 5;
             pointer-events: none;
             font-weight: bold;
-            transition: color 0.5s ease, text-shadow 0.5s ease, transform 1.2s cubic-bezier(0.25, 1, 0.5, 1), opacity 1.2s ease;
         }
 
         #bottom-bar {
@@ -368,7 +309,6 @@
             box-shadow: 0 0 20px var(--theme-glow);
             z-index: 9999;
             pointer-events: auto;
-            transition: all 0.5s ease, transform 1.2s cubic-bezier(0.25, 1, 0.5, 1), opacity 1.2s ease;
         }
 
         #bottom-bar input[type="text"] {
@@ -584,7 +524,7 @@
             }
         }
 
-        // Animación pieza por pieza secuencial corregida
+        // Animación corregida pieza por pieza: posiciones ordenadas al entrar y salir limpiamente a la derecha sin desorden
         function triggerTransitionAnimation(targetActiveState) {
             const svgCoreWrapper = document.getElementById('core-hud-wrapper');
             const svgCore = document.getElementById('svg-core-hud');
@@ -601,17 +541,17 @@
             ];
 
             if (targetActiveState) {
-                // 1. SALIDA PIEZA POR PIEZA A LA DERECHA (más lenta, fluida y escalonada)
+                // 1. SALIDA PIEZA POR PIEZA A LA DERECHA (limpia y fluida)
                 pieces.forEach((piece, index) => {
                     if (piece) {
                         setTimeout(() => {
                             piece.style.transform = 'translateX(120vw)';
                             piece.style.opacity = '0';
-                        }, index * 120);
+                        }, index * 90);
                     }
                 });
 
-                // 2. 1 SEGUNDO DESPUÉS: ENTRAN LAS PIEZAS ROJAS DESDE LA DERECHA PIEZA POR PIEZA
+                // 2. 1 SEGUNDO DESPUÉS: ENTRAN LAS PIEZAS ROJAS DESDE LA DERECHA EN ORDEN PERFECTO
                 setTimeout(() => {
                     svgCoreWrapper.classList.remove('advanced-active');
                     root.style.setProperty('--theme-color', '#ff3333');
@@ -622,30 +562,33 @@
 
                     pieces.forEach((piece, index) => {
                         if (piece) {
-                            piece.style.transform = 'translateX(100vw)';
+                            // Se posicionan previamente a la derecha fuera de pantalla
+                            piece.style.transform = 'translateX(120vw)';
                             piece.style.opacity = '0';
+                            
                             setTimeout(() => {
+                                // Transición fluida de entrada a su sitio (translateX(0)) conservando el layout original
                                 piece.style.transform = 'translateX(0)';
                                 piece.style.opacity = '1';
-                            }, index * 140);
+                            }, index * 100 + 50);
                         }
                     });
 
                     setTimeout(() => {
                         isAdvancedWorkMode = true;
                         svgCoreWrapper.classList.add('advanced-active');
-                    }, pieces.length * 140 + 200);
+                    }, pieces.length * 100 + 200);
 
                 }, 1200);
 
             } else {
-                // APAGADO: Colores invertidos (sale rojo izquierdo y entra azul derecha)
+                // APAGADO: Salida ordenada hacia la derecha
                 pieces.forEach((piece, index) => {
                     if (piece) {
                         setTimeout(() => {
-                            piece.style.transform = 'translateX(-120vw)';
+                            piece.style.transform = 'translateX(120vw)';
                             piece.style.opacity = '0';
-                        }, index * 120);
+                        }, index * 90);
                     }
                 });
 
@@ -661,12 +604,13 @@
 
                     pieces.forEach((piece, index) => {
                         if (piece) {
-                            piece.style.transform = 'translateX(100vw)';
+                            piece.style.transform = 'translateX(120vw)';
                             piece.style.opacity = '0';
+                            
                             setTimeout(() => {
                                 piece.style.transform = 'translateX(0)';
                                 piece.style.opacity = '1';
-                            }, index * 140);
+                            }, index * 100 + 50);
                         }
                     });
 
@@ -1029,7 +973,8 @@
 
         async function callGroqAPI(key, payloadMessages) {
             try {
-                const modelToUse = currentImageBase64 ? "llama-3.2-11b-vision-preview" : "llama-3.3-70b-versatile";
+                // Modelo oficial corregido según su consola: openai/gpt-oss-120b para texto e inteligencia general
+                const modelToUse = currentImageBase64 ? "openai/gpt-oss-120b" : "openai/gpt-oss-120b";
 
                 const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                     method: "POST",
@@ -1199,6 +1144,7 @@
                 utterance.voice = maleVoice;
             }
 
+            window.speechSynthesis.accept = utterance;
             window.speechSynthesis.speak(utterance);
         }
 
