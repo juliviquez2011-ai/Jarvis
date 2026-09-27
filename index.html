@@ -298,17 +298,17 @@
 
         @keyframes ringColorCycle {
             0% { stroke: var(--theme-color); }
-            25% { stroke: #9d00ff; }
-            50% { stroke: #00ff66; }
-            75% { stroke: #ff007f; }
+            25% { stroke: #ff9900; }
+            50% { stroke: #ff5500; }
+            75% { stroke: #ffcc00; }
             100% { stroke: #ff3333; }
         }
 
         @keyframes textTransitionColor {
             0% { fill: var(--theme-color); filter: drop-shadow(0 0 25px var(--theme-color)); }
-            25% { fill: #9d00ff; filter: drop-shadow(0 0 30px #9d00ff); }
-            50% { fill: #00ff66; filter: drop-shadow(0 0 30px #00ff66); }
-            75% { fill: #ff007f; filter: drop-shadow(0 0 30px #ff007f); }
+            25% { fill: #ff9900; filter: drop-shadow(0 0 30px #ff9900); }
+            50% { fill: #ff5500; filter: drop-shadow(0 0 30px #ff5500); }
+            75% { fill: #ffcc00; filter: drop-shadow(0 0 30px #ffcc00); }
             100% { fill: #ff3333; filter: drop-shadow(0 0 35px #ff3333); }
         }
 
@@ -583,11 +583,11 @@
                 svgCoreWrapper.classList.add('transition-surge');
                 svgCoreWrapper.classList.remove('advanced-active');
 
-                root.style.setProperty('--theme-color', '#9d00ff');
-                root.style.setProperty('--theme-glow', 'rgba(157, 0, 255, 0.9)');
-                root.style.setProperty('--theme-bg', 'rgba(15, 2, 25, 0.95)');
-                particlesMat.color.setHex(0x9d00ff);
-                if(svgCore) svgCore.style.filter = "drop-shadow(0 0 40px #9d00ff)";
+                root.style.setProperty('--theme-color', '#ff9900');
+                root.style.setProperty('--theme-glow', 'rgba(255, 153, 0, 0.9)');
+                root.style.setProperty('--theme-bg', 'rgba(25, 12, 2, 0.95)');
+                particlesMat.color.setHex(0xff9900);
+                if(svgCore) svgCore.style.filter = "drop-shadow(0 0 40px #ff9900)";
 
                 setTimeout(() => {
                     svgCoreWrapper.classList.remove('transition-surge');
@@ -605,11 +605,11 @@
                 svgCoreWrapper.classList.remove('advanced-active');
                 isAdvancedWorkMode = false;
 
-                root.style.setProperty('--theme-color', '#9d00ff');
-                root.style.setProperty('--theme-glow', 'rgba(157, 0, 255, 0.9)');
-                root.style.setProperty('--theme-bg', 'rgba(15, 2, 25, 0.95)');
-                particlesMat.color.setHex(0x9d00ff);
-                if(svgCore) svgCore.style.filter = "drop-shadow(0 0 40px #9d00ff)";
+                root.style.setProperty('--theme-color', '#ff9900');
+                root.style.setProperty('--theme-glow', 'rgba(255, 153, 0, 0.9)');
+                root.style.setProperty('--theme-bg', 'rgba(25, 12, 2, 0.95)');
+                particlesMat.color.setHex(0xff9900);
+                if(svgCore) svgCore.style.filter = "drop-shadow(0 0 40px #ff9900)";
 
                 setTimeout(() => {
                     svgCoreWrapper.classList.remove('transition-surge');
@@ -1119,7 +1119,6 @@
             chat.scrollTop = chat.scrollHeight;
         }
 
-        // Función nativa de síntesis de voz en el navegador con filtro de voz masculina y tono grave
         function speakJarvis(text) {
             if (!('speechSynthesis' in window)) {
                 console.warn("Tu navegador no soporta síntesis de voz nativa.");
@@ -1132,7 +1131,7 @@
             const utterance = new SpeechSynthesisUtterance(cleanText);
             utterance.lang = 'es-ES';
             utterance.rate = 1.0;
-            utterance.pitch = 0.85; // Tono más grave para simular voz masculina
+            utterance.pitch = 0.85;
 
             const voices = window.speechSynthesis.getVoices();
             const spanishVoices = voices.filter(v => v.lang.startsWith('es'));
