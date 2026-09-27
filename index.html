@@ -1154,16 +1154,41 @@
             chat.scrollTop = chat.scrollHeight;
         }
 
-        function speakJarvis(text) {
-            if (!window.speechSynthesis) return;
-            window.speechSynthesis.cancel();
-            const cleanText = text.replace(/<[^>]*>?/gm, '');
-            const utterance = new SpeechSynthesisUtterance(cleanText);
-            utterance.lang = 'es-ES';
-            utterance.rate = 1.0;
-            utterance.pitch = 0.9;
-            
-            window.speechSynthesis.speak(utterance);
+        // Nueva función speakJarvis conectada a API de síntesis externa gratuita mediante fetch
+        async function speakJarvis(text) {
+            try {
+                const cleanText = text.replace(/<[^>]*>?/gm, '');
+                const response = await fetch('https://freetts.org/api/tts', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        text: cleanText,
+                        voice: 'es-ES-AlvaroNeural' // Voz masculina formal en español
+                    })
+                });
+
+                if (!response.ok) throw new Error('Fallo en la red del servicio de voz');
+
+                const data = await response.json();
+                if (data && data.audioUrl) {
+                    const audio = new Audio(data.audioUrl);
+                    audio.play();
+                } else {
+                    throw new Error('Respuesta de audio inválida');
+                }
+            } catch (error) {
+                console.warn("Fallo el servicio externo de voz, usando respaldo local del navegador:", error);
+                if (!window.speechSynthesis) return;
+                window.speechSynthesis.cancel();
+                const cleanText = text.replace(/<[^>]*>?/gm, '');
+                const utterance = new SpeechSynthesisUtterance(cleanText);
+                utterance.lang = 'es-ES';
+                utterance.rate = 1.0;
+                utterance.pitch = 0.8;
+                window.speechSynthesis.speak(utterance);
+            }
         }
     </script>
 </body>
