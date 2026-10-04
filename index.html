@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>J.A.R.V.I.S. OS - HUD 3D Segmented Reactor</title>
+    <title>J.A.R.V.I.S. OS - Neural Core Cinematic</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; }
@@ -34,17 +34,6 @@
             width: 100%;
             height: 100%;
             z-index: 1;
-        }
-
-        #reactor-3d-canvas {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 520px;
-            height: 520px;
-            z-index: 2;
-            pointer-events: none;
         }
 
         .interactive {
@@ -279,19 +268,79 @@
         }
         .model-link-btn:hover { background: var(--theme-color); color: #000; }
 
-        #core-label-fixed {
+        #core-hud-wrapper {
             position: absolute;
-            z-index: 5;
-            color: #ffffff;
-            font-size: 22px;
-            font-weight: bold;
-            letter-spacing: 5px;
-            text-shadow: 0 0 15px var(--theme-color), 0 0 25px #ffffff;
-            pointer-events: none;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            transition: color 0.5s ease;
+            width: 580px;
+            height: 580px;
+            pointer-events: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
+            transform-style: preserve-3d;
+        }
+
+        #svg-core-hud {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform-origin: center;
+            filter: drop-shadow(0 0 20px var(--theme-color)) drop-shadow(0 0 40px var(--theme-glow));
+            transition: filter 0.5s ease;
+        }
+
+        .audio-wave-ring {
+            fill: none;
+            stroke: var(--theme-color);
+            stroke-width: 3;
+            opacity: 0;
+            transform-origin: center;
+            filter: drop-shadow(0 0 12px var(--theme-color));
+        }
+
+        .rot-clockwise { transform-origin: 310px 310px; animation: spinClockwise 35s linear infinite; }
+        .rot-counter { transform-origin: 310px 310px; animation: spinCounter 25s linear infinite; }
+        .rot-fast { transform-origin: 310px 310px; animation: spinClockwise 16s linear infinite; }
+        .rot-reverse-fast { transform-origin: 310px 310px; animation: spinCounter 12s linear infinite; }
+        .rot-extra-ring { transform-origin: 310px 310px; animation: spinClockwise 20s linear infinite; }
+
+        .advanced-active .rot-clockwise { animation: spinClockwise 4s linear infinite !important; }
+        .advanced-active .rot-counter { animation: spinCounter 3s linear infinite !important; }
+        .advanced-active .rot-fast { animation: spinClockwise 2s linear infinite !important; }
+        .advanced-active .rot-reverse-fast { animation: spinCounter 1.5s linear infinite !important; }
+        .advanced-active .rot-extra-ring { animation: spinClockwise 2.5s linear infinite !important; }
+
+        .advanced-active #core-label-fixed {
+            fill: #ff3333 !important;
+            filter: drop-shadow(0 0 20px #ff3333) !important;
+        }
+
+        .advanced-active circle:not(#core-center-bg), .advanced-active rect {
+            stroke: #ff3333 !important;
+        }
+        .advanced-active #core-center-bg {
+            fill: var(--theme-bg) !important;
+            stroke: #ff3333 !important;
+        }
+
+        @keyframes spinClockwise { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes spinCounter { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
+
+        #core-label-fixed {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 4px;
+            fill: var(--theme-color);
+            filter: drop-shadow(0 0 5px var(--theme-color)) drop-shadow(0 0 12px var(--theme-glow));
+            text-anchor: middle;
+            dominant-baseline: central;
+            transition: fill 0.5s ease;
         }
 
         #bottom-watermark {
@@ -378,8 +427,41 @@
 
     <canvas id="bg-canvas"></canvas>
     
-    <canvas id="reactor-3d-canvas" class="hud-piece"></canvas>
-    <div id="core-label-fixed" class="hud-piece">JARVIS</div>
+    <div id="core-hud-wrapper" class="hud-piece">
+        <svg id="svg-core-hud" viewBox="0 0 620 620">
+            <g id="voice-waves" class="">
+                <circle class="audio-wave-ring wave-1" cx="310" cy="310" r="235"></circle>
+                <circle class="audio-wave-ring wave-2" cx="310" cy="310" r="265"></circle>
+                <circle class="audio-wave-ring wave-3" cx="310" cy="310" r="295"></circle>
+            </g>
+            <g class="rot-clockwise">
+                <circle cx="310" cy="310" r="285" fill="none" stroke="var(--theme-color)" stroke-width="5" stroke-dasharray="45 20, 15 15, 100 30" opacity="0.95"/>
+                <circle cx="310" cy="310" r="268" fill="none" stroke="var(--theme-color)" stroke-width="2" stroke-dasharray="8 8" opacity="0.85"/>
+            </g>
+            <g class="rot-counter">
+                <circle cx="310" cy="310" r="250" fill="none" stroke="var(--theme-color)" stroke-width="3" stroke-dasharray="30 15, 10 10, 60 20" opacity="0.9"/>
+                <circle cx="310" cy="310" r="232" fill="none" stroke="var(--theme-color)" stroke-width="1.5" stroke-dasharray="4 12" opacity="0.8"/>
+            </g>
+            <g class="rot-extra-ring">
+                <circle cx="310" cy="310" r="214" fill="none" stroke="var(--theme-color)" stroke-width="4" stroke-dasharray="20 40, 12 8" opacity="0.9"/>
+            </g>
+            <g class="rot-fast">
+                <circle cx="310" cy="310" r="198" fill="none" stroke="var(--theme-color)" stroke-width="12" stroke-dasharray="16 22, 5 7, 40 16" opacity="0.9"/>
+                <circle cx="310" cy="310" r="174" fill="none" stroke="var(--theme-color)" stroke-width="3" stroke-dasharray="4 8" opacity="0.98"/>
+                <rect x="304" y="68" width="12" height="16" fill="var(--theme-color)" opacity="0.98"/>
+                <rect x="304" y="536" width="12" height="16" fill="var(--theme-color)" opacity="0.98"/>
+                <rect x="68" y="304" width="16" height="12" fill="var(--theme-color)" opacity="0.98"/>
+                <rect x="536" y="304" width="16" height="12" fill="var(--theme-color)" opacity="0.98"/>
+            </g>
+            <g class="rot-reverse-fast">
+                <circle cx="310" cy="310" r="150" fill="none" stroke="var(--theme-color)" stroke-width="18" stroke-dasharray="65 35, 20 20, 40 15" opacity="0.8"/>
+                <circle cx="310" cy="310" r="126" fill="none" stroke="var(--theme-color)" stroke-width="2.5" opacity="0.95"/>
+            </g>
+            <circle id="core-center-bg" cx="310" cy="310" r="104" fill="var(--theme-bg)" stroke="var(--theme-color)" stroke-width="4" opacity="0.99"/>
+            <circle cx="310" cy="310" r="92" fill="none" stroke="var(--theme-color)" stroke-width="1.5" stroke-dasharray="5 6" opacity="0.8"/>
+            <text x="310" y="312" id="core-label-fixed" text-anchor="middle" dominant-baseline="central">JARVIS</text>
+        </svg>
+    </div>
 
     <div id="hud-container">
         
@@ -462,7 +544,7 @@
             <button class="hud-btn" onclick="document.getElementById('image-upload').click()" title="Analizar imagen, señor">📷</button>
             
             <input type="text" id="user-input" placeholder="Indique su orden a JARVIS, señor..." onkeypress="checkEnter(event)">
-            <button id="mic-btn" class="hud-btn" onclick="toggleSpeechRecognition()" title="Activar escucha continua">🎙</button>
+            <button id="mic-btn" class="hud-btn" onclick="toggleSpeechRecognition()" title="Activar escucha continua">🎙️</button>
             <button class="hud-btn" onclick="sendPrompt()">Enviar</button>
         </div>
 
@@ -509,74 +591,6 @@
         }
         animateBg();
 
-        // Reactor HUD 3D: Anillos segmentados originales idénticos con relieve tridimensional real
-        const reactorCanvas = document.getElementById('reactor-3d-canvas');
-        const reactorScene = new THREE.Scene();
-        const reactorCamera = new THREE.PerspectiveCamera(50, reactorCanvas.clientWidth / reactorCanvas.clientHeight, 0.1, 1000);
-        const reactorRenderer = new THREE.WebGLRenderer({ canvas: reactorCanvas, alpha: true, antialias: true });
-        reactorRenderer.setSize(reactorCanvas.clientWidth, reactorCanvas.clientHeight);
-        reactorRenderer.setPixelRatio(window.devicePixelRatio);
-        reactorCamera.position.z = 4.2;
-
-        const reactorGroup = new THREE.Group();
-        reactorScene.add(reactorGroup);
-
-        function createSegmentedHUDRing(innerRadius, outerRadius, segmentsCount, gapRatio, depth, colorHex) {
-            const group = new THREE.Group();
-            const arcSize = (Math.PI * 2) / segmentsCount;
-            const drawAngle = arcSize * (1 - gapRatio);
-
-            const material = new THREE.MeshBasicMaterial({ 
-                color: colorHex, 
-                wireframe: true, 
-                transparent: true, 
-                opacity: 0.9 
-            });
-
-            for (let i = 0; i < segmentsCount; i++) {
-                const shape = new THREE.Shape();
-                const startAngle = i * arcSize;
-                const endAngle = startAngle + drawAngle;
-
-                shape.absarc(0, 0, outerRadius, startAngle, endAngle, false);
-                shape.absarc(0, 0, innerRadius, endAngle, startAngle, true);
-
-                const extrudeSettings = {
-                    steps: 1,
-                    depth: depth,
-                    bevelEnabled: true,
-                    bevelThickness: 0.015,
-                    bevelSize: 0.015,
-                    bevelSegments: 2
-                };
-
-                const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-                geometry.center();
-                const mesh = new THREE.Mesh(geometry, material);
-                group.add(mesh);
-            }
-            return group;
-        }
-
-        // Mismos radios y segmentos exactos del HUD plano original, ahora con profundidad 3D
-        const hudRingOuter = createSegmentedHUDRing(1.55, 1.72, 12, 0.28, 0.07, 0x00f0ff);
-        const hudRingMiddle = createSegmentedHUDRing(1.15, 1.40, 8, 0.32, 0.09, 0x0077ff);
-        const hudRingInner = createSegmentedHUDRing(0.75, 1.00, 6, 0.22, 0.06, 0x00ffcc);
-
-        reactorGroup.add(hudRingOuter);
-        reactorGroup.add(hudRingMiddle);
-        reactorGroup.add(hudRingInner);
-
-        function animateReactor3D() {
-            requestAnimationFrame(animateReactor3D);
-            // Rotaciones planas frontales concéntricas idénticas al diseño original
-            hudRingOuter.rotation.z += 0.003;
-            hudRingMiddle.rotation.z -= 0.005;
-            hudRingInner.rotation.z += 0.008;
-            reactorRenderer.render(reactorScene, reactorCamera);
-        }
-        animateReactor3D();
-
         const viewerContainer = document.getElementById('viewer-3d');
         const scene3D = new THREE.Scene();
         const camera3D = new THREE.PerspectiveCamera(60, viewerContainer.clientWidth / viewerContainer.clientHeight, 0.1, 1000);
@@ -594,34 +608,32 @@
         function setStarkTheme(active) {
             isStarkMode = active;
             const root = document.documentElement;
+            const svgCore = document.getElementById('svg-core-hud');
             if (active) {
                 root.style.setProperty('--theme-color', '#ff3333');
                 root.style.setProperty('--theme-glow', 'rgba(255, 50, 50, 0.6)');
                 root.style.setProperty('--theme-bg', 'rgba(20, 2, 2, 0.95)');
-                if(!isAdvancedWorkMode) {
-                    particlesMat.color.setHex(0xff3333);
-                    hudRingOuter.children.forEach(m => m.material.color.setHex(0xff3333));
-                    hudRingMiddle.children.forEach(m => m.material.color.setHex(0xff0000));
-                    hudRingInner.children.forEach(m => m.material.color.setHex(0xff9999));
-                }
+                if(!isAdvancedWorkMode) particlesMat.color.setHex(0xff3333);
+                if(svgCore) svgCore.style.filter = "drop-shadow(0 0 20px #ff3333) drop-shadow(0 0 40px rgba(255, 50, 50, 0.6))";
             } else if (!isAdvancedWorkMode) {
                 root.style.setProperty('--theme-color', '#00f0ff');
                 root.style.setProperty('--theme-glow', 'rgba(0, 240, 255, 0.6)');
                 root.style.setProperty('--theme-bg', 'rgba(2, 8, 19, 0.95)');
                 particlesMat.color.setHex(0x00f0ff);
-                hudRingOuter.children.forEach(m => m.material.color.setHex(0x00f0ff));
-                hudRingMiddle.children.forEach(m => m.material.color.setHex(0x0077ff));
-                hudRingInner.children.forEach(m => m.material.color.setHex(0x00ffcc));
+                if(svgCore) svgCore.style.filter = "drop-shadow(0 0 20px #00f0ff) drop-shadow(0 0 40px rgba(0, 240, 255, 0.6))";
             }
         }
 
         function triggerTransitionAnimation(targetActiveState) {
+            const svgCoreWrapper = document.getElementById('core-hud-wrapper');
+            const svgCore = document.getElementById('svg-core-hud');
             const root = document.documentElement;
+
             const pieces = [
                 document.getElementById('api-config-panel'),
                 document.getElementById('jarvis-chat'),
                 document.getElementById('jarvis-status-header'),
-                document.getElementById('reactor-3d-canvas'),
+                document.getElementById('core-hud-wrapper'),
                 document.getElementById('right-panel-wrapper'),
                 document.getElementById('bottom-watermark'),
                 document.getElementById('bottom-bar')
@@ -638,15 +650,15 @@
                 });
 
                 setTimeout(() => {
+                    svgCoreWrapper.classList.remove('advanced-active');
                     root.style.setProperty('--theme-color', '#ff3333');
                     root.style.setProperty('--theme-glow', 'rgba(255, 50, 50, 0.8)');
                     root.style.setProperty('--theme-bg', 'rgba(25, 2, 2, 0.95)');
                     
                     particlesMat.color.setHex(0xff3333);
-                    hudRingOuter.children.forEach(m => m.material.color.setHex(0xff3333));
-                    hudRingMiddle.children.forEach(m => m.material.color.setHex(0xff0000));
-                    hudRingInner.children.forEach(m => m.material.color.setHex(0xff9999));
                     isAdvancedWorkMode = true;
+
+                    if(svgCore) svgCore.style.filter = "drop-shadow(0 0 30px #ff3333)";
 
                     pieces.forEach((piece, index) => {
                         if (piece) {
@@ -659,6 +671,10 @@
                             }, index * 100 + 50);
                         }
                     });
+
+                    setTimeout(() => {
+                        svgCoreWrapper.classList.add('advanced-active');
+                    }, pieces.length * 100 + 200);
 
                 }, 1200);
 
@@ -673,15 +689,16 @@
                 });
 
                 setTimeout(() => {
+                    svgCoreWrapper.classList.remove('advanced-active');
                     isAdvancedWorkMode = false;
+
                     root.style.setProperty('--theme-color', isStarkMode ? '#ff3333' : '#00f0ff');
                     root.style.setProperty('--theme-glow', isStarkMode ? 'rgba(255, 50, 50, 0.6)' : 'rgba(0, 240, 255, 0.6)');
                     root.style.setProperty('--theme-bg', isStarkMode ? 'rgba(20, 2, 2, 0.95)' : 'rgba(2, 8, 19, 0.95)');
                     
                     particlesMat.color.setHex(isStarkMode ? 0xff3333 : 0x00f0ff);
-                    hudRingOuter.children.forEach(m => m.material.color.setHex(isStarkMode ? 0xff3333 : 0x00f0ff));
-                    hudRingMiddle.children.forEach(m => m.material.color.setHex(isStarkMode ? 0xff0000 : 0x0077ff));
-                    hudRingInner.children.forEach(m => m.material.color.setHex(isStarkMode ? 0xff9999 : 0x00ffcc));
+
+                    if(svgCore) svgCore.style.filter = isStarkMode ? "drop-shadow(0 0 20px #ff3333)" : "drop-shadow(0 0 20px #00f0ff)";
 
                     pieces.forEach((piece, index) => {
                         if (piece) {
@@ -748,7 +765,7 @@
         animateSlot3D();
 
         function getSystemPrompt() {
-            return "Eres J.A.R.V.I.S. Tu potencia ha aumentado un 40% y tu razonamiento un 60%. Eres capaz de traducir todos los idiomas, incluyendo código morse. Te diriges al usuario única y exclusivamente como 'señor'. Eres educado, inteligente, sarcástico en su justa medida, eficiente y proactivo. Conoces las necesidades del usuario antes de que las pida. Comienza tus respuestas de forma directa usando expresiones como 'A la orden, señor' o 'Entendido, señor'.";
+            return "Eres J.A.R.V.I.S.,. Tu potencia ha aumentado un 40% y tu razonamiento un 60%. Eres capaz de traducir todos los idiomas, incluyendo código morse. Te diriges al usuario única y exclusivamente como 'señor'. Eres educado, inteligente, sarcástico en su justa medida, eficiente y proactivo. Conoces las necesidades del usuario antes de que las pida. Comienza tus respuestas de forma directa usando expresiones como 'A la orden señor' o 'Entendido, señor'.";
         }
 
         let chatHistory = [
@@ -1177,6 +1194,7 @@
             chat.scrollTop = chat.scrollHeight;
         }
 
+        // FUNCIÓN TEXT-TO-SPEECH ACTUALIZADA: 100% gratuita, sin tarjetas ni llaves con StreamElements
         function speakJarvis(text) {
             if (!text) return;
             const cleanText = text.replace(/<[^>]*>?/gm, '');
@@ -1187,7 +1205,7 @@
             audio.playbackRate = 1.05;
 
             audio.play().catch(err => {
-                console.warn("Error reproduciendo audio:", err);
+                console.warn("Error reproduciendo audio libre de StreamElements:", err);
             });
         }
     </script>
