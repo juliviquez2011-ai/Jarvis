@@ -36,7 +36,6 @@
             z-index: 1;
         }
 
-        /* Lienzo exacto para el Reactor HUD 3D en la misma posición */
         #reactor-3d-canvas {
             position: absolute;
             top: 50%;
@@ -379,7 +378,6 @@
 
     <canvas id="bg-canvas"></canvas>
     
-    <!-- Lienzo 3D con los anillos segmentados originales extruidos en relieve -->
     <canvas id="reactor-3d-canvas" class="hud-piece"></canvas>
     <div id="core-label-fixed" class="hud-piece">JARVIS</div>
 
@@ -478,7 +476,6 @@
         setInterval(actualizarReloj, 1000);
         actualizarReloj();
 
-        // 1. Fondo de Estrellas/Partículas
         const canvas = document.getElementById('bg-canvas');
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -512,7 +509,7 @@
         }
         animateBg();
 
-        // 2. REACTOR HUD 3D CON ANILLOS CORTADOS Y SEGMENTADOS ORIGINALES (CON RELIEVE Y PROFUNDIDAD)
+        // Reactor HUD 3D: Anillos segmentados originales idénticos con relieve tridimensional real
         const reactorCanvas = document.getElementById('reactor-3d-canvas');
         const reactorScene = new THREE.Scene();
         const reactorCamera = new THREE.PerspectiveCamera(50, reactorCanvas.clientWidth / reactorCanvas.clientHeight, 0.1, 1000);
@@ -524,7 +521,6 @@
         const reactorGroup = new THREE.Group();
         reactorScene.add(reactorGroup);
 
-        // Función para crear anillos segmentados / cortados exactos con extrusión 3D (profundidad en relieve)
         function createSegmentedHUDRing(innerRadius, outerRadius, segmentsCount, gapRatio, depth, colorHex) {
             const group = new THREE.Group();
             const arcSize = (Math.PI * 2) / segmentsCount;
@@ -534,7 +530,7 @@
                 color: colorHex, 
                 wireframe: true, 
                 transparent: true, 
-                opacity: 0.85 
+                opacity: 0.9 
             });
 
             for (let i = 0; i < segmentsCount; i++) {
@@ -542,7 +538,6 @@
                 const startAngle = i * arcSize;
                 const endAngle = startAngle + drawAngle;
 
-                // Dibujar arco cortado 2D
                 shape.absarc(0, 0, outerRadius, startAngle, endAngle, false);
                 shape.absarc(0, 0, innerRadius, endAngle, startAngle, true);
 
@@ -550,23 +545,23 @@
                     steps: 1,
                     depth: depth,
                     bevelEnabled: true,
-                    bevelThickness: 0.01,
-                    bevelSize: 0.01,
+                    bevelThickness: 0.015,
+                    bevelSize: 0.015,
                     bevelSegments: 2
                 };
 
                 const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-                geometry.center(); // Centrar origen para rotaciones perfectas
+                geometry.center();
                 const mesh = new THREE.Mesh(geometry, material);
                 group.add(mesh);
             }
             return group;
         }
 
-        // Construir los anillos respetando exactamente el diseño original segmentado con volumen 3D
-        const hudRingOuter = createSegmentedHUDRing(1.6, 1.75, 12, 0.25, 0.06, 0x00f0ff);
-        const hudRingMiddle = createSegmentedHUDRing(1.2, 1.45, 8, 0.35, 0.08, 0x0077ff);
-        const hudRingInner = createSegmentedHUDRing(0.8, 1.05, 6, 0.2, 0.05, 0x00ffcc);
+        // Mismos radios y segmentos exactos del HUD plano original, ahora con profundidad 3D
+        const hudRingOuter = createSegmentedHUDRing(1.55, 1.72, 12, 0.28, 0.07, 0x00f0ff);
+        const hudRingMiddle = createSegmentedHUDRing(1.15, 1.40, 8, 0.32, 0.09, 0x0077ff);
+        const hudRingInner = createSegmentedHUDRing(0.75, 1.00, 6, 0.22, 0.06, 0x00ffcc);
 
         reactorGroup.add(hudRingOuter);
         reactorGroup.add(hudRingMiddle);
@@ -574,7 +569,7 @@
 
         function animateReactor3D() {
             requestAnimationFrame(animateReactor3D);
-            // Rotaciones planas frontales concéntricas idénticas a la interfaz original pero con profundidad 3D
+            // Rotaciones planas frontales concéntricas idénticas al diseño original
             hudRingOuter.rotation.z += 0.003;
             hudRingMiddle.rotation.z -= 0.005;
             hudRingInner.rotation.z += 0.008;
@@ -582,7 +577,6 @@
         }
         animateReactor3D();
 
-        // 3. Visor 3D Secundario (Slot superior derecho)
         const viewerContainer = document.getElementById('viewer-3d');
         const scene3D = new THREE.Scene();
         const camera3D = new THREE.PerspectiveCamera(60, viewerContainer.clientWidth / viewerContainer.clientHeight, 0.1, 1000);
@@ -1193,7 +1187,7 @@
             audio.playbackRate = 1.05;
 
             audio.play().catch(err => {
-                console.warn("Error reproduciendo audio libre de StreamElements:", err);
+                console.warn("Error reproduciendo audio:", err);
             });
         }
     </script>
