@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>J.A.R.V.I.S. OS - Reactor Core Cinematic</title>
+    <title>J.A.R.V.I.S. OS - Volumetric 3D Reactor Core</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; }
@@ -13,13 +13,6 @@
             --theme-color: #00f0ff;
             --theme-glow: rgba(0, 240, 255, 0.6);
             --theme-bg: rgba(2, 8, 19, 0.95);
-            
-            /* Colores del núcleo central estilo reactor naranja/dorado detallado */
-            --core-orange-1: #ff8800;
-            --core-orange-2: #ffaa33;
-            --core-amber: #ff5500;
-            --core-glow: rgba(255, 136, 0, 0.85);
-            --dark-core-bg: #0d0400;
         }
 
         #hud-container {
@@ -275,7 +268,8 @@
         }
         .model-link-btn:hover { background: var(--theme-color); color: #000; }
 
-        #core-hud-wrapper {
+        /* Contenedor del Núcleo Central 3D Volumétrico (Estilo IMG2 / IMG5) */
+        #core-3d-wrapper {
             position: absolute;
             top: 50%;
             left: 50%;
@@ -283,67 +277,19 @@
             width: 580px;
             height: 580px;
             pointer-events: none;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             z-index: 2;
-            transform-style: preserve-3d;
         }
 
-        #svg-core-hud {
+        #core-canvas-3d {
             width: 100%;
             height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-            transform-origin: center;
-            /* Filtro con brillo naranja idéntico a las referencias */
-            filter: drop-shadow(0 0 30px var(--core-orange-1)) drop-shadow(0 0 60px var(--core-glow));
+            display: block;
+            filter: drop-shadow(0 0 30px rgba(255, 136, 0, 0.85)) drop-shadow(0 0 60px rgba(255, 85, 0, 0.6));
             transition: filter 0.5s ease;
         }
 
-        /* Animaciones continuas de los anillos del núcleo */
-        .rot-clockwise { transform-origin: 310px 310px; animation: spinClockwise 40s linear infinite; }
-        .rot-counter { transform-origin: 310px 310px; animation: spinCounter 30s linear infinite; }
-        .rot-fast { transform-origin: 310px 310px; animation: spinClockwise 18s linear infinite; }
-        .rot-reverse-fast { transform-origin: 310px 310px; animation: spinCounter 14s linear infinite; }
-        .rot-extra-ring { transform-origin: 310px 310px; animation: spinClockwise 25s linear infinite; }
-        .rot-inner-turb { transform-origin: 310px 310px; animation: spinCounter 8s linear infinite; }
-
-        /* Aceleración en Modo Avanzado (Rojo Brillante total) */
-        .advanced-active .rot-clockwise { animation: spinClockwise 5s linear infinite !important; }
-        .advanced-active .rot-counter { animation: spinCounter 4s linear infinite !important; }
-        .advanced-active .rot-fast { animation: spinClockwise 2.5s linear infinite !important; }
-        .advanced-active .rot-reverse-fast { animation: spinCounter 2s linear infinite !important; }
-        .advanced-active .rot-extra-ring { animation: spinClockwise 3s linear infinite !important; }
-        .advanced-active .rot-inner-turb { animation: spinCounter 1.5s linear infinite !important; }
-
-        .advanced-active #svg-core-hud {
+        .advanced-active #core-canvas-3d {
             filter: drop-shadow(0 0 35px #ff1100) drop-shadow(0 0 70px #ff3300) !important;
-        }
-        .advanced-active .core-ring-elem {
-            stroke: #ff3300 !important;
-        }
-        .advanced-active .core-ring-elem-bright {
-            stroke: #ff7744 !important;
-        }
-        .advanced-active #core-label-fixed {
-            fill: #ff3333 !important;
-            filter: drop-shadow(0 0 20px #ff3333) !important;
-        }
-
-        @keyframes spinClockwise { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes spinCounter { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
-
-        #core-label-fixed {
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 24px;
-            font-weight: bold;
-            letter-spacing: 4px;
-            fill: var(--core-orange-2);
-            filter: drop-shadow(0 0 6px var(--core-orange-1)) drop-shadow(0 0 16px var(--core-glow));
-            text-anchor: middle;
-            dominant-baseline: central;
         }
 
         #bottom-watermark {
@@ -430,48 +376,9 @@
 
     <canvas id="bg-canvas"></canvas>
     
-    <!-- Núcleo Central Detallado Estilo Reactor Naranja/Dorado (Idéntico a IMG3/IMG5) -->
-    <div id="core-hud-wrapper" class="hud-piece">
-        <svg id="svg-core-hud" viewBox="0 0 620 620">
-            <!-- Anillo Exterior Denso y Segmentado -->
-            <g class="rot-clockwise">
-                <circle cx="310" cy="310" r="295" fill="none" stroke="var(--core-orange-1)" stroke-width="4" stroke-dasharray="15 8, 30 12, 8 8, 45 15" opacity="0.9"/>
-                <circle cx="310" cy="310" r="282" fill="none" stroke="var(--core-orange-2)" stroke-width="2" stroke-dasharray="40 20, 10 10, 5 15" opacity="0.8"/>
-            </g>
-
-            <!-- Capa de Datos y Bloques Complejos en Rotación Inversa -->
-            <g class="rot-counter">
-                <circle class="core-ring-elem" cx="310" cy="310" r="265" fill="none" stroke="var(--core-orange-1)" stroke-width="9" stroke-dasharray="50 25, 15 15, 80 30, 20 10" opacity="0.95"/>
-                <circle class="core-ring-elem-bright" cx="310" cy="310" r="248" fill="none" stroke="var(--core-orange-2)" stroke-width="2.5" stroke-dasharray="12 12, 4 20, 35 15" opacity="0.9"/>
-            </g>
-
-            <!-- Anillo Intermedio Dinámico -->
-            <g class="rot-extra-ring">
-                <circle class="core-ring-elem" cx="310" cy="310" r="230" fill="none" stroke="var(--core-orange-1)" stroke-width="6" stroke-dasharray="25 35, 10 10, 45 20, 5 15" opacity="0.92"/>
-                <!-- Pequeños bloques de marcado cardinal -->
-                <rect x="306" y="70" width="8" height="14" fill="var(--core-orange-2)" opacity="0.95"/>
-                <rect x="306" y="536" width="8" height="14" fill="var(--core-orange-2)" opacity="0.95"/>
-                <rect x="70" y="306" width="14" height="8" fill="var(--core-orange-2)" opacity="0.95"/>
-                <rect x="536" y="306" width="14" height="8" fill="var(--core-orange-2)" opacity="0.95"/>
-            </g>
-
-            <!-- Anillo Interno de Alta Velocidad y Segmentos Gruesos -->
-            <g class="rot-fast">
-                <circle class="core-ring-elem" cx="310" cy="310" r="202" fill="none" stroke="var(--core-orange-2)" stroke-width="16" stroke-dasharray="18 24, 6 8, 35 18, 50 20" opacity="0.9"/>
-                <circle class="core-ring-elem-bright" cx="310" cy="310" r="178" fill="none" stroke="var(--core-orange-1)" stroke-width="3" stroke-dasharray="6 12, 18 6" opacity="0.98"/>
-            </g>
-
-            <!-- Turbina Central Interna / Reactor -->
-            <g class="rot-inner-turb">
-                <circle class="core-ring-elem" cx="310" cy="310" r="152" fill="none" stroke="var(--core-orange-1)" stroke-width="14" stroke-dasharray="60 30, 15 15, 30 15, 45 25" opacity="0.85"/>
-                <circle class="core-ring-elem-bright" cx="310" cy="310" r="128" fill="none" stroke="var(--core-orange-2)" stroke-width="2" stroke-dasharray="8 8" opacity="0.95"/>
-            </g>
-
-            <!-- Centro del Reactor y Etiqueta -->
-            <circle id="core-center-bg" cx="310" cy="310" r="105" fill="var(--dark-core-bg)" stroke="var(--core-orange-2)" stroke-width="4" opacity="0.98"/>
-            <circle cx="310" cy="310" r="92" fill="none" stroke="var(--core-orange-1)" stroke-width="1.5" stroke-dasharray="4 8" opacity="0.8"/>
-            <text x="310" y="312" id="core-label-fixed" text-anchor="middle" dominant-baseline="central">JARVIS</text>
-        </svg>
+    <!-- Núcleo Central 3D Volumétrico en tiempo real (Estilo IMG2 / IMG5) -->
+    <div id="core-3d-wrapper" class="hud-piece">
+        <canvas id="core-canvas-3d"></canvas>
     </div>
 
     <div id="hud-container">
@@ -504,7 +411,7 @@
         </div>
 
         <div id="jarvis-chat" class="interactive hud-piece">
-            <div class="msg jarvis" id="welcome-msg">JARVIS: Reactor central en línea. A su orden, señor.</div>
+            <div class="msg jarvis" id="welcome-msg">JARVIS: Reactor central 3D en línea. A su orden, señor.</div>
         </div>
 
         <div id="right-panel-wrapper" class="interactive hud-piece">
@@ -569,6 +476,7 @@
         setInterval(actualizarReloj, 1000);
         actualizarReloj();
 
+        // 1. Fondo Estelar
         const canvas = document.getElementById('bg-canvas');
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -587,7 +495,6 @@
             positions[i+2] = (Math.random() - 0.5) * 20;
         }
         particlesGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        
         const particlesMat = new THREE.PointsMaterial({ size: 0.065, color: 0x00f0ff, transparent: true, opacity: 0.5 });
         const particleSystem = new THREE.Points(particlesGeo, particlesMat);
         scene.add(particleSystem);
@@ -602,6 +509,76 @@
         }
         animateBg();
 
+        // 2. NÚCLEO CENTRAL 3D VOLUMÉTRICO (ESTILO HOLOGRÁFICO AVANZADO IMG2/IMG5)
+        const coreContainer = document.getElementById('core-canvas-3d');
+        const sceneCore = new THREE.Scene();
+        const cameraCore = new THREE.PerspectiveCamera(50, coreContainer.clientWidth / coreContainer.clientHeight, 0.1, 1000);
+        const rendererCore = new THREE.WebGLRenderer({ canvas: coreContainer, alpha: true, antialias: true });
+        rendererCore.setSize(coreContainer.clientWidth, coreContainer.clientHeight);
+        rendererCore.setPixelRatio(window.devicePixelRatio);
+        cameraCore.position.z = 4.8;
+
+        const coreGroup = new THREE.Group();
+        sceneCore.add(coreGroup);
+
+        // Materiales Holográficos Naranja/Dorado
+        const matOrangeWire = new THREE.MeshBasicMaterial({ color: 0xff8800, wireframe: true, transparent: true, opacity: 0.75 });
+        const matGoldWire = new THREE.MeshBasicMaterial({ color: 0xffaa33, wireframe: true, transparent: true, opacity: 0.9 });
+        const matRedWire = new THREE.MeshBasicMaterial({ color: 0xff2200, wireframe: true, transparent: true, opacity: 0.85 });
+
+        // Anillos concéntricos 3D y Toroide de alta complejidad
+        const ring1 = new THREE.Mesh(new THREE.TorusGeometry(1.8, 0.04, 16, 100), matOrangeWire);
+        const ring2 = new THREE.Mesh(new THREE.TorusGeometry(1.5, 0.03, 16, 80), matGoldWire);
+        const ring3 = new THREE.Mesh(new THREE.TorusGeometry(1.2, 0.05, 16, 60), matOrangeWire);
+        const innerSphere = new THREE.Mesh(new THREE.IcosahedronGeometry(0.8, 2), matGoldWire);
+        
+        coreGroup.add(ring1);
+        coreGroup.add(ring2);
+        coreGroup.add(ring3);
+        coreGroup.add(innerSphere);
+
+        // Nube de partículas densas orbitando el núcleo
+        const coreParticlesGeo = new THREE.BufferGeometry();
+        const coreCount = 600;
+        const corePos = new Float32Array(coreCount * 3);
+        for(let i=0; i<coreCount*3; i+=3) {
+            const u = Math.random();
+            const v = Math.random();
+            const theta = u * 2.0 * Math.PI;
+            const phi = Math.acos(2.0 * v - 1.0);
+            const r = 0.9 + Math.random() * 0.9;
+            corePos[i] = r * Math.sin(phi) * Math.cos(theta);
+            corePos[i+1] = r * Math.sin(phi) * Math.sin(theta);
+            corePos[i+2] = r * Math.cos(phi);
+        }
+        coreParticlesGeo.setAttribute('position', new THREE.BufferAttribute(corePos, 3));
+        const coreParticlesMat = new THREE.PointsMaterial({ size: 0.035, color: 0xffaa33, transparent: true, opacity: 0.8 });
+        const coreParticleSystem = new THREE.Points(coreParticlesGeo, coreParticlesMat);
+        coreGroup.add(coreParticleSystem);
+
+        function animateCore3D() {
+            requestAnimationFrame(animateCore3D);
+            const speedMult = isAdvancedWorkMode ? 3.5 : 1.0;
+
+            ring1.rotation.x += 0.008 * speedMult;
+            ring1.rotation.y += 0.012 * speedMult;
+
+            ring2.rotation.y -= 0.01 * speedMult;
+            ring2.rotation.z += 0.015 * speedMult;
+
+            ring3.rotation.x -= 0.015 * speedMult;
+            ring3.rotation.y -= 0.008 * speedMult;
+
+            innerSphere.rotation.y += 0.02 * speedMult;
+            innerSphere.rotation.z += 0.01 * speedMult;
+
+            coreParticleSystem.rotation.y -= 0.005 * speedMult;
+
+            rendererCore.render(sceneCore, cameraCore);
+        }
+        animateCore3D();
+
+        // 3. Slot 3D Secundario
         const viewerContainer = document.getElementById('viewer-3d');
         const scene3D = new THREE.Scene();
         const camera3D = new THREE.PerspectiveCamera(60, viewerContainer.clientWidth / viewerContainer.clientHeight, 0.1, 1000);
@@ -633,14 +610,14 @@
         }
 
         function triggerTransitionAnimation(targetActiveState) {
-            const svgCoreWrapper = document.getElementById('core-hud-wrapper');
+            const core3DWrapper = document.getElementById('core-3d-wrapper');
             const root = document.documentElement;
 
             const pieces = [
                 document.getElementById('api-config-panel'),
                 document.getElementById('jarvis-chat'),
                 document.getElementById('jarvis-status-header'),
-                document.getElementById('core-hud-wrapper'),
+                core3DWrapper,
                 document.getElementById('right-panel-wrapper'),
                 document.getElementById('bottom-watermark'),
                 document.getElementById('bottom-bar')
@@ -657,11 +634,15 @@
                 });
 
                 setTimeout(() => {
-                    svgCoreWrapper.classList.remove('advanced-active');
                     root.style.setProperty('--theme-color', '#ff3333');
                     root.style.setProperty('--theme-glow', 'rgba(255, 50, 50, 0.8)');
                     root.style.setProperty('--theme-bg', 'rgba(25, 2, 2, 0.95)');
                     
+                    // Cambiar núcleo a rojo brillante total en Modo Avanzado
+                    matOrangeWire.color.setHex(0xff1100);
+                    matGoldWire.color.setHex(0xff4400);
+                    coreParticlesMat.color.setHex(0xff2200);
+
                     particlesMat.color.setHex(0xff3333);
                     isAdvancedWorkMode = true;
 
@@ -676,11 +657,6 @@
                             }, index * 100 + 50);
                         }
                     });
-
-                    setTimeout(() => {
-                        svgCoreWrapper.classList.add('advanced-active');
-                    }, pieces.length * 100 + 200);
-
                 }, 1200);
 
             } else {
@@ -694,13 +670,16 @@
                 });
 
                 setTimeout(() => {
-                    svgCoreWrapper.classList.remove('advanced-active');
                     isAdvancedWorkMode = false;
-
                     root.style.setProperty('--theme-color', isStarkMode ? '#ff3333' : '#00f0ff');
                     root.style.setProperty('--theme-glow', isStarkMode ? 'rgba(255, 50, 50, 0.6)' : 'rgba(0, 240, 255, 0.6)');
                     root.style.setProperty('--theme-bg', isStarkMode ? 'rgba(20, 2, 2, 0.95)' : 'rgba(2, 8, 19, 0.95)');
                     
+                    // Restaurar colores originales naranja/dorado
+                    matOrangeWire.color.setHex(0xff8800);
+                    matGoldWire.color.setHex(0xffaa33);
+                    coreParticlesMat.color.setHex(0xffaa33);
+
                     particlesMat.color.setHex(isStarkMode ? 0xff3333 : 0x00f0ff);
 
                     pieces.forEach((piece, index) => {
@@ -714,7 +693,6 @@
                             }, index * 100 + 50);
                         }
                     });
-
                 }, 1200);
             }
         }
