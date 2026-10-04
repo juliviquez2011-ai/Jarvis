@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>J.A.R.V.I.S. OS - Neural Core & Cyan HUD</title>
+    <title>J.A.R.V.I.S. OS - Hyper Neural Core</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; }
@@ -13,9 +13,9 @@
             --theme-color: #00eeff;
             --theme-glow: rgba(0, 238, 255, 0.5);
             --theme-bg: rgba(2, 10, 18, 0.92);
-            --core-color: #ff8800;
         }
 
+        /* Contenedor exclusivo para la interfaz que se desplaza */
         #hud-container {
             position: relative;
             width: 100vw;
@@ -27,9 +27,9 @@
             padding: 20px;
             pointer-events: none;
             transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1), filter 1.2s ease;
+            z-index: 10;
         }
 
-        /* Animación de barrido lateral para modo avanzado */
         .hud-transition-left {
             transform: translateX(-100vw) scale(0.9) !important;
             filter: hue-rotate(140deg) brightness(1.5);
@@ -53,12 +53,7 @@
 
         .interactive {
             pointer-events: auto;
-            z-index: 10;
-        }
-
-        .hud-piece {
-            transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1), opacity 1.2s ease !important;
-            will-change: transform, opacity;
+            z-index: 20;
         }
 
         #jarvis-status-header {
@@ -73,11 +68,9 @@
             border: 1px solid var(--theme-glow);
             padding: 6px 22px;
             border-radius: 20px;
-            font-family: monospace;
             color: var(--theme-color);
             font-size: 14px;
             backdrop-filter: blur(5px);
-            z-index: 100;
             box-shadow: 0 0 15px var(--theme-glow);
         }
 
@@ -94,7 +87,6 @@
             flex-direction: column;
             gap: 8px;
             backdrop-filter: blur(5px);
-            z-index: 100;
         }
         .api-row {
             display: flex;
@@ -151,7 +143,6 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
-            z-index: 100;
         }
 
         #top-right-slot {
@@ -283,7 +274,7 @@
         }
         .model-link-btn:hover { background: var(--theme-color); color: #000; }
 
-        /* CONTENEDOR CENTRAL: Sin borde naranja cuadrado externo, centrado en el núcleo neuronal naranja */
+        /* NÚCLEO CENTRAL 3D FIJO (Inmune al barrido de la HUD) */
         #core-3d-wrapper {
             position: absolute;
             top: 50%;
@@ -292,7 +283,7 @@
             width: 720px;
             height: 720px;
             pointer-events: none;
-            z-index: 2;
+            z-index: 2; /* Por debajo de la HUD, totalmente estático */
             background: transparent;
             overflow: hidden;
             display: flex;
@@ -300,7 +291,6 @@
             justify-content: center;
         }
 
-        /* Paneles HUD superior e inferior sutiles en tono celeste */
         #core-3d-wrapper::before {
             content: '';
             position: absolute;
@@ -343,7 +333,6 @@
             letter-spacing: 3px;
             color: var(--theme-color);
             text-shadow: 0 0 10px var(--theme-glow);
-            z-index: 5;
             pointer-events: none;
             font-weight: bold;
         }
@@ -412,20 +401,20 @@
 </head>
 <body>
 
-    <div id="jarvis-status-header" class="interactive hud-piece">
+    <div id="jarvis-status-header" class="interactive">
         <div id="header-time">--:--:--</div>
     </div>
 
     <canvas id="bg-canvas"></canvas>
     
-    <!-- Núcleo Central 3D: Red Neuronal y Anillos Naranjas -->
-    <div id="core-3d-wrapper" class="hud-piece">
+    <!-- Núcleo Central 3D Fijo (Red Neuronal Masiva e Inmune al Barrido) -->
+    <div id="core-3d-wrapper">
         <canvas id="core-canvas-3d"></canvas>
     </div>
 
     <div id="hud-container">
         
-        <div id="api-config-panel" class="interactive hud-piece">
+        <div id="api-config-panel" class="interactive">
             <div class="api-row">
                 <span style="width: 55px;">Groq:</span>
                 <input type="password" id="groq-key-input" placeholder="gsk_..." onchange="saveKeys()">
@@ -441,7 +430,7 @@
             <button class="hud-btn" style="padding: 3px 8px; font-size: 10px; margin-left: 0;" onclick="saveKeys()">Guardar Credencial</button>
         </div>
 
-        <button id="settings-toggle-btn" class="hud-btn interactive hud-piece" style="padding: 8px 12px; font-size: 12px;" onclick="toggleSettingsMenu()">⚙️ Config</button>
+        <button id="settings-toggle-btn" class="hud-btn interactive" style="padding: 8px 12px; font-size: 12px;" onclick="toggleSettingsMenu()">⚙️ Config</button>
 
         <div id="settings-modal" class="interactive">
             <h3>CONFIGURACIÓN</h3>
@@ -452,11 +441,11 @@
             <button class="hud-btn" style="margin-left: 0; margin-top: 2px; text-align: center; font-size: 10px; width: 100%;" onclick="toggleSettingsMenu()">Cerrar</button>
         </div>
 
-        <div id="jarvis-chat" class="interactive hud-piece">
-            <div class="msg jarvis" id="welcome-msg">JARVIS: Red neuronal y HUD celeste sincronizados, señor. A su orden.</div>
+        <div id="jarvis-chat" class="interactive">
+            <div class="msg jarvis" id="welcome-msg">JARVIS: Sistemas activos. A su orden, señor.</div>
         </div>
 
-        <div id="right-panel-wrapper" class="interactive hud-piece">
+        <div id="right-panel-wrapper" class="interactive">
             <div id="top-right-slot">
                 <div class="slot-title">SLOT 3D & COMPILADOR CAD</div>
                 <div id="viewer-3d"></div>
@@ -497,9 +486,9 @@
             </div>
         </div>
 
-        <div id="bottom-watermark" class="hud-piece">J.A.R.V.I.S.</div>
+        <div id="bottom-watermark">J.A.R.V.I.S.</div>
 
-        <div id="bottom-bar" class="hud-piece">
+        <div id="bottom-bar">
             <input type="file" id="image-upload" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
             <button class="hud-btn" onclick="document.getElementById('image-upload').click()" title="Analizar imagen, señor">📷</button>
             
@@ -518,7 +507,7 @@
         setInterval(actualizarReloj, 1000);
         actualizarReloj();
 
-        // 1. Fondo Estelar Sutil Celeste
+        // 1. Fondo Estelar Sutil
         const canvas = document.getElementById('bg-canvas');
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -548,7 +537,7 @@
         }
         animateBg();
 
-        // 2. NÚCLEO CENTRAL 3D: VERDADERA RED NEURONAL Y ANILLOS NARANJAS
+        // 2. NÚCLEO CENTRAL 3D: RED NEURONAL MASIVA DE MILLONES DE PUNTITOS Y ANILLOS
         const coreContainer = document.getElementById('core-canvas-3d');
         const sceneCore = new THREE.Scene();
         const cameraCore = new THREE.PerspectiveCamera(45, coreContainer.clientWidth / coreContainer.clientHeight, 0.1, 1000);
@@ -564,7 +553,7 @@
         const matGoldBright = new THREE.MeshBasicMaterial({ color: 0xffaa11, wireframe: true, transparent: true, opacity: 0.95 });
         const matDeepAmber = new THREE.MeshBasicMaterial({ color: 0xff4400, wireframe: true, transparent: true, opacity: 0.85 });
 
-        // Anillos exteriores naranjas idénticos
+        // Anillos exteriores naranjas
         const ringOuterGroup = new THREE.Group();
         for (let i = 0; i < 12; i++) {
             const segment = new THREE.Mesh(new THREE.TorusGeometry(1.85, 0.02, 16, 40, Math.PI * 0.35), matOrangeGlow);
@@ -583,49 +572,52 @@
         ringTilted2.rotation.y = Math.PI * 0.4;
         coreGroup.add(ringTilted2);
 
-        // VERDADERA RED NEURONAL CENTRAL (Nodos interconectados con líneas sinápticas dinámicas)
-        const neuronNodeCount = 75;
+        // RED NEURONAL CON PUNTITOS ULTRA FINOS Y CANTIDAD MASIVA (2500 nodos con alta densidad visual)
+        const neuronNodeCount = 2500;
         const neuronPositions = new Float32Array(neuronNodeCount * 3);
-        const neuronNodeMesh = new THREE.InstancedMesh(
-            new THREE.SphereGeometry(0.035, 8, 8),
-            new THREE.MeshBasicMaterial({ color: 0xffaa33 }),
-            neuronNodeCount
-        );
-
-        const dummy = new THREE.Object3D();
         const nodeCoords = [];
+
         for(let i = 0; i < neuronNodeCount; i++) {
             const u = Math.random();
             const v = Math.random();
             const theta = u * 2.0 * Math.PI;
             const phi = Math.acos(2.0 * v - 1.0);
-            const r = 0.2 + Math.random() * 0.85;
+            const r = 0.15 + Math.random() * 0.9;
             
             const x = r * Math.sin(phi) * Math.cos(theta);
             const y = r * Math.sin(phi) * Math.sin(theta);
             const z = r * Math.cos(phi);
 
             nodeCoords.push(new THREE.Vector3(x, y, z));
-            dummy.position.set(x, y, z);
-            dummy.updateMatrix();
-            neuronNodeMesh.setMatrixAt(i, dummy.matrix);
+            neuronPositions[i * 3] = x;
+            neuronPositions[i * 3 + 1] = y;
+            neuronPositions[i * 3 + 2] = z;
         }
-        neuronNodeMesh.instanceMatrix.needsUpdate = true;
-        coreGroup.add(neuronNodeMesh);
 
-        // Líneas sinápticas de la red neuronal
-        const lineGeo = new THREE.BufferGeometry();
+        const neuronGeo = new THREE.BufferGeometry();
+        neuronGeo.setAttribute('position', new THREE.BufferAttribute(neuronPositions, 3));
+        const neuronMat = new THREE.PointsMaterial({
+            size: 0.015,
+            color: 0xffaa22,
+            transparent: true,
+            opacity: 0.8
+        });
+        const neuronPoints = new THREE.Points(neuronGeo, neuronMat);
+        coreGroup.add(neuronPoints);
+
+        // Sinapsis / Líneas neuronales ultra densas conectadas entre nodos cercanos
         const linePositions = [];
-        for(let i = 0; i < nodeCoords.length; i++) {
-            for(let j = i + 1; j < nodeCoords.length; j++) {
-                if(nodeCoords[i].distanceTo(nodeCoords[j]) < 0.55) {
+        for(let i = 0; i < nodeCoords.length; i += 3) { // Optimizador de bucle para alto rendimiento con miles de puntos
+            for(let j = i + 1; j < nodeCoords.length; j += 12) {
+                if(nodeCoords[i].distanceTo(nodeCoords[j]) < 0.35) {
                     linePositions.push(nodeCoords[i].x, nodeCoords[i].y, nodeCoords[i].z);
                     linePositions.push(nodeCoords[j].x, nodeCoords[j].y, nodeCoords[j].z);
                 }
             }
         }
+        const lineGeo = new THREE.BufferGeometry();
         lineGeo.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
-        const lineMat = new THREE.LineBasicMaterial({ color: 0xff6600, transparent: true, opacity: 0.6 });
+        const lineMat = new THREE.LineBasicMaterial({ color: 0xff5500, transparent: true, opacity: 0.35 });
         const neuralNetLines = new THREE.LineSegments(lineGeo, lineMat);
         coreGroup.add(neuralNetLines);
 
@@ -638,8 +630,8 @@
             ringTilted2.rotation.y -= 0.01;
             ringTilted2.rotation.z += 0.007;
 
-            neuronNodeMesh.rotation.y -= 0.006;
-            neuralNetLines.rotation.y -= 0.006;
+            neuronPoints.rotation.y -= 0.003;
+            neuralNetLines.rotation.y -= 0.003;
 
             rendererCore.render(sceneCore, cameraCore);
         }
@@ -704,7 +696,7 @@
         animateSlot3D();
 
         function getSystemPrompt() {
-            return "Eres J.A.R.V.I.S., asistente avanzado de Tony Stark. Eres educado, inteligente, sarcástico en su justa medida, eficiente y proactivo. Te diriges al usuario única y exclusivamente como 'señor'.";
+            return "Eres J.A.R.V.I.S., asistente avanzado de Tony Stark. Directo, sarcástico, altamente eficiente y tecnológico. Nunca digas 'Buenos días' ni uses saludos formales molestos. Responde de manera concisa y lúcida, dirigiéndote al usuario única y exclusivamente como 'señor'.";
         }
 
         let chatHistory = [
@@ -718,7 +710,7 @@
 
         function clearChatHistory() {
             const chat = document.getElementById('jarvis-chat');
-            chat.innerHTML = `<div class="msg jarvis" id="welcome-msg">JARVIS: Memoria depurada, señor. A su orden.</div>`;
+            chat.innerHTML = `<div class="msg jarvis" id="welcome-msg">JARVIS: Memoria depurada, señor.</div>`;
             chatHistory = [{ role: "system", content: getSystemPrompt() }];
         }
 
@@ -734,7 +726,7 @@
             if (ai3dKey) localStorage.setItem('ai3d_api_key', ai3dKey);
             
             chatHistory = [{ role: "system", content: getSystemPrompt() }];
-            addChatMessage("JARVIS: Credenciales de red actualizadas, señor.", "jarvis");
+            addChatMessage("JARVIS: Credenciales actualizadas, señor.", "jarvis");
         }
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -754,7 +746,7 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 currentImageBase64 = e.target.result;
-                addChatMessage(`JARVIS: Imagen "${file.name}" cargada, señor. Indique qué desea que analice.`, "jarvis");
+                addChatMessage(`JARVIS: Imagen "${file.name}" enlazada, señor.`, "jarvis");
                 updateVisorModel('search_mesh');
             };
             reader.readAsDataURL(file);
@@ -766,11 +758,11 @@
             if (!ai3dKey) {
                 return {
                     success: false,
-                    message: "Por favor, configura tu llave de API de Tripo 3D en el panel superior izquierdo, señor."
+                    message: "Falta configurar la llave de API de Tripo 3D en el panel, señor."
                 };
             }
 
-            document.getElementById('cad-code-display').innerText = `// TRIPO 3D - GENERANDO...\nPrompt: "${promptTexto}"\nStatus: [PROCESANDO]`;
+            document.getElementById('cad-code-display').innerText = `// TRIPO 3D - GENERANDO...\nPrompt: "${promptTexto}"`;
             updateVisorModel('search_mesh');
 
             try {
@@ -789,15 +781,15 @@
                 const data = await response.json();
                 if (data && data.data && data.data.task_id) {
                     const taskId = data.data.task_id;
-                    document.getElementById('cad-code-display').innerText = `// TRIPO 3D - ÉXITO\nID: ${taskId}\nStatus: [LISTO]`;
+                    document.getElementById('cad-code-display').innerText = `// TRIPO 3D - ÉXITO\nID: ${taskId}`;
                     return {
                         success: true,
-                        message: `Modelo 3D generado mediante Tripo con éxito, señor. ID: ${taskId}.`
+                        message: `Modelo generado con éxito, señor. ID: ${taskId}.`
                     };
                 }
-                return { success: false, message: "Tripo no devolvió una tarea válida, señor." };
+                return { success: false, message: "Tripo no procesó la tarea, señor." };
             } catch (err) {
-                return { success: false, message: "Error al enlazar con Tripo AI, señor." };
+                return { success: false, message: "Error de enlace con Tripo AI, señor." };
             }
         }
 
@@ -817,7 +809,7 @@
                 const micBtn = document.getElementById('mic-btn');
                 if (micBtn) micBtn.classList.add('listening');
                 const input = document.getElementById('user-input');
-                if (input) input.placeholder = "Escucha continua activa, señor...";
+                if (input) input.placeholder = "Escuchando, señor...";
             };
 
             recognition.onresult = (event) => {
@@ -855,22 +847,17 @@
         }
 
         function toggleSpeechRecognition() {
-            if (!recognition) {
-                alert("Reconocimiento de voz no soportado en este navegador, señor.");
-                return;
-            }
+            if (!recognition) return;
             if (isListening) {
                 shouldKeepListening = false;
                 recognition.stop();
                 stopListeningState();
-                addChatMessage("JARVIS: Escucha continua desactivada, señor.", "jarvis");
-                speakJarvis("Escucha continua desactivada, señor.");
+                addChatMessage("JARVIS: Micrófono desactivado, señor.", "jarvis");
             } else {
                 shouldKeepListening = true;
                 try {
                     recognition.start();
-                    addChatMessage("JARVIS: Escucha continua activada, señor.", "jarvis");
-                    speakJarvis("Escucha continua activada, señor.");
+                    addChatMessage("JARVIS: Escucha continua activa, señor.", "jarvis");
                 } catch(e) {
                     try { recognition.stop(); recognition.start(); } catch(err) {}
                 }
@@ -911,19 +898,17 @@
             lastQueryTimestamp = Date.now();
 
             const groqKey = localStorage.getItem('groq_api_key') || document.getElementById('groq-key-input').value.trim();
-            if (!groqKey) return "Por favor, configura tu llave de API de Groq en el panel superior izquierdo, señor.";
+            if (!groqKey) return "Configure su llave de API de Groq en el panel, señor.";
             
             const lowerText = userText.toLowerCase();
-            const triggerBusqueda = "busca en internet";
-
-            if (lowerText.includes(triggerBusqueda)) {
-                let terminoBusqueda = userText.toLowerCase().replace(triggerBusqueda, "").trim();
+            if (lowerText.includes("busca en internet")) {
+                let terminoBusqueda = userText.toLowerCase().replace("busca en internet", "").trim();
                 terminoBusqueda = terminoBusqueda.replace(/^[:,\s-]+/, "") || userText;
 
-                addChatMessage("JARVIS: Buscando en la red: " + terminoBusqueda, "jarvis");
+                addChatMessage("JARVIS: Buscando: " + terminoBusqueda, "jarvis");
                 let contextoWeb = await buscarEnInternet(terminoBusqueda);
                 if (contextoWeb) {
-                    userText = `${userText}\n\n[Información en tiempo real de internet:\n${contextoWeb}]`;
+                    userText = `${userText}\n\n[Datos de internet:\n${contextoWeb}]`;
                 }
             }
 
@@ -933,7 +918,7 @@
                 messagesPayload.push({
                     role: "user",
                     content: [
-                        { type: "text", text: userText || "Analiza esta imagen, señor." },
+                        { type: "text", text: userText || "Analiza esto, señor." },
                         { type: "image_url", image_url: { url: currentImageBase64 } }
                     ]
                 });
@@ -967,9 +952,9 @@
                 } else if (data.error) {
                     return `Error de Groq, señor: ${data.error.message || 'Desconocido'}`;
                 }
-                return "Respuesta vacía de Groq, señor.";
+                return "Respuesta vacía, señor.";
             } catch (err) {
-                return "Falló la conexión con la API de Groq, señor.";
+                return "Error de conexión con Groq, señor.";
             }
         }
 
@@ -985,7 +970,7 @@
             const lower = text.toLowerCase();
             let codeSnippet = '';
 
-            // Secuencia de animación de barrido rojo/azul para modo avanzado
+            // Secuencia de animación de barrido rojo/azul solo para la HUD (El núcleo central se queda intacto)
             if (lower.includes("modo de trabajo avanzado") || lower.includes("modo avanzado")) {
                 const container = document.getElementById('hud-container');
                 container.classList.add('hud-transition-left');
@@ -999,8 +984,8 @@
                     setTimeout(() => container.classList.remove('hud-transition-right'), 1200);
                 }, 1200);
 
-                addChatMessage("JARVIS: ¡Modo de trabajo avanzado activado, señor! Capacidad de procesamiento al máximo.", "jarvis");
-                speakJarvis("Modo de trabajo avanzado activado, señor.");
+                addChatMessage("JARVIS: Modo avanzado activo. Procesamiento al máximo, señor.", "jarvis");
+                speakJarvis("Modo avanzado activo, señor.");
                 return;
             } else if (lower.includes("desactivar modo") || lower.includes("modo normal")) {
                 const container = document.getElementById('hud-container');
@@ -1015,8 +1000,8 @@
                     setTimeout(() => container.classList.remove('hud-transition-left'), 1200);
                 }, 1200);
 
-                addChatMessage("JARVIS: Regresando a parámetros estándar, señor.", "jarvis");
-                speakJarvis("Regresando a parámetros estándar, señor.");
+                addChatMessage("JARVIS: Parámetros estándar restaurados, señor.", "jarvis");
+                speakJarvis("Parámetros estándar restaurados, señor.");
                 return;
             }
 
@@ -1026,15 +1011,15 @@
                 let encodedSearch = encodeURIComponent(cleanQuery);
 
                 updateVisorModel('search_mesh');
-                codeSnippet = `// BÚSQUEDA WEB\nQuery: "${cleanQuery}"\nStatus: [ENLACES ACTIVOS]`;
+                codeSnippet = `// BÚSQUEDA WEB\nQuery: "${cleanQuery}"`;
                 
-                let searchHtml = `JARVIS: Enlaces localizados para "${cleanQuery}", señor.<br>
+                let searchHtml = `JARVIS: Enlaces listados para "${cleanQuery}", señor.<br>
                 <a class="model-link-btn" href="https://www.printables.com/search/models?q=${encodedSearch}" target="_blank">🔍 Printables</a>
                 <a class="model-link-btn" href="https://www.thingiverse.com/search?q=${encodedSearch}" target="_blank">🔍 Thingiverse</a>`;
                 
                 document.getElementById('cad-code-display').innerText = codeSnippet;
                 addChatMessage(searchHtml, "jarvis", true);
-                speakJarvis(`Enlaces de búsqueda localizados para ${cleanQuery}, señor.`);
+                speakJarvis(`Enlaces localizados para ${cleanQuery}, señor.`);
                 return;
             }
 
@@ -1042,7 +1027,7 @@
             if (esOrdenDeCreacion && lower.includes("3d")) {
                 let promptModelo = text.replace(/jarvis/gi, "").replace(/crea|genera|diseña|un|modelo|en|3d/gi, "").trim() || "objeto mecánico";
 
-                addChatMessage("JARVIS: Iniciando Tripo AI para modelado de: " + promptModelo + ", señor...", "jarvis");
+                addChatMessage("JARVIS: Generando modelo en Tripo AI: " + promptModelo + ", señor...", "jarvis");
                 
                 generarModelo3DConTripo(promptModelo).then(resultado => {
                     let respuestaHtml = `JARVIS: ${resultado.message}<br>` +
@@ -1056,17 +1041,17 @@
 
             if (lower.includes("armadura") || lower.includes("traje") || lower.includes("mark")) {
                 updateVisorModel('armor');
-                codeSnippet = '// PROTOCOLO STARK\nStatus: [OK]';
+                codeSnippet = '// PROTOCOLO STARK [OK]';
             } else if (lower.includes("esfera")) {
                 updateVisorModel('sphere');
-                codeSnippet = '// Geometría Esférica\nStatus: [OK]';
+                codeSnippet = '// GEOMETRÍA ESFÉRICA [OK]';
             } else {
-                codeSnippet = `// ORDEN RECIBIDA\nStatus: [OK]`;
+                codeSnippet = `// ORDEN RECIBIDA [OK]`;
             }
 
             document.getElementById('cad-code-display').innerText = codeSnippet;
 
-            const aiResponse = await queryAI(text || "Analiza esta imagen, señor.");
+            const aiResponse = await queryAI(text || "Analiza esto, señor.");
             addChatMessage("JARVIS: " + aiResponse, "jarvis");
             speakJarvis(aiResponse);
         }
@@ -1092,10 +1077,7 @@
 
             const audio = new Audio(audioUrl);
             audio.playbackRate = 1.05;
-
-            audio.play().catch(err => {
-                console.warn("Error reproduciendo audio:", err);
-            });
+            audio.play().catch(err => {});
         }
     </script>
 </body>
