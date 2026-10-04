@@ -3,16 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>J.A.R.V.I.S. OS - Stark HUD Precise Replica</title>
+    <title>J.A.R.V.I.S. OS - Neural Core & Cyan HUD</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; }
-        body, html { width: 100%; height: 100%; background-color: #030303; color: var(--theme-color, #ff8800); overflow: hidden; transition: background 0.5s ease; }
+        body, html { width: 100%; height: 100%; background-color: #020408; color: var(--theme-color, #00eeff); overflow: hidden; transition: background 0.5s ease; }
 
         :root {
-            --theme-color: #ff8800;
-            --theme-glow: rgba(255, 136, 0, 0.6);
-            --theme-bg: rgba(8, 4, 2, 0.95);
+            --theme-color: #00eeff;
+            --theme-glow: rgba(0, 238, 255, 0.5);
+            --theme-bg: rgba(2, 10, 18, 0.92);
+            --core-color: #ff8800;
         }
 
         #hud-container {
@@ -25,6 +26,20 @@
             align-items: center;
             padding: 20px;
             pointer-events: none;
+            transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1), filter 1.2s ease;
+        }
+
+        /* Animación de barrido lateral para modo avanzado */
+        .hud-transition-left {
+            transform: translateX(-100vw) scale(0.9) !important;
+            filter: hue-rotate(140deg) brightness(1.5);
+            opacity: 0;
+        }
+
+        .hud-transition-right {
+            transform: translateX(100vw) scale(0.9) !important;
+            filter: hue-rotate(-140deg) brightness(1.5);
+            opacity: 0;
         }
 
         #bg-canvas {
@@ -89,7 +104,7 @@
         #api-config-panel input {
             background: #000;
             border: 1px solid var(--theme-color);
-            color: #ffaa44;
+            color: var(--theme-color);
             padding: 4px 8px;
             border-radius: 4px;
             font-size: 10px;
@@ -162,13 +177,13 @@
         #cad-code-display {
             width: 100%;
             height: 52px;
-            background: rgba(10, 5, 0, 0.9);
+            background: rgba(2, 6, 12, 0.9);
             border: 1px solid var(--theme-glow);
             border-radius: 4px;
             margin-top: 5px;
             padding: 5px;
             font-size: 8.5px;
-            color: #ffaa44;
+            color: var(--theme-color);
             overflow-y: auto;
             white-space: pre-wrap;
         }
@@ -233,7 +248,7 @@
             color: rgba(255, 255, 255, 0.75);
             line-height: 1.3;
             margin-top: 4px;
-            border-top: 1px dashed rgba(255, 136, 0, 0.2);
+            border-top: 1px dashed rgba(0, 238, 255, 0.2);
             padding-top: 4px;
         }
 
@@ -244,13 +259,13 @@
             width: 340px;
             max-height: 38vh;
             overflow-y: auto;
-            background: rgba(8, 4, 2, 0.85);
+            background: rgba(2, 10, 18, 0.85);
             border-left: 3px solid var(--theme-color);
             padding: 12px;
             font-size: 12px;
             border-radius: 0 8px 8px 0;
             backdrop-filter: blur(5px);
-            transition: border-color 0.5s ease, transform 1.2s cubic-bezier(0.25, 1, 0.5, 1), opacity 1.2s ease;
+            transition: border-color 0.5s ease;
         }
         .msg { margin-bottom: 8px; line-height: 1.3; }
         .msg.jarvis { color: var(--theme-color); }
@@ -259,7 +274,7 @@
             display: inline-block;
             margin-top: 4px;
             padding: 4px 8px;
-            background: rgba(255, 136, 0, 0.2);
+            background: rgba(0, 238, 255, 0.2);
             border: 1px solid var(--theme-color);
             color: #fff;
             border-radius: 4px;
@@ -268,7 +283,7 @@
         }
         .model-link-btn:hover { background: var(--theme-color); color: #000; }
 
-        /* CONTENEDOR CENTRAL: Réplica exacta del marco y detalles técnicos de la Referencia[span_2](start_span)[span_2](end_span) */
+        /* CONTENEDOR CENTRAL: Sin borde naranja cuadrado externo, centrado en el núcleo neuronal naranja */
         #core-3d-wrapper {
             position: absolute;
             top: 50%;
@@ -278,16 +293,14 @@
             height: 720px;
             pointer-events: none;
             z-index: 2;
-            background: rgba(4, 2, 1, 0.7);
-            border: 1px solid rgba(255, 120, 0, 0.4);
-            box-shadow: inset 0 0 80px rgba(255, 90, 0, 0.2), 0 0 50px rgba(255, 100, 0, 0.25);
+            background: transparent;
             overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        /* Elementos HUD estructurales idénticos a la referencia[span_3](start_span)[span_3](end_span) */
+        /* Paneles HUD superior e inferior sutiles en tono celeste */
         #core-3d-wrapper::before {
             content: '';
             position: absolute;
@@ -295,9 +308,9 @@
             left: 12px;
             right: 12px;
             height: 18px;
-            border-top: 2px solid rgba(255, 140, 0, 0.8);
-            border-bottom: 1px solid rgba(255, 140, 0, 0.4);
-            background: linear-gradient(90deg, rgba(255,100,0,0.3) 0%, rgba(10,5,0,0.8) 100%);
+            border-top: 2px solid rgba(0, 238, 255, 0.7);
+            border-bottom: 1px solid rgba(0, 238, 255, 0.3);
+            background: linear-gradient(90deg, rgba(0,238,255,0.2) 0%, rgba(2,10,18,0.8) 100%);
             z-index: 5;
         }
 
@@ -308,9 +321,9 @@
             left: 12px;
             right: 12px;
             height: 18px;
-            border-top: 1px solid rgba(255, 140, 0, 0.4);
-            border-bottom: 2px solid rgba(255, 140, 0, 0.8);
-            background: linear-gradient(90deg, rgba(10,5,0,0.8) 0%, rgba(255,100,0,0.3) 100%);
+            border-top: 1px solid rgba(0, 238, 255, 0.3);
+            border-bottom: 2px solid rgba(0, 238, 255, 0.7);
+            background: linear-gradient(90deg, rgba(2,10,18,0.8) 0%, rgba(0,238,255,0.2) 100%);
             z-index: 5;
         }
 
@@ -378,7 +391,7 @@
         }
         .hud-btn:hover {
             background: var(--theme-color);
-            color: #030303;
+            color: #020408;
             box-shadow: 0 0 12px var(--theme-color);
         }
 
@@ -405,7 +418,7 @@
 
     <canvas id="bg-canvas"></canvas>
     
-    <!-- Núcleo Central 3D con la réplica exacta de la referencia[span_4](start_span)[span_4](end_span) -->
+    <!-- Núcleo Central 3D: Red Neuronal y Anillos Naranjas -->
     <div id="core-3d-wrapper" class="hud-piece">
         <canvas id="core-canvas-3d"></canvas>
     </div>
@@ -434,13 +447,13 @@
             <h3>CONFIGURACIÓN</h3>
             <div style="display: flex; gap: 5px; margin-top: 4px;">
                 <button class="hud-btn" style="flex: 1; margin: 0; font-size: 9px; padding: 4px;" onclick="clearChatHistory()">Limpiar Chat</button>
-                <button class="hud-btn" style="flex: 1; margin: 0; font-size: 9px; padding: 4px; border-color: #ffaa44; color: #ffaa44;" onclick="restartSystem()">🔄 Reiniciar</button>
+                <button class="hud-btn" style="flex: 1; margin: 0; font-size: 9px; padding: 4px; border-color: var(--theme-color); color: var(--theme-color);" onclick="restartSystem()">🔄 Reiniciar</button>
             </div>
             <button class="hud-btn" style="margin-left: 0; margin-top: 2px; text-align: center; font-size: 10px; width: 100%;" onclick="toggleSettingsMenu()">Cerrar</button>
         </div>
 
         <div id="jarvis-chat" class="interactive hud-piece">
-            <div class="msg jarvis" id="welcome-msg">JARVIS: Réplica exacta del núcleo holográfico sincronizada, señor. A su orden.</div>
+            <div class="msg jarvis" id="welcome-msg">JARVIS: Red neuronal y HUD celeste sincronizados, señor. A su orden.</div>
         </div>
 
         <div id="right-panel-wrapper" class="interactive hud-piece">
@@ -505,7 +518,7 @@
         setInterval(actualizarReloj, 1000);
         actualizarReloj();
 
-        // 1. Fondo Estelar Sutil
+        // 1. Fondo Estelar Sutil Celeste
         const canvas = document.getElementById('bg-canvas');
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -524,7 +537,7 @@
             positions[i+2] = (Math.random() - 0.5) * 22;
         }
         particlesGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        const particlesMat = new THREE.PointsMaterial({ size: 0.05, color: 0xff8800, transparent: true, opacity: 0.4 });
+        const particlesMat = new THREE.PointsMaterial({ size: 0.05, color: 0x00eeff, transparent: true, opacity: 0.35 });
         const particleSystem = new THREE.Points(particlesGeo, particlesMat);
         scene.add(particleSystem);
 
@@ -535,7 +548,7 @@
         }
         animateBg();
 
-        // 2. NÚCLEO CENTRAL 3D - RÉPLICAS EXACTAS DE LA REFERENCIA[span_5](start_span)[span_5](end_span)
+        // 2. NÚCLEO CENTRAL 3D: VERDADERA RED NEURONAL Y ANILLOS NARANJAS
         const coreContainer = document.getElementById('core-canvas-3d');
         const sceneCore = new THREE.Scene();
         const cameraCore = new THREE.PerspectiveCamera(45, coreContainer.clientWidth / coreContainer.clientHeight, 0.1, 1000);
@@ -547,12 +560,11 @@
         const coreGroup = new THREE.Group();
         sceneCore.add(coreGroup);
 
-        // Materiales de alta precisión con tonos ámbar, oro y fuego idénticos
         const matOrangeGlow = new THREE.MeshBasicMaterial({ color: 0xff6600, wireframe: true, transparent: true, opacity: 0.9 });
         const matGoldBright = new THREE.MeshBasicMaterial({ color: 0xffaa11, wireframe: true, transparent: true, opacity: 0.95 });
         const matDeepAmber = new THREE.MeshBasicMaterial({ color: 0xff4400, wireframe: true, transparent: true, opacity: 0.85 });
 
-        // Capa 1: Anillos segmentados exteriores rotativos masivos (Idénticos a IMG13)[span_6](start_span)[span_6](end_span)
+        // Anillos exteriores naranjas idénticos
         const ringOuterGroup = new THREE.Group();
         for (let i = 0; i < 12; i++) {
             const segment = new THREE.Mesh(new THREE.TorusGeometry(1.85, 0.02, 16, 40, Math.PI * 0.35), matOrangeGlow);
@@ -561,7 +573,6 @@
         }
         coreGroup.add(ringOuterGroup);
 
-        // Capa 2: Anillos concéntricos cruzados principales en ángulo pronunciado
         const ringTilted1 = new THREE.Mesh(new THREE.TorusGeometry(1.6, 0.035, 16, 120), matGoldBright);
         ringTilted1.rotation.x = Math.PI * 0.3;
         ringTilted1.rotation.y = Math.PI * 0.2;
@@ -572,32 +583,51 @@
         ringTilted2.rotation.y = Math.PI * 0.4;
         coreGroup.add(ringTilted2);
 
-        // Capa 3: Estructuras internas hiper-detalladas (Geometrías complejas entrelazadas)
-        const innerGeo1 = new THREE.Mesh(new THREE.IcosahedronGeometry(0.8, 2), matGoldBright);
-        const innerGeo2 = new THREE.Mesh(new THREE.OctahedronGeometry(1.0, 2), matOrangeGlow);
-        innerGeo2.rotation.x = 0.5;
-        innerGeo2.rotation.z = 0.7;
-        coreGroup.add(innerGeo1);
-        coreGroup.add(innerGeo2);
+        // VERDADERA RED NEURONAL CENTRAL (Nodos interconectados con líneas sinápticas dinámicas)
+        const neuronNodeCount = 75;
+        const neuronPositions = new Float32Array(neuronNodeCount * 3);
+        const neuronNodeMesh = new THREE.InstancedMesh(
+            new THREE.SphereGeometry(0.035, 8, 8),
+            new THREE.MeshBasicMaterial({ color: 0xffaa33 }),
+            neuronNodeCount
+        );
 
-        // Capa 4: Núcleo central de energía densa (Esfera de partículas masiva)
-        const coreParticlesGeo = new THREE.BufferGeometry();
-        const coreCount = 1500;
-        const corePos = new Float32Array(coreCount * 3);
-        for(let i=0; i<coreCount*3; i+=3) {
+        const dummy = new THREE.Object3D();
+        const nodeCoords = [];
+        for(let i = 0; i < neuronNodeCount; i++) {
             const u = Math.random();
             const v = Math.random();
             const theta = u * 2.0 * Math.PI;
             const phi = Math.acos(2.0 * v - 1.0);
-            const r = 0.2 + Math.random() * 1.0;
-            corePos[i] = r * Math.sin(phi) * Math.cos(theta);
-            corePos[i+1] = r * Math.sin(phi) * Math.sin(theta);
-            corePos[i+2] = r * Math.cos(phi);
+            const r = 0.2 + Math.random() * 0.85;
+            
+            const x = r * Math.sin(phi) * Math.cos(theta);
+            const y = r * Math.sin(phi) * Math.sin(theta);
+            const z = r * Math.cos(phi);
+
+            nodeCoords.push(new THREE.Vector3(x, y, z));
+            dummy.position.set(x, y, z);
+            dummy.updateMatrix();
+            neuronNodeMesh.setMatrixAt(i, dummy.matrix);
         }
-        coreParticlesGeo.setAttribute('position', new THREE.BufferAttribute(corePos, 3));
-        const coreParticlesMat = new THREE.PointsMaterial({ size: 0.022, color: 0xffcc33, transparent: true, opacity: 0.95 });
-        const coreParticleSystem = new THREE.Points(coreParticlesGeo, coreParticlesMat);
-        coreGroup.add(coreParticleSystem);
+        neuronNodeMesh.instanceMatrix.needsUpdate = true;
+        coreGroup.add(neuronNodeMesh);
+
+        // Líneas sinápticas de la red neuronal
+        const lineGeo = new THREE.BufferGeometry();
+        const linePositions = [];
+        for(let i = 0; i < nodeCoords.length; i++) {
+            for(let j = i + 1; j < nodeCoords.length; j++) {
+                if(nodeCoords[i].distanceTo(nodeCoords[j]) < 0.55) {
+                    linePositions.push(nodeCoords[i].x, nodeCoords[i].y, nodeCoords[i].z);
+                    linePositions.push(nodeCoords[j].x, nodeCoords[j].y, nodeCoords[j].z);
+                }
+            }
+        }
+        lineGeo.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
+        const lineMat = new THREE.LineBasicMaterial({ color: 0xff6600, transparent: true, opacity: 0.6 });
+        const neuralNetLines = new THREE.LineSegments(lineGeo, lineMat);
+        coreGroup.add(neuralNetLines);
 
         function animateCore3D() {
             requestAnimationFrame(animateCore3D);
@@ -608,12 +638,8 @@
             ringTilted2.rotation.y -= 0.01;
             ringTilted2.rotation.z += 0.007;
 
-            innerGeo1.rotation.y += 0.015;
-            innerGeo1.rotation.z += 0.008;
-            innerGeo2.rotation.x -= 0.012;
-            innerGeo2.rotation.y -= 0.016;
-
-            coreParticleSystem.rotation.y -= 0.005;
+            neuronNodeMesh.rotation.y -= 0.006;
+            neuralNetLines.rotation.y -= 0.006;
 
             rendererCore.render(sceneCore, cameraCore);
         }
@@ -642,15 +668,14 @@
             }
 
             if (type === 'armor') {
-                const matGold = new THREE.MeshBasicMaterial({ color: 0xffaa00, wireframe: true });
-                const matRed = new THREE.MeshBasicMaterial({ color: 0xff0033, wireframe: true });
-                const chestBox = new THREE.Mesh(new THREE.BoxGeometry(0.9, 1.1, 0.5), matRed);
-                const helmetBox = new THREE.Mesh(new THREE.DodecahedronGeometry(0.4), matGold);
+                const matCyan = new THREE.MeshBasicMaterial({ color: 0x00eeff, wireframe: true });
+                const chestBox = new THREE.Mesh(new THREE.BoxGeometry(0.9, 1.1, 0.5), matCyan);
+                const helmetBox = new THREE.Mesh(new THREE.DodecahedronGeometry(0.4), matCyan);
                 helmetBox.position.set(0, 0.85, 0);
                 activeMeshGroup.add(chestBox);
                 activeMeshGroup.add(helmetBox);
             } else if (type === 'robot_arm' || type === 'search_mesh') {
-                const matCyan = new THREE.MeshBasicMaterial({ color: 0x00ffaa, wireframe: true });
+                const matCyan = new THREE.MeshBasicMaterial({ color: 0x00eeff, wireframe: true });
                 const baseCyl = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.8, 0.3, 16), matCyan);
                 baseCyl.position.set(0, -0.8, 0);
                 const armJoint = new THREE.Mesh(new THREE.BoxGeometry(0.3, 1.2, 0.3), matCyan);
@@ -661,7 +686,7 @@
                 activeMeshGroup.add(armClaw);
             } else {
                 let geom = (type === 'sphere') ? new THREE.SphereGeometry(0.9, 16, 16) : new THREE.BoxGeometry(1.0, 1.0, 1.0);
-                let mat = new THREE.MeshBasicMaterial({ color: 0xff8800, wireframe: true });
+                let mat = new THREE.MeshBasicMaterial({ color: 0x00eeff, wireframe: true });
                 activeMeshGroup.add(new THREE.Mesh(geom, mat));
             }
         }
@@ -959,6 +984,41 @@
 
             const lower = text.toLowerCase();
             let codeSnippet = '';
+
+            // Secuencia de animación de barrido rojo/azul para modo avanzado
+            if (lower.includes("modo de trabajo avanzado") || lower.includes("modo avanzado")) {
+                const container = document.getElementById('hud-container');
+                container.classList.add('hud-transition-left');
+                
+                setTimeout(() => {
+                    document.documentElement.style.setProperty('--theme-color', '#ff3300');
+                    document.documentElement.style.setProperty('--theme-glow', 'rgba(255, 51, 0, 0.6)');
+                    document.documentElement.style.setProperty('--theme-bg', 'rgba(18, 4, 2, 0.95)');
+                    container.classList.remove('hud-transition-left');
+                    container.classList.add('hud-transition-right');
+                    setTimeout(() => container.classList.remove('hud-transition-right'), 1200);
+                }, 1200);
+
+                addChatMessage("JARVIS: ¡Modo de trabajo avanzado activado, señor! Capacidad de procesamiento al máximo.", "jarvis");
+                speakJarvis("Modo de trabajo avanzado activado, señor.");
+                return;
+            } else if (lower.includes("desactivar modo") || lower.includes("modo normal")) {
+                const container = document.getElementById('hud-container');
+                container.classList.add('hud-transition-right');
+                
+                setTimeout(() => {
+                    document.documentElement.style.setProperty('--theme-color', '#00eeff');
+                    document.documentElement.style.setProperty('--theme-glow', 'rgba(0, 238, 255, 0.5)');
+                    document.documentElement.style.setProperty('--theme-bg', 'rgba(2, 10, 18, 0.92)');
+                    container.classList.remove('hud-transition-right');
+                    container.classList.add('hud-transition-left');
+                    setTimeout(() => container.classList.remove('hud-transition-left'), 1200);
+                }, 1200);
+
+                addChatMessage("JARVIS: Regresando a parámetros estándar, señor.", "jarvis");
+                speakJarvis("Regresando a parámetros estándar, señor.");
+                return;
+            }
 
             const esOrdenDeBusqueda = lower.includes("busca") || lower.includes("búscame");
             if (esOrdenDeBusqueda && (lower.includes("modelo") || lower.includes("stl") || lower.includes("printables") || lower.includes("thingiverse"))) {
