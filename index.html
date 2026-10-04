@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>J.A.R.V.I.S. OS - Ultimate Stark Arc Reactor Core</title>
+    <title>J.A.R.V.I.S. OS - Stark HUD Precise Replica</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; }
-        body, html { width: 100%; height: 100%; background-color: #020813; color: var(--theme-color, #00f0ff); overflow: hidden; transition: background 0.5s ease; }
+        body, html { width: 100%; height: 100%; background-color: #030303; color: var(--theme-color, #ff8800); overflow: hidden; transition: background 0.5s ease; }
 
         :root {
-            --theme-color: #00f0ff;
-            --theme-glow: rgba(0, 240, 255, 0.6);
-            --theme-bg: rgba(2, 8, 19, 0.95);
+            --theme-color: #ff8800;
+            --theme-glow: rgba(255, 136, 0, 0.6);
+            --theme-bg: rgba(8, 4, 2, 0.95);
         }
 
         #hud-container {
@@ -89,7 +89,7 @@
         #api-config-panel input {
             background: #000;
             border: 1px solid var(--theme-color);
-            color: #00ff66;
+            color: #ffaa44;
             padding: 4px 8px;
             border-radius: 4px;
             font-size: 10px;
@@ -162,13 +162,13 @@
         #cad-code-display {
             width: 100%;
             height: 52px;
-            background: rgba(0, 10, 25, 0.9);
+            background: rgba(10, 5, 0, 0.9);
             border: 1px solid var(--theme-glow);
             border-radius: 4px;
             margin-top: 5px;
             padding: 5px;
             font-size: 8.5px;
-            color: #00ff66;
+            color: #ffaa44;
             overflow-y: auto;
             white-space: pre-wrap;
         }
@@ -233,7 +233,7 @@
             color: rgba(255, 255, 255, 0.75);
             line-height: 1.3;
             margin-top: 4px;
-            border-top: 1px dashed rgba(0, 240, 255, 0.2);
+            border-top: 1px dashed rgba(255, 136, 0, 0.2);
             padding-top: 4px;
         }
 
@@ -244,7 +244,7 @@
             width: 340px;
             max-height: 38vh;
             overflow-y: auto;
-            background: rgba(2, 8, 19, 0.85);
+            background: rgba(8, 4, 2, 0.85);
             border-left: 3px solid var(--theme-color);
             padding: 12px;
             font-size: 12px;
@@ -259,7 +259,7 @@
             display: inline-block;
             margin-top: 4px;
             padding: 4px 8px;
-            background: rgba(0, 240, 255, 0.2);
+            background: rgba(255, 136, 0, 0.2);
             border: 1px solid var(--theme-color);
             color: #fff;
             border-radius: 4px;
@@ -268,35 +268,57 @@
         }
         .model-link-btn:hover { background: var(--theme-color); color: #000; }
 
-        /* Contenedor del Núcleo Central 3D (Estilo Marco Cuadrado IDÉNTICO a IMG4)[span_1](start_span)[span_1](end_span) */
+        /* CONTENEDOR CENTRAL: Réplica exacta del marco y detalles técnicos de la Referencia[span_2](start_span)[span_2](end_span) */
         #core-3d-wrapper {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 680px;
-            height: 680px;
+            width: 720px;
+            height: 720px;
             pointer-events: none;
             z-index: 2;
-            border: 1px solid rgba(255, 136, 0, 0.35);
-            background: rgba(8, 3, 1, 0.45);
-            box-shadow: inset 0 0 50px rgba(255, 100, 0, 0.15), 0 0 30px rgba(255, 110, 0, 0.25);
+            background: rgba(4, 2, 1, 0.7);
+            border: 1px solid rgba(255, 120, 0, 0.4);
+            box-shadow: inset 0 0 80px rgba(255, 90, 0, 0.2), 0 0 50px rgba(255, 100, 0, 0.25);
             overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
+        /* Elementos HUD estructurales idénticos a la referencia[span_3](start_span)[span_3](end_span) */
+        #core-3d-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            right: 12px;
+            height: 18px;
+            border-top: 2px solid rgba(255, 140, 0, 0.8);
+            border-bottom: 1px solid rgba(255, 140, 0, 0.4);
+            background: linear-gradient(90deg, rgba(255,100,0,0.3) 0%, rgba(10,5,0,0.8) 100%);
+            z-index: 5;
+        }
+
+        #core-3d-wrapper::after {
+            content: '';
+            position: absolute;
+            bottom: 12px;
+            left: 12px;
+            right: 12px;
+            height: 18px;
+            border-top: 1px solid rgba(255, 140, 0, 0.4);
+            border-bottom: 2px solid rgba(255, 140, 0, 0.8);
+            background: linear-gradient(90deg, rgba(10,5,0,0.8) 0%, rgba(255,100,0,0.3) 100%);
+            z-index: 5;
+        }
+
         #core-canvas-3d {
             width: 100%;
             height: 100%;
             display: block;
-            filter: drop-shadow(0 0 30px rgba(255, 120, 0, 0.85)) drop-shadow(0 0 60px rgba(255, 60, 0, 0.55));
-            transition: filter 0.5s ease;
-        }
-
-        .advanced-active #core-canvas-3d {
-            filter: drop-shadow(0 0 40px #ff1100) drop-shadow(0 0 80px #ff3300) !important;
+            filter: drop-shadow(0 0 35px rgba(255, 130, 0, 0.9)) drop-shadow(0 0 70px rgba(255, 60, 0, 0.6));
         }
 
         #bottom-watermark {
@@ -356,7 +378,7 @@
         }
         .hud-btn:hover {
             background: var(--theme-color);
-            color: #020813;
+            color: #030303;
             box-shadow: 0 0 12px var(--theme-color);
         }
 
@@ -383,7 +405,7 @@
 
     <canvas id="bg-canvas"></canvas>
     
-    <!-- Núcleo Central 3D dentro de Marco Cuadrado Detallado (Estilo IMG4)[span_2](start_span)[span_2](end_span) -->
+    <!-- Núcleo Central 3D con la réplica exacta de la referencia[span_4](start_span)[span_4](end_span) -->
     <div id="core-3d-wrapper" class="hud-piece">
         <canvas id="core-canvas-3d"></canvas>
     </div>
@@ -412,13 +434,13 @@
             <h3>CONFIGURACIÓN</h3>
             <div style="display: flex; gap: 5px; margin-top: 4px;">
                 <button class="hud-btn" style="flex: 1; margin: 0; font-size: 9px; padding: 4px;" onclick="clearChatHistory()">Limpiar Chat</button>
-                <button class="hud-btn" style="flex: 1; margin: 0; font-size: 9px; padding: 4px; border-color: #00ff88; color: #00ff88;" onclick="restartSystem()">🔄 Reiniciar</button>
+                <button class="hud-btn" style="flex: 1; margin: 0; font-size: 9px; padding: 4px; border-color: #ffaa44; color: #ffaa44;" onclick="restartSystem()">🔄 Reiniciar</button>
             </div>
             <button class="hud-btn" style="margin-left: 0; margin-top: 2px; text-align: center; font-size: 10px; width: 100%;" onclick="toggleSettingsMenu()">Cerrar</button>
         </div>
 
         <div id="jarvis-chat" class="interactive hud-piece">
-            <div class="msg jarvis" id="welcome-msg">JARVIS: Reactor holográfico en marco 3D maximizado, señor. A su orden.</div>
+            <div class="msg jarvis" id="welcome-msg">JARVIS: Réplica exacta del núcleo holográfico sincronizada, señor. A su orden.</div>
         </div>
 
         <div id="right-panel-wrapper" class="interactive hud-piece">
@@ -434,30 +456,30 @@
                 <div class="telemetry-item">
                     <div class="telemetry-label">
                         <span>Núcleo Neuronal</span>
-                        <span class="value">98.4%</span>
+                        <span class="value">99.8%</span>
                     </div>
-                    <div class="progress-bar"><div class="progress-fill" style="width: 98.4%;"></div></div>
+                    <div class="progress-bar"><div class="progress-fill" style="width: 99.8%;"></div></div>
                 </div>
 
                 <div class="telemetry-item">
                     <div class="telemetry-label">
                         <span>Temperatura</span>
-                        <span class="value">34.2 °C</span>
+                        <span class="value">33.5 °C</span>
                     </div>
-                    <div class="progress-bar"><div class="progress-fill" style="width: 68%;"></div></div>
+                    <div class="progress-bar"><div class="progress-fill" style="width: 65%;"></div></div>
                 </div>
 
                 <div class="telemetry-item">
                     <div class="telemetry-label">
                         <span>Enlace / Red</span>
-                        <span class="value">12 ms</span>
+                        <span class="value">9 ms</span>
                     </div>
-                    <div class="progress-bar"><div class="progress-fill" style="width: 92%;"></div></div>
+                    <div class="progress-bar"><div class="progress-fill" style="width: 95%;"></div></div>
                 </div>
 
                 <div class="system-logs-real">
                     <p>STATUS: [ONLINE] - Stark Activo</p>
-                    <p>MEM: 14.2 GB / 16 GB [OK]</p>
+                    <p>MEM: 14.5 GB / 16 GB [OK]</p>
                 </div>
             </div>
         </div>
@@ -483,7 +505,7 @@
         setInterval(actualizarReloj, 1000);
         actualizarReloj();
 
-        // 1. Fondo Estelar
+        // 1. Fondo Estelar Sutil
         const canvas = document.getElementById('bg-canvas');
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -493,7 +515,7 @@
         renderer.setPixelRatio(window.devicePixelRatio);
         camera.position.z = 6;
 
-        const particlesCount = 350;
+        const particlesCount = 300;
         const particlesGeo = new THREE.BufferGeometry();
         const positions = new Float32Array(particlesCount * 3);
         for(let i=0; i<particlesCount*3; i+=3) {
@@ -502,117 +524,96 @@
             positions[i+2] = (Math.random() - 0.5) * 22;
         }
         particlesGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        const particlesMat = new THREE.PointsMaterial({ size: 0.065, color: 0x00f0ff, transparent: true, opacity: 0.5 });
+        const particlesMat = new THREE.PointsMaterial({ size: 0.05, color: 0xff8800, transparent: true, opacity: 0.4 });
         const particleSystem = new THREE.Points(particlesGeo, particlesMat);
         scene.add(particleSystem);
 
-        let isAdvancedWorkMode = false;
-
         function animateBg() {
             requestAnimationFrame(animateBg);
-            const rotationSpeed = isAdvancedWorkMode ? 0.0018 : 0.0004;
-            particleSystem.rotation.y += rotationSpeed;
+            particleSystem.rotation.y += 0.0003;
             renderer.render(scene, camera);
         }
         animateBg();
 
-        // 2. NÚCLEO CENTRAL 3D DENTRO DE MARCO CUADRADO (ESTILO IMG4 - MÁXIMO DETALLE)[span_3](start_span)[span_3](end_span)
+        // 2. NÚCLEO CENTRAL 3D - RÉPLICAS EXACTAS DE LA REFERENCIA[span_5](start_span)[span_5](end_span)
         const coreContainer = document.getElementById('core-canvas-3d');
         const sceneCore = new THREE.Scene();
         const cameraCore = new THREE.PerspectiveCamera(45, coreContainer.clientWidth / coreContainer.clientHeight, 0.1, 1000);
         const rendererCore = new THREE.WebGLRenderer({ canvas: coreContainer, alpha: true, antialias: true });
         rendererCore.setSize(coreContainer.clientWidth, coreContainer.clientHeight);
         rendererCore.setPixelRatio(window.devicePixelRatio);
-        cameraCore.position.z = 4.2;
+        cameraCore.position.z = 4.0;
 
         const coreGroup = new THREE.Group();
         sceneCore.add(coreGroup);
 
-        // Materiales Holográficos de Alta Intensidad (Ámbar / Naranja Stark)
-        const matAmberWire = new THREE.MeshBasicMaterial({ color: 0xff7700, wireframe: true, transparent: true, opacity: 0.85 });
-        const matGoldWire = new THREE.MeshBasicMaterial({ color: 0xffaa11, wireframe: true, transparent: true, opacity: 0.95 });
-        const matBrightOrange = new THREE.MeshBasicMaterial({ color: 0xff5500, wireframe: true, transparent: true, opacity: 0.9 });
+        // Materiales de alta precisión con tonos ámbar, oro y fuego idénticos
+        const matOrangeGlow = new THREE.MeshBasicMaterial({ color: 0xff6600, wireframe: true, transparent: true, opacity: 0.9 });
+        const matGoldBright = new THREE.MeshBasicMaterial({ color: 0xffaa11, wireframe: true, transparent: true, opacity: 0.95 });
+        const matDeepAmber = new THREE.MeshBasicMaterial({ color: 0xff4400, wireframe: true, transparent: true, opacity: 0.85 });
 
-        // Anillos Cortados / Segmentados Múltiples de Alta Densidad (Estilo IMG4)[span_4](start_span)[span_4](end_span)
-        const segmentedRingGroup1 = new THREE.Group();
-        for (let i = 0; i < 8; i++) {
-            const arcMesh = new THREE.Mesh(new THREE.TorusGeometry(1.9, 0.025, 16, 40, Math.PI * 0.6), matAmberWire);
-            arcMesh.rotation.z = i * (Math.PI / 4);
-            segmentedRingGroup1.add(arcMesh);
+        // Capa 1: Anillos segmentados exteriores rotativos masivos (Idénticos a IMG13)[span_6](start_span)[span_6](end_span)
+        const ringOuterGroup = new THREE.Group();
+        for (let i = 0; i < 12; i++) {
+            const segment = new THREE.Mesh(new THREE.TorusGeometry(1.85, 0.02, 16, 40, Math.PI * 0.35), matOrangeGlow);
+            segment.rotation.z = i * (Math.PI / 6);
+            ringOuterGroup.add(segment);
         }
-        coreGroup.add(segmentedRingGroup1);
+        coreGroup.add(ringOuterGroup);
 
-        const segmentedRingGroup2 = new THREE.Group();
-        for (let i = 0; i < 6; i++) {
-            const arcMesh2 = new THREE.Mesh(new THREE.TorusGeometry(1.6, 0.03, 16, 30, Math.PI * 0.45), matGoldWire);
-            arcMesh2.rotation.z = i * (Math.PI / 3) + 0.3;
-            segmentedRingGroup2.add(arcMesh2);
-        }
-        coreGroup.add(segmentedRingGroup2);
+        // Capa 2: Anillos concéntricos cruzados principales en ángulo pronunciado
+        const ringTilted1 = new THREE.Mesh(new THREE.TorusGeometry(1.6, 0.035, 16, 120), matGoldBright);
+        ringTilted1.rotation.x = Math.PI * 0.3;
+        ringTilted1.rotation.y = Math.PI * 0.2;
+        coreGroup.add(ringTilted1);
 
-        // Anillos Concéntricos Principales Completos e Intersecados
-        const ringMain1 = new THREE.Mesh(new THREE.TorusGeometry(1.75, 0.035, 16, 120), matBrightOrange);
-        const ringMain2 = new THREE.Mesh(new THREE.TorusGeometry(1.35, 0.025, 16, 100), matAmberWire);
-        const ringMain3 = new THREE.Mesh(new THREE.TorusGeometry(1.05, 0.04, 16, 80), matGoldWire);
-        
-        ringMain1.rotation.x = Math.PI * 0.25;
-        ringMain2.rotation.y = Math.PI * 0.33;
+        const ringTilted2 = new THREE.Mesh(new THREE.TorusGeometry(1.3, 0.025, 16, 100), matDeepAmber);
+        ringTilted2.rotation.x = -Math.PI * 0.25;
+        ringTilted2.rotation.y = Math.PI * 0.4;
+        coreGroup.add(ringTilted2);
 
-        coreGroup.add(ringMain1);
-        coreGroup.add(ringMain2);
-        coreGroup.add(ringMain3);
+        // Capa 3: Estructuras internas hiper-detalladas (Geometrías complejas entrelazadas)
+        const innerGeo1 = new THREE.Mesh(new THREE.IcosahedronGeometry(0.8, 2), matGoldBright);
+        const innerGeo2 = new THREE.Mesh(new THREE.OctahedronGeometry(1.0, 2), matOrangeGlow);
+        innerGeo2.rotation.x = 0.5;
+        innerGeo2.rotation.z = 0.7;
+        coreGroup.add(innerGeo1);
+        coreGroup.add(innerGeo2);
 
-        // Geometrías Internas Volumétricas Compuestas (Icosaedros y Estructuras de Precisión)
-        const innerMesh1 = new THREE.Mesh(new THREE.IcosahedronGeometry(0.75, 2), matGoldWire);
-        const innerMesh2 = new THREE.Mesh(new THREE.OctahedronGeometry(0.9, 2), matAmberWire);
-        innerMesh2.rotation.x = 0.6;
-        innerMesh2.rotation.y = 0.4;
-
-        coreGroup.add(innerMesh1);
-        coreGroup.add(innerMesh2);
-
-        // Nube de Partículas de Alta Densidad en el Núcleo
+        // Capa 4: Núcleo central de energía densa (Esfera de partículas masiva)
         const coreParticlesGeo = new THREE.BufferGeometry();
-        const coreCount = 1200;
+        const coreCount = 1500;
         const corePos = new Float32Array(coreCount * 3);
         for(let i=0; i<coreCount*3; i+=3) {
             const u = Math.random();
             const v = Math.random();
             const theta = u * 2.0 * Math.PI;
             const phi = Math.acos(2.0 * v - 1.0);
-            const r = 0.5 + Math.random() * 1.2;
+            const r = 0.2 + Math.random() * 1.0;
             corePos[i] = r * Math.sin(phi) * Math.cos(theta);
             corePos[i+1] = r * Math.sin(phi) * Math.sin(theta);
             corePos[i+2] = r * Math.cos(phi);
         }
         coreParticlesGeo.setAttribute('position', new THREE.BufferAttribute(corePos, 3));
-        const coreParticlesMat = new THREE.PointsMaterial({ size: 0.025, color: 0xffaa22, transparent: true, opacity: 0.9 });
+        const coreParticlesMat = new THREE.PointsMaterial({ size: 0.022, color: 0xffcc33, transparent: true, opacity: 0.95 });
         const coreParticleSystem = new THREE.Points(coreParticlesGeo, coreParticlesMat);
         coreGroup.add(coreParticleSystem);
 
         function animateCore3D() {
             requestAnimationFrame(animateCore3D);
-            const speedMult = isAdvancedWorkMode ? 3.5 : 1.0;
 
-            segmentedRingGroup1.rotation.z += 0.005 * speedMult;
-            segmentedRingGroup2.rotation.z -= 0.008 * speedMult;
+            ringOuterGroup.rotation.z += 0.004;
+            ringTilted1.rotation.x += 0.008;
+            ringTilted1.rotation.y += 0.012;
+            ringTilted2.rotation.y -= 0.01;
+            ringTilted2.rotation.z += 0.007;
 
-            ringMain1.rotation.x += 0.007 * speedMult;
-            ringMain1.rotation.y += 0.01 * speedMult;
+            innerGeo1.rotation.y += 0.015;
+            innerGeo1.rotation.z += 0.008;
+            innerGeo2.rotation.x -= 0.012;
+            innerGeo2.rotation.y -= 0.016;
 
-            ringMain2.rotation.y -= 0.009 * speedMult;
-            ringMain2.rotation.z += 0.012 * speedMult;
-
-            ringMain3.rotation.x -= 0.012 * speedMult;
-            ringMain3.rotation.y -= 0.007 * speedMult;
-
-            innerMesh1.rotation.y += 0.015 * speedMult;
-            innerMesh1.rotation.z += 0.008 * speedMult;
-
-            innerMesh2.rotation.x -= 0.01 * speedMult;
-            innerMesh2.rotation.y -= 0.015 * speedMult;
-
-            coreParticleSystem.rotation.y -= 0.004 * speedMult;
+            coreParticleSystem.rotation.y -= 0.005;
 
             rendererCore.render(sceneCore, cameraCore);
         }
@@ -630,112 +631,7 @@
         scene3D.add(activeMeshGroup);
         camera3D.position.z = 3.2;
 
-        let isStarkMode = false;
         let currentImageBase64 = null;
-
-        function setStarkTheme(active) {
-            isStarkMode = active;
-            const root = document.documentElement;
-            if (active) {
-                root.style.setProperty('--theme-color', '#ff3333');
-                root.style.setProperty('--theme-glow', 'rgba(255, 50, 50, 0.6)');
-                root.style.setProperty('--theme-bg', 'rgba(20, 2, 2, 0.95)');
-                if(!isAdvancedWorkMode) particlesMat.color.setHex(0xff3333);
-            } else if (!isAdvancedWorkMode) {
-                root.style.setProperty('--theme-color', '#00f0ff');
-                root.style.setProperty('--theme-glow', 'rgba(0, 240, 255, 0.6)');
-                root.style.setProperty('--theme-bg', 'rgba(2, 8, 19, 0.95)');
-                particlesMat.color.setHex(0x00f0ff);
-            }
-        }
-
-        function triggerTransitionAnimation(targetActiveState) {
-            const core3DWrapper = document.getElementById('core-3d-wrapper');
-            const root = document.documentElement;
-
-            const pieces = [
-                document.getElementById('api-config-panel'),
-                document.getElementById('jarvis-chat'),
-                document.getElementById('jarvis-status-header'),
-                core3DWrapper,
-                document.getElementById('right-panel-wrapper'),
-                document.getElementById('bottom-watermark'),
-                document.getElementById('bottom-bar')
-            ];
-
-            if (targetActiveState) {
-                pieces.forEach((piece, index) => {
-                    if (piece) {
-                        setTimeout(() => {
-                            piece.style.transform = 'translateX(120vw)';
-                            piece.style.opacity = '0';
-                        }, index * 90);
-                    }
-                });
-
-                setTimeout(() => {
-                    root.style.setProperty('--theme-color', '#ff3333');
-                    root.style.setProperty('--theme-glow', 'rgba(255, 50, 50, 0.8)');
-                    root.style.setProperty('--theme-bg', 'rgba(25, 2, 2, 0.95)');
-                    
-                    matAmberWire.color.setHex(0xff1100);
-                    matGoldWire.color.setHex(0xff4400);
-                    matBrightOrange.color.setHex(0xff2200);
-                    coreParticlesMat.color.setHex(0xff2200);
-
-                    particlesMat.color.setHex(0xff3333);
-                    isAdvancedWorkMode = true;
-
-                    pieces.forEach((piece, index) => {
-                        if (piece) {
-                            piece.style.transform = 'translateX(120vw)';
-                            piece.style.opacity = '0';
-                            
-                            setTimeout(() => {
-                                piece.style.transform = '';
-                                piece.style.opacity = '';
-                            }, index * 100 + 50);
-                        }
-                    });
-                }, 1200);
-
-            } else {
-                pieces.forEach((piece, index) => {
-                    if (piece) {
-                        setTimeout(() => {
-                            piece.style.transform = 'translateX(120vw)';
-                            piece.style.opacity = '0';
-                        }, index * 90);
-                    }
-                });
-
-                setTimeout(() => {
-                    isAdvancedWorkMode = false;
-                    root.style.setProperty('--theme-color', isStarkMode ? '#ff3333' : '#00f0ff');
-                    root.style.setProperty('--theme-glow', isStarkMode ? 'rgba(255, 50, 50, 0.6)' : 'rgba(0, 240, 255, 0.6)');
-                    root.style.setProperty('--theme-bg', isStarkMode ? 'rgba(20, 2, 2, 0.95)' : 'rgba(2, 8, 19, 0.95)');
-                    
-                    matAmberWire.color.setHex(0xff7700);
-                    matGoldWire.color.setHex(0xffaa11);
-                    matBrightOrange.color.setHex(0xff5500);
-                    coreParticlesMat.color.setHex(0xffaa22);
-
-                    particlesMat.color.setHex(isStarkMode ? 0xff3333 : 0x00f0ff);
-
-                    pieces.forEach((piece, index) => {
-                        if (piece) {
-                            piece.style.transform = 'translateX(120vw)';
-                            piece.style.opacity = '0';
-                            
-                            setTimeout(() => {
-                                piece.style.transform = '';
-                                piece.style.opacity = '';
-                            }, index * 100 + 50);
-                        }
-                    });
-                }, 1200);
-            }
-        }
 
         function updateVisorModel(type) {
             while(activeMeshGroup.children.length > 0){ 
@@ -746,7 +642,6 @@
             }
 
             if (type === 'armor') {
-                setStarkTheme(true);
                 const matGold = new THREE.MeshBasicMaterial({ color: 0xffaa00, wireframe: true });
                 const matRed = new THREE.MeshBasicMaterial({ color: 0xff0033, wireframe: true });
                 const chestBox = new THREE.Mesh(new THREE.BoxGeometry(0.9, 1.1, 0.5), matRed);
@@ -755,7 +650,6 @@
                 activeMeshGroup.add(chestBox);
                 activeMeshGroup.add(helmetBox);
             } else if (type === 'robot_arm' || type === 'search_mesh') {
-                setStarkTheme(false);
                 const matCyan = new THREE.MeshBasicMaterial({ color: 0x00ffaa, wireframe: true });
                 const baseCyl = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.8, 0.3, 16), matCyan);
                 baseCyl.position.set(0, -0.8, 0);
@@ -766,9 +660,8 @@
                 activeMeshGroup.add(armJoint);
                 activeMeshGroup.add(armClaw);
             } else {
-                setStarkTheme(false);
                 let geom = (type === 'sphere') ? new THREE.SphereGeometry(0.9, 16, 16) : new THREE.BoxGeometry(1.0, 1.0, 1.0);
-                let mat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, wireframe: true });
+                let mat = new THREE.MeshBasicMaterial({ color: 0xff8800, wireframe: true });
                 activeMeshGroup.add(new THREE.Mesh(geom, mat));
             }
         }
@@ -800,7 +693,7 @@
 
         function clearChatHistory() {
             const chat = document.getElementById('jarvis-chat');
-            chat.innerHTML = `<div class="msg jarvis" id="welcome-msg">JARVIS: Memoria de chat depurada, señor. A su orden.</div>`;
+            chat.innerHTML = `<div class="msg jarvis" id="welcome-msg">JARVIS: Memoria depurada, señor. A su orden.</div>`;
             chatHistory = [{ role: "system", content: getSystemPrompt() }];
         }
 
@@ -816,7 +709,7 @@
             if (ai3dKey) localStorage.setItem('ai3d_api_key', ai3dKey);
             
             chatHistory = [{ role: "system", content: getSystemPrompt() }];
-            addChatMessage("JARVIS: Credenciales de red actualizadas, señor. A su orden.", "jarvis");
+            addChatMessage("JARVIS: Credenciales de red actualizadas, señor.", "jarvis");
         }
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -883,47 +776,6 @@
             }
         }
 
-        function ejecutarComandoIPad(accion, objetivo, extraInfo = "") {
-            document.getElementById('cad-code-display').innerText = `// PUENTE IPAD\nAcción: ${accion}\nStatus: [OK]`;
-            
-            if (accion === "abrir_app") {
-                window.location.href = `shortcuts://run-shortcut?name=AbrirApp&input=text&text=${encodeURIComponent(objetivo)}`;
-                return `Entendido, señor. Abriendo la aplicación ${objetivo}.`;
-            } else if (accion === "enviar_mensaje") {
-                window.location.href = `shortcuts://run-shortcut?name=EnviarMensaje&input=text&text=${encodeURIComponent(objetivo + ":" + extraInfo)}`;
-                return `A su orden, señor. Transmitiendo mensaje.`;
-            } else if (accion === "mover_stl") {
-                window.location.href = `shortcuts://run-shortcut?name=MandarAShapr3D`;
-                return `Entendido, señor. Archivo STL transferido a Shapr3D.`;
-            }
-            return "Comando ejecutado, señor.";
-        }
-
-        function procesarComandoModoAvanzado(textoCompleto) {
-            const lower = textoCompleto.toLowerCase();
-            const contieneAvanzado = lower.includes("avanzado") || lower.includes("trabajo avanzado");
-            
-            if (!contieneAvanzado) return false;
-
-            const esApagar = lower.includes("desactiva") || lower.includes("apaga") || lower.includes("quitar") || lower.includes("apagar") || lower.includes("desactivar");
-
-            if (esApagar) {
-                triggerTransitionAnimation(false);
-                let responseMsg = "Desactivando modo de trabajo avanzado, señor.";
-                addChatMessage("JARVIS: " + responseMsg, "jarvis");
-                speakJarvis(responseMsg);
-                document.getElementById('cad-code-display').innerText = "// MODO AVANZADO\nStatus: [INACTIVO]";
-                return true;
-            } else {
-                triggerTransitionAnimation(true);
-                let responseMsg = "Iniciando modo de trabajo avanzado, señor.";
-                addChatMessage("JARVIS: " + responseMsg, "jarvis");
-                speakJarvis(responseMsg);
-                document.getElementById('cad-code-display').innerText = "// MODO AVANZADO\nStatus: [ACTIVO]";
-                return true;
-            }
-        }
-
         let recognition = null;
         let isListening = false;
         let shouldKeepListening = false;
@@ -945,19 +797,8 @@
 
             recognition.onresult = (event) => {
                 let speechToText = event.results[event.results.length - 1][0].transcript.trim();
-                const lowerText = speechToText.toLowerCase();
-                
-                if (lowerText.includes("detente") || lowerText.includes("para")) {
-                    addChatMessage("JARVIS: Interrupción recibida, señor.", "jarvis");
-                    return;
-                }
-
                 let cleanOrder = speechToText.replace(/jarvis/gi, "").trim();
                 
-                if (procesarComandoModoAvanzado(cleanOrder)) {
-                    return;
-                }
-
                 if (cleanOrder.length > 0) {
                     document.getElementById('user-input').value = cleanOrder;
                     sendPrompt();
@@ -1116,40 +957,8 @@
             addChatMessage(displayText, "user");
             input.value = "";
 
-            if (procesarComandoModoAvanzado(text)) {
-                return;
-            }
-
             const lower = text.toLowerCase();
             let codeSnippet = '';
-
-            if (lower.includes("protocolo stark") && !lower.includes("apagar")) {
-                setStarkTheme(true);
-            } else if (lower.includes("apagar protocolo stark") || lower.includes("apagar stark")) {
-                setStarkTheme(false);
-            }
-
-            if (lower.includes("abre la app") || lower.includes("abre la aplicación")) {
-                let appName = text.replace(/jarvis|abre la app|abre la aplicación|el|la/gi, "").trim();
-                let res = ejecutarComandoIPad("abrir_app", appName);
-                addChatMessage("JARVIS: " + res, "jarvis");
-                speakJarvis(res);
-                return;
-            }
-
-            if (lower.includes("envía un mensaje") || lower.includes("manda un mensaje")) {
-                let res = ejecutarComandoIPad("enviar_mensaje", "Contacto", text);
-                addChatMessage("JARVIS: " + res, "jarvis");
-                speakJarvis(res);
-                return;
-            }
-
-            if (lower.includes("shapr3d") || lower.includes("stl") && lower.includes("mover")) {
-                let res = ejecutarComandoIPad("mover_stl", "Shapr3D");
-                addChatMessage("JARVIS: " + res, "jarvis");
-                speakJarvis(res);
-                return;
-            }
 
             const esOrdenDeBusqueda = lower.includes("busca") || lower.includes("búscame");
             if (esOrdenDeBusqueda && (lower.includes("modelo") || lower.includes("stl") || lower.includes("printables") || lower.includes("thingiverse"))) {
