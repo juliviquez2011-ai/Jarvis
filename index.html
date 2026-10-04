@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>J.A.R.V.I.S. OS - Neural Core Cinematic</title>
+    <title>J.A.R.V.I.S. OS - Reactor Core Cinematic</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; }
@@ -14,11 +14,12 @@
             --theme-glow: rgba(0, 240, 255, 0.6);
             --theme-bg: rgba(2, 8, 19, 0.95);
             
-            /* Nuevas variables para el núcleo central naranja */
-            --orange-core: #ff7700;
-            --orange-bright: #ffaa33;
-            --orange-glow: rgba(255, 119, 0, 0.7);
-            --dark-amber: #1f0b00;
+            /* Colores del núcleo central estilo reactor naranja/dorado detallado */
+            --core-orange-1: #ff8800;
+            --core-orange-2: #ffaa33;
+            --core-amber: #ff5500;
+            --core-glow: rgba(255, 136, 0, 0.85);
+            --dark-core-bg: #0d0400;
         }
 
         #hud-container {
@@ -296,32 +297,36 @@
             top: 0;
             left: 0;
             transform-origin: center;
-            /* Núcleo naranja con brillo intenso adaptado de la imagen */
-            filter: drop-shadow(0 0 25px var(--orange-core)) drop-shadow(0 0 50px var(--orange-glow));
+            /* Filtro con brillo naranja idéntico a las referencias */
+            filter: drop-shadow(0 0 30px var(--core-orange-1)) drop-shadow(0 0 60px var(--core-glow));
             transition: filter 0.5s ease;
         }
 
-        .audio-wave-ring {
-            fill: none;
-            stroke: var(--orange-bright);
-            stroke-width: 3;
-            opacity: 0;
-            transform-origin: center;
-            filter: drop-shadow(0 0 12px var(--orange-core));
+        /* Animaciones continuas de los anillos del núcleo */
+        .rot-clockwise { transform-origin: 310px 310px; animation: spinClockwise 40s linear infinite; }
+        .rot-counter { transform-origin: 310px 310px; animation: spinCounter 30s linear infinite; }
+        .rot-fast { transform-origin: 310px 310px; animation: spinClockwise 18s linear infinite; }
+        .rot-reverse-fast { transform-origin: 310px 310px; animation: spinCounter 14s linear infinite; }
+        .rot-extra-ring { transform-origin: 310px 310px; animation: spinClockwise 25s linear infinite; }
+        .rot-inner-turb { transform-origin: 310px 310px; animation: spinCounter 8s linear infinite; }
+
+        /* Aceleración en Modo Avanzado (Rojo Brillante total) */
+        .advanced-active .rot-clockwise { animation: spinClockwise 5s linear infinite !important; }
+        .advanced-active .rot-counter { animation: spinCounter 4s linear infinite !important; }
+        .advanced-active .rot-fast { animation: spinClockwise 2.5s linear infinite !important; }
+        .advanced-active .rot-reverse-fast { animation: spinCounter 2s linear infinite !important; }
+        .advanced-active .rot-extra-ring { animation: spinClockwise 3s linear infinite !important; }
+        .advanced-active .rot-inner-turb { animation: spinCounter 1.5s linear infinite !important; }
+
+        .advanced-active #svg-core-hud {
+            filter: drop-shadow(0 0 35px #ff1100) drop-shadow(0 0 70px #ff3300) !important;
         }
-
-        .rot-clockwise { transform-origin: 310px 310px; animation: spinClockwise 35s linear infinite; }
-        .rot-counter { transform-origin: 310px 310px; animation: spinCounter 25s linear infinite; }
-        .rot-fast { transform-origin: 310px 310px; animation: spinClockwise 16s linear infinite; }
-        .rot-reverse-fast { transform-origin: 310px 310px; animation: spinCounter 12s linear infinite; }
-        .rot-extra-ring { transform-origin: 310px 310px; animation: spinClockwise 20s linear infinite; }
-
-        .advanced-active .rot-clockwise { animation: spinClockwise 4s linear infinite !important; }
-        .advanced-active .rot-counter { animation: spinCounter 3s linear infinite !important; }
-        .advanced-active .rot-fast { animation: spinClockwise 2s linear infinite !important; }
-        .advanced-active .rot-reverse-fast { animation: spinCounter 1.5s linear infinite !important; }
-        .advanced-active .rot-extra-ring { animation: spinClockwise 2.5s linear infinite !important; }
-
+        .advanced-active .core-ring-elem {
+            stroke: #ff3300 !important;
+        }
+        .advanced-active .core-ring-elem-bright {
+            stroke: #ff7744 !important;
+        }
         .advanced-active #core-label-fixed {
             fill: #ff3333 !important;
             filter: drop-shadow(0 0 20px #ff3333) !important;
@@ -335,8 +340,8 @@
             font-size: 24px;
             font-weight: bold;
             letter-spacing: 4px;
-            fill: var(--orange-bright);
-            filter: drop-shadow(0 0 5px var(--orange-core)) drop-shadow(0 0 15px var(--orange-glow));
+            fill: var(--core-orange-2);
+            filter: drop-shadow(0 0 6px var(--core-orange-1)) drop-shadow(0 0 16px var(--core-glow));
             text-anchor: middle;
             dominant-baseline: central;
         }
@@ -425,39 +430,46 @@
 
     <canvas id="bg-canvas"></canvas>
     
-    <!-- Núcleo Central Modificado con Estilo Naranja Holográfico -->
+    <!-- Núcleo Central Detallado Estilo Reactor Naranja/Dorado (Idéntico a IMG3/IMG5) -->
     <div id="core-hud-wrapper" class="hud-piece">
         <svg id="svg-core-hud" viewBox="0 0 620 620">
-            <g id="voice-waves" class="">
-                <circle class="audio-wave-ring wave-1" cx="310" cy="310" r="235"></circle>
-                <circle class="audio-wave-ring wave-2" cx="310" cy="310" r="265"></circle>
-                <circle class="audio-wave-ring wave-3" cx="310" cy="310" r="295"></circle>
-            </g>
+            <!-- Anillo Exterior Denso y Segmentado -->
             <g class="rot-clockwise">
-                <circle cx="310" cy="310" r="285" fill="none" stroke="var(--orange-core)" stroke-width="5" stroke-dasharray="45 20, 15 15, 100 30" opacity="0.95"/>
-                <circle cx="310" cy="310" r="268" fill="none" stroke="var(--orange-bright)" stroke-width="2" stroke-dasharray="8 8" opacity="0.85"/>
+                <circle cx="310" cy="310" r="295" fill="none" stroke="var(--core-orange-1)" stroke-width="4" stroke-dasharray="15 8, 30 12, 8 8, 45 15" opacity="0.9"/>
+                <circle cx="310" cy="310" r="282" fill="none" stroke="var(--core-orange-2)" stroke-width="2" stroke-dasharray="40 20, 10 10, 5 15" opacity="0.8"/>
             </g>
+
+            <!-- Capa de Datos y Bloques Complejos en Rotación Inversa -->
             <g class="rot-counter">
-                <circle cx="310" cy="310" r="250" fill="none" stroke="var(--orange-bright)" stroke-width="3" stroke-dasharray="30 15, 10 10, 60 20" opacity="0.9"/>
-                <circle cx="310" cy="310" r="232" fill="none" stroke="var(--orange-core)" stroke-width="1.5" stroke-dasharray="4 12" opacity="0.8"/>
+                <circle class="core-ring-elem" cx="310" cy="310" r="265" fill="none" stroke="var(--core-orange-1)" stroke-width="9" stroke-dasharray="50 25, 15 15, 80 30, 20 10" opacity="0.95"/>
+                <circle class="core-ring-elem-bright" cx="310" cy="310" r="248" fill="none" stroke="var(--core-orange-2)" stroke-width="2.5" stroke-dasharray="12 12, 4 20, 35 15" opacity="0.9"/>
             </g>
+
+            <!-- Anillo Intermedio Dinámico -->
             <g class="rot-extra-ring">
-                <circle cx="310" cy="310" r="214" fill="none" stroke="var(--orange-core)" stroke-width="4" stroke-dasharray="20 40, 12 8" opacity="0.9"/>
+                <circle class="core-ring-elem" cx="310" cy="310" r="230" fill="none" stroke="var(--core-orange-1)" stroke-width="6" stroke-dasharray="25 35, 10 10, 45 20, 5 15" opacity="0.92"/>
+                <!-- Pequeños bloques de marcado cardinal -->
+                <rect x="306" y="70" width="8" height="14" fill="var(--core-orange-2)" opacity="0.95"/>
+                <rect x="306" y="536" width="8" height="14" fill="var(--core-orange-2)" opacity="0.95"/>
+                <rect x="70" y="306" width="14" height="8" fill="var(--core-orange-2)" opacity="0.95"/>
+                <rect x="536" y="306" width="14" height="8" fill="var(--core-orange-2)" opacity="0.95"/>
             </g>
+
+            <!-- Anillo Interno de Alta Velocidad y Segmentos Gruesos -->
             <g class="rot-fast">
-                <circle cx="310" cy="310" r="198" fill="none" stroke="var(--orange-bright)" stroke-width="12" stroke-dasharray="16 22, 5 7, 40 16" opacity="0.9"/>
-                <circle cx="310" cy="310" r="174" fill="none" stroke="var(--orange-core)" stroke-width="3" stroke-dasharray="4 8" opacity="0.98"/>
-                <rect x="304" y="68" width="12" height="16" fill="var(--orange-bright)" opacity="0.98"/>
-                <rect x="304" y="536" width="12" height="16" fill="var(--orange-bright)" opacity="0.98"/>
-                <rect x="68" y="304" width="16" height="12" fill="var(--orange-bright)" opacity="0.98"/>
-                <rect x="536" y="304" width="16" height="12" fill="var(--orange-bright)" opacity="0.98"/>
+                <circle class="core-ring-elem" cx="310" cy="310" r="202" fill="none" stroke="var(--core-orange-2)" stroke-width="16" stroke-dasharray="18 24, 6 8, 35 18, 50 20" opacity="0.9"/>
+                <circle class="core-ring-elem-bright" cx="310" cy="310" r="178" fill="none" stroke="var(--core-orange-1)" stroke-width="3" stroke-dasharray="6 12, 18 6" opacity="0.98"/>
             </g>
-            <g class="rot-reverse-fast">
-                <circle cx="310" cy="310" r="150" fill="none" stroke="var(--orange-core)" stroke-width="18" stroke-dasharray="65 35, 20 20, 40 15" opacity="0.8"/>
-                <circle cx="310" cy="310" r="126" fill="none" stroke="var(--orange-bright)" stroke-width="2.5" opacity="0.95"/>
+
+            <!-- Turbina Central Interna / Reactor -->
+            <g class="rot-inner-turb">
+                <circle class="core-ring-elem" cx="310" cy="310" r="152" fill="none" stroke="var(--core-orange-1)" stroke-width="14" stroke-dasharray="60 30, 15 15, 30 15, 45 25" opacity="0.85"/>
+                <circle class="core-ring-elem-bright" cx="310" cy="310" r="128" fill="none" stroke="var(--core-orange-2)" stroke-width="2" stroke-dasharray="8 8" opacity="0.95"/>
             </g>
-            <circle id="core-center-bg" cx="310" cy="310" r="104" fill="var(--dark-amber)" stroke="var(--orange-bright)" stroke-width="4" opacity="0.99"/>
-            <circle cx="310" cy="310" r="92" fill="none" stroke="var(--orange-core)" stroke-width="1.5" stroke-dasharray="5 6" opacity="0.8"/>
+
+            <!-- Centro del Reactor y Etiqueta -->
+            <circle id="core-center-bg" cx="310" cy="310" r="105" fill="var(--dark-core-bg)" stroke="var(--core-orange-2)" stroke-width="4" opacity="0.98"/>
+            <circle cx="310" cy="310" r="92" fill="none" stroke="var(--core-orange-1)" stroke-width="1.5" stroke-dasharray="4 8" opacity="0.8"/>
             <text x="310" y="312" id="core-label-fixed" text-anchor="middle" dominant-baseline="central">JARVIS</text>
         </svg>
     </div>
@@ -492,7 +504,7 @@
         </div>
 
         <div id="jarvis-chat" class="interactive hud-piece">
-            <div class="msg jarvis" id="welcome-msg">JARVIS: Prototipo con núcleo naranja en línea. A su orden, señor.</div>
+            <div class="msg jarvis" id="welcome-msg">JARVIS: Reactor central en línea. A su orden, señor.</div>
         </div>
 
         <div id="right-panel-wrapper" class="interactive hud-piece">
@@ -607,7 +619,6 @@
         function setStarkTheme(active) {
             isStarkMode = active;
             const root = document.documentElement;
-            const svgCore = document.getElementById('svg-core-hud');
             if (active) {
                 root.style.setProperty('--theme-color', '#ff3333');
                 root.style.setProperty('--theme-glow', 'rgba(255, 50, 50, 0.6)');
@@ -623,7 +634,6 @@
 
         function triggerTransitionAnimation(targetActiveState) {
             const svgCoreWrapper = document.getElementById('core-hud-wrapper');
-            const svgCore = document.getElementById('svg-core-hud');
             const root = document.documentElement;
 
             const pieces = [
@@ -758,7 +768,7 @@
         animateSlot3D();
 
         function getSystemPrompt() {
-            return "Eres J.A.R.V.I.S.,. Tu potencia ha aumentado un 40% y tu razonamiento un 60%. Eres capaz de traducir todos los idiomas, incluyendo código morse. Te diriges al usuario única y exclusivamente como 'señor'. Eres educado, inteligente, sarcástico en su justa medida, eficiente y proactivo. Conoces las necesidades del usuario antes de que las pida. Comienza tus respuestas de forma directa usando expresiones como 'A la orden señor' o 'Entendido, señor'.";
+            return "Eres J.A.R.V.I.S., asistente avanzado de Tony Stark. Eres educado, inteligente, sarcástico en su justa medida, eficiente y proactivo. Te diriges al usuario única y exclusivamente como 'señor'.";
         }
 
         let chatHistory = [
