@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>J.A.R.V.I.S. OS - Volumetric 3D Reactor Core</title>
+    <title>J.A.R.V.I.S. OS - Massive Volumetric 3D Reactor Core</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; }
@@ -268,14 +268,14 @@
         }
         .model-link-btn:hover { background: var(--theme-color); color: #000; }
 
-        /* Contenedor del Núcleo Central 3D Volumétrico (Estilo IMG2 / IMG5) */
+        /* Contenedor Masivo del Núcleo Central 3D (Estilo IMG3) */
         #core-3d-wrapper {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 580px;
-            height: 580px;
+            width: 720px;
+            height: 720px;
             pointer-events: none;
             z-index: 2;
         }
@@ -284,12 +284,12 @@
             width: 100%;
             height: 100%;
             display: block;
-            filter: drop-shadow(0 0 30px rgba(255, 136, 0, 0.85)) drop-shadow(0 0 60px rgba(255, 85, 0, 0.6));
+            filter: drop-shadow(0 0 35px rgba(255, 136, 0, 0.9)) drop-shadow(0 0 75px rgba(255, 85, 0, 0.65));
             transition: filter 0.5s ease;
         }
 
         .advanced-active #core-canvas-3d {
-            filter: drop-shadow(0 0 35px #ff1100) drop-shadow(0 0 70px #ff3300) !important;
+            filter: drop-shadow(0 0 40px #ff1100) drop-shadow(0 0 80px #ff3300) !important;
         }
 
         #bottom-watermark {
@@ -376,7 +376,7 @@
 
     <canvas id="bg-canvas"></canvas>
     
-    <!-- Núcleo Central 3D Volumétrico en tiempo real (Estilo IMG2 / IMG5) -->
+    <!-- Núcleo Central 3D Volumétrico Masivo (Estilo IMG3 con anillos cortados y alta densidad) -->
     <div id="core-3d-wrapper" class="hud-piece">
         <canvas id="core-canvas-3d"></canvas>
     </div>
@@ -411,7 +411,7 @@
         </div>
 
         <div id="jarvis-chat" class="interactive hud-piece">
-            <div class="msg jarvis" id="welcome-msg">JARVIS: Reactor central 3D en línea. A su orden, señor.</div>
+            <div class="msg jarvis" id="welcome-msg">JARVIS: Reactor central masivo 3D en línea. A su orden, señor.</div>
         </div>
 
         <div id="right-panel-wrapper" class="interactive hud-piece">
@@ -486,13 +486,13 @@
         renderer.setPixelRatio(window.devicePixelRatio);
         camera.position.z = 6;
 
-        const particlesCount = 300;
+        const particlesCount = 350;
         const particlesGeo = new THREE.BufferGeometry();
         const positions = new Float32Array(particlesCount * 3);
         for(let i=0; i<particlesCount*3; i+=3) {
-            positions[i] = (Math.random() - 0.5) * 20;
-            positions[i+1] = (Math.random() - 0.5) * 20;
-            positions[i+2] = (Math.random() - 0.5) * 20;
+            positions[i] = (Math.random() - 0.5) * 22;
+            positions[i+1] = (Math.random() - 0.5) * 22;
+            positions[i+2] = (Math.random() - 0.5) * 22;
         }
         particlesGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
         const particlesMat = new THREE.PointsMaterial({ size: 0.065, color: 0x00f0ff, transparent: true, opacity: 0.5 });
@@ -509,7 +509,7 @@
         }
         animateBg();
 
-        // 2. NÚCLEO CENTRAL 3D VOLUMÉTRICO (ESTILO HOLOGRÁFICO AVANZADO IMG2/IMG5)
+        // 2. NÚCLEO CENTRAL 3D VOLUMÉTRICO MASIVO (ESTILO IMG3 - ANILLOS CORTADOS Y ALTA DENSIDAD)
         const coreContainer = document.getElementById('core-canvas-3d');
         const sceneCore = new THREE.Scene();
         const cameraCore = new THREE.PerspectiveCamera(50, coreContainer.clientWidth / coreContainer.clientHeight, 0.1, 1000);
@@ -521,38 +521,62 @@
         const coreGroup = new THREE.Group();
         sceneCore.add(coreGroup);
 
-        // Materiales Holográficos Naranja/Dorado
-        const matOrangeWire = new THREE.MeshBasicMaterial({ color: 0xff8800, wireframe: true, transparent: true, opacity: 0.75 });
-        const matGoldWire = new THREE.MeshBasicMaterial({ color: 0xffaa33, wireframe: true, transparent: true, opacity: 0.9 });
-        const matRedWire = new THREE.MeshBasicMaterial({ color: 0xff2200, wireframe: true, transparent: true, opacity: 0.85 });
+        // Materiales Holográficos Naranja/Dorado de Alta Intensidad
+        const matOrangeWire = new THREE.MeshBasicMaterial({ color: 0xff7700, wireframe: true, transparent: true, opacity: 0.8 });
+        const matGoldWire = new THREE.MeshBasicMaterial({ color: 0xffaa22, wireframe: true, transparent: true, opacity: 0.95 });
+        const matBrightOrange = new THREE.MeshBasicMaterial({ color: 0xff9900, wireframe: true, transparent: true, opacity: 0.9 });
 
-        // Anillos concéntricos 3D y Toroide de alta complejidad
-        const ring1 = new THREE.Mesh(new THREE.TorusGeometry(1.8, 0.04, 16, 100), matOrangeWire);
-        const ring2 = new THREE.Mesh(new THREE.TorusGeometry(1.5, 0.03, 16, 80), matGoldWire);
-        const ring3 = new THREE.Mesh(new THREE.TorusGeometry(1.2, 0.05, 16, 60), matOrangeWire);
-        const innerSphere = new THREE.Mesh(new THREE.IcosahedronGeometry(0.8, 2), matGoldWire);
+        // Anillos Cortados / Segmentados (Arcos en lugar de círculos completos)
+        const cutRingGroup1 = new THREE.Group();
+        for (let i = 0; i < 6; i++) {
+            const arcMesh = new THREE.Mesh(new THREE.TorusGeometry(2.3, 0.035, 16, 35, Math.PI * 0.7), matOrangeWire);
+            arcMesh.rotation.z = i * (Math.PI / 3);
+            cutRingGroup1.add(arcMesh);
+        }
+        coreGroup.add(cutRingGroup1);
+
+        const cutRingGroup2 = new THREE.Group();
+        for (let i = 0; i < 8; i++) {
+            const arcMesh2 = new THREE.Mesh(new THREE.TorusGeometry(1.9, 0.03, 16, 25, Math.PI * 0.5), matGoldWire);
+            arcMesh2.rotation.z = i * (Math.PI / 4) + 0.5;
+            cutRingGroup2.add(arcMesh2);
+        }
+        coreGroup.add(cutRingGroup2);
+
+        // Anillos concéntricos principales adicionales (Estilo IMG3)
+        const ringMain1 = new THREE.Mesh(new THREE.TorusGeometry(2.1, 0.045, 16, 120), matBrightOrange);
+        const ringMain2 = new THREE.Mesh(new THREE.TorusGeometry(1.65, 0.035, 16, 100), matOrangeWire);
+        const ringMain3 = new THREE.Mesh(new THREE.TorusGeometry(1.3, 0.05, 16, 80), matGoldWire);
         
-        coreGroup.add(ring1);
-        coreGroup.add(ring2);
-        coreGroup.add(ring3);
-        coreGroup.add(innerSphere);
+        coreGroup.add(ringMain1);
+        coreGroup.add(ringMain2);
+        coreGroup.add(ringMain3);
 
-        // Nube de partículas densas orbitando el núcleo
+        // Esferas y tramas geométricas internas cruzadas en ángulo
+        const innerSphere1 = new THREE.Mesh(new THREE.IcosahedronGeometry(1.0, 2), matGoldWire);
+        const innerSphere2 = new THREE.Mesh(new THREE.OctahedronGeometry(1.15, 2), matOrangeWire);
+        innerSphere2.rotation.x = 0.5;
+        innerSphere2.rotation.y = 0.5;
+
+        coreGroup.add(innerSphere1);
+        coreGroup.add(innerSphere2);
+
+        // Nube de partículas densas orbitando el núcleo masivo
         const coreParticlesGeo = new THREE.BufferGeometry();
-        const coreCount = 600;
+        const coreCount = 900;
         const corePos = new Float32Array(coreCount * 3);
         for(let i=0; i<coreCount*3; i+=3) {
             const u = Math.random();
             const v = Math.random();
             const theta = u * 2.0 * Math.PI;
             const phi = Math.acos(2.0 * v - 1.0);
-            const r = 0.9 + Math.random() * 0.9;
+            const r = 0.8 + Math.random() * 1.4;
             corePos[i] = r * Math.sin(phi) * Math.cos(theta);
             corePos[i+1] = r * Math.sin(phi) * Math.sin(theta);
             corePos[i+2] = r * Math.cos(phi);
         }
         coreParticlesGeo.setAttribute('position', new THREE.BufferAttribute(corePos, 3));
-        const coreParticlesMat = new THREE.PointsMaterial({ size: 0.035, color: 0xffaa33, transparent: true, opacity: 0.8 });
+        const coreParticlesMat = new THREE.PointsMaterial({ size: 0.03, color: 0xffaa33, transparent: true, opacity: 0.85 });
         const coreParticleSystem = new THREE.Points(coreParticlesGeo, coreParticlesMat);
         coreGroup.add(coreParticleSystem);
 
@@ -560,17 +584,23 @@
             requestAnimationFrame(animateCore3D);
             const speedMult = isAdvancedWorkMode ? 3.5 : 1.0;
 
-            ring1.rotation.x += 0.008 * speedMult;
-            ring1.rotation.y += 0.012 * speedMult;
+            cutRingGroup1.rotation.z += 0.006 * speedMult;
+            cutRingGroup2.rotation.z -= 0.009 * speedMult;
 
-            ring2.rotation.y -= 0.01 * speedMult;
-            ring2.rotation.z += 0.015 * speedMult;
+            ringMain1.rotation.x += 0.008 * speedMult;
+            ringMain1.rotation.y += 0.012 * speedMult;
 
-            ring3.rotation.x -= 0.015 * speedMult;
-            ring3.rotation.y -= 0.008 * speedMult;
+            ringMain2.rotation.y -= 0.01 * speedMult;
+            ringMain2.rotation.z += 0.015 * speedMult;
 
-            innerSphere.rotation.y += 0.02 * speedMult;
-            innerSphere.rotation.z += 0.01 * speedMult;
+            ringMain3.rotation.x -= 0.015 * speedMult;
+            ringMain3.rotation.y -= 0.008 * speedMult;
+
+            innerSphere1.rotation.y += 0.02 * speedMult;
+            innerSphere1.rotation.z += 0.01 * speedMult;
+
+            innerSphere2.rotation.x -= 0.015 * speedMult;
+            innerSphere2.rotation.y -= 0.02 * speedMult;
 
             coreParticleSystem.rotation.y -= 0.005 * speedMult;
 
@@ -638,9 +668,9 @@
                     root.style.setProperty('--theme-glow', 'rgba(255, 50, 50, 0.8)');
                     root.style.setProperty('--theme-bg', 'rgba(25, 2, 2, 0.95)');
                     
-                    // Cambiar núcleo a rojo brillante total en Modo Avanzado
                     matOrangeWire.color.setHex(0xff1100);
                     matGoldWire.color.setHex(0xff4400);
+                    matBrightOrange.color.setHex(0xff2200);
                     coreParticlesMat.color.setHex(0xff2200);
 
                     particlesMat.color.setHex(0xff3333);
@@ -675,9 +705,9 @@
                     root.style.setProperty('--theme-glow', isStarkMode ? 'rgba(255, 50, 50, 0.6)' : 'rgba(0, 240, 255, 0.6)');
                     root.style.setProperty('--theme-bg', isStarkMode ? 'rgba(20, 2, 2, 0.95)' : 'rgba(2, 8, 19, 0.95)');
                     
-                    // Restaurar colores originales naranja/dorado
-                    matOrangeWire.color.setHex(0xff8800);
-                    matGoldWire.color.setHex(0xffaa33);
+                    matOrangeWire.color.setHex(0xff7700);
+                    matGoldWire.color.setHex(0xffaa22);
+                    matBrightOrange.color.setHex(0xff9900);
                     coreParticlesMat.color.setHex(0xffaa33);
 
                     particlesMat.color.setHex(isStarkMode ? 0xff3333 : 0x00f0ff);
