@@ -13,6 +13,12 @@
             --theme-color: #00f0ff;
             --theme-glow: rgba(0, 240, 255, 0.6);
             --theme-bg: rgba(2, 8, 19, 0.95);
+            
+            /* Nuevas variables para el núcleo central naranja */
+            --orange-core: #ff7700;
+            --orange-bright: #ffaa33;
+            --orange-glow: rgba(255, 119, 0, 0.7);
+            --dark-amber: #1f0b00;
         }
 
         #hud-container {
@@ -290,17 +296,18 @@
             top: 0;
             left: 0;
             transform-origin: center;
-            filter: drop-shadow(0 0 20px var(--theme-color)) drop-shadow(0 0 40px var(--theme-glow));
+            /* Núcleo naranja con brillo intenso adaptado de la imagen */
+            filter: drop-shadow(0 0 25px var(--orange-core)) drop-shadow(0 0 50px var(--orange-glow));
             transition: filter 0.5s ease;
         }
 
         .audio-wave-ring {
             fill: none;
-            stroke: var(--theme-color);
+            stroke: var(--orange-bright);
             stroke-width: 3;
             opacity: 0;
             transform-origin: center;
-            filter: drop-shadow(0 0 12px var(--theme-color));
+            filter: drop-shadow(0 0 12px var(--orange-core));
         }
 
         .rot-clockwise { transform-origin: 310px 310px; animation: spinClockwise 35s linear infinite; }
@@ -320,14 +327,6 @@
             filter: drop-shadow(0 0 20px #ff3333) !important;
         }
 
-        .advanced-active circle:not(#core-center-bg), .advanced-active rect {
-            stroke: #ff3333 !important;
-        }
-        .advanced-active #core-center-bg {
-            fill: var(--theme-bg) !important;
-            stroke: #ff3333 !important;
-        }
-
         @keyframes spinClockwise { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes spinCounter { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
 
@@ -336,11 +335,10 @@
             font-size: 24px;
             font-weight: bold;
             letter-spacing: 4px;
-            fill: var(--theme-color);
-            filter: drop-shadow(0 0 5px var(--theme-color)) drop-shadow(0 0 12px var(--theme-glow));
+            fill: var(--orange-bright);
+            filter: drop-shadow(0 0 5px var(--orange-core)) drop-shadow(0 0 15px var(--orange-glow));
             text-anchor: middle;
             dominant-baseline: central;
-            transition: fill 0.5s ease;
         }
 
         #bottom-watermark {
@@ -427,6 +425,7 @@
 
     <canvas id="bg-canvas"></canvas>
     
+    <!-- Núcleo Central Modificado con Estilo Naranja Holográfico -->
     <div id="core-hud-wrapper" class="hud-piece">
         <svg id="svg-core-hud" viewBox="0 0 620 620">
             <g id="voice-waves" class="">
@@ -435,30 +434,30 @@
                 <circle class="audio-wave-ring wave-3" cx="310" cy="310" r="295"></circle>
             </g>
             <g class="rot-clockwise">
-                <circle cx="310" cy="310" r="285" fill="none" stroke="var(--theme-color)" stroke-width="5" stroke-dasharray="45 20, 15 15, 100 30" opacity="0.95"/>
-                <circle cx="310" cy="310" r="268" fill="none" stroke="var(--theme-color)" stroke-width="2" stroke-dasharray="8 8" opacity="0.85"/>
+                <circle cx="310" cy="310" r="285" fill="none" stroke="var(--orange-core)" stroke-width="5" stroke-dasharray="45 20, 15 15, 100 30" opacity="0.95"/>
+                <circle cx="310" cy="310" r="268" fill="none" stroke="var(--orange-bright)" stroke-width="2" stroke-dasharray="8 8" opacity="0.85"/>
             </g>
             <g class="rot-counter">
-                <circle cx="310" cy="310" r="250" fill="none" stroke="var(--theme-color)" stroke-width="3" stroke-dasharray="30 15, 10 10, 60 20" opacity="0.9"/>
-                <circle cx="310" cy="310" r="232" fill="none" stroke="var(--theme-color)" stroke-width="1.5" stroke-dasharray="4 12" opacity="0.8"/>
+                <circle cx="310" cy="310" r="250" fill="none" stroke="var(--orange-bright)" stroke-width="3" stroke-dasharray="30 15, 10 10, 60 20" opacity="0.9"/>
+                <circle cx="310" cy="310" r="232" fill="none" stroke="var(--orange-core)" stroke-width="1.5" stroke-dasharray="4 12" opacity="0.8"/>
             </g>
             <g class="rot-extra-ring">
-                <circle cx="310" cy="310" r="214" fill="none" stroke="var(--theme-color)" stroke-width="4" stroke-dasharray="20 40, 12 8" opacity="0.9"/>
+                <circle cx="310" cy="310" r="214" fill="none" stroke="var(--orange-core)" stroke-width="4" stroke-dasharray="20 40, 12 8" opacity="0.9"/>
             </g>
             <g class="rot-fast">
-                <circle cx="310" cy="310" r="198" fill="none" stroke="var(--theme-color)" stroke-width="12" stroke-dasharray="16 22, 5 7, 40 16" opacity="0.9"/>
-                <circle cx="310" cy="310" r="174" fill="none" stroke="var(--theme-color)" stroke-width="3" stroke-dasharray="4 8" opacity="0.98"/>
-                <rect x="304" y="68" width="12" height="16" fill="var(--theme-color)" opacity="0.98"/>
-                <rect x="304" y="536" width="12" height="16" fill="var(--theme-color)" opacity="0.98"/>
-                <rect x="68" y="304" width="16" height="12" fill="var(--theme-color)" opacity="0.98"/>
-                <rect x="536" y="304" width="16" height="12" fill="var(--theme-color)" opacity="0.98"/>
+                <circle cx="310" cy="310" r="198" fill="none" stroke="var(--orange-bright)" stroke-width="12" stroke-dasharray="16 22, 5 7, 40 16" opacity="0.9"/>
+                <circle cx="310" cy="310" r="174" fill="none" stroke="var(--orange-core)" stroke-width="3" stroke-dasharray="4 8" opacity="0.98"/>
+                <rect x="304" y="68" width="12" height="16" fill="var(--orange-bright)" opacity="0.98"/>
+                <rect x="304" y="536" width="12" height="16" fill="var(--orange-bright)" opacity="0.98"/>
+                <rect x="68" y="304" width="16" height="12" fill="var(--orange-bright)" opacity="0.98"/>
+                <rect x="536" y="304" width="16" height="12" fill="var(--orange-bright)" opacity="0.98"/>
             </g>
             <g class="rot-reverse-fast">
-                <circle cx="310" cy="310" r="150" fill="none" stroke="var(--theme-color)" stroke-width="18" stroke-dasharray="65 35, 20 20, 40 15" opacity="0.8"/>
-                <circle cx="310" cy="310" r="126" fill="none" stroke="var(--theme-color)" stroke-width="2.5" opacity="0.95"/>
+                <circle cx="310" cy="310" r="150" fill="none" stroke="var(--orange-core)" stroke-width="18" stroke-dasharray="65 35, 20 20, 40 15" opacity="0.8"/>
+                <circle cx="310" cy="310" r="126" fill="none" stroke="var(--orange-bright)" stroke-width="2.5" opacity="0.95"/>
             </g>
-            <circle id="core-center-bg" cx="310" cy="310" r="104" fill="var(--theme-bg)" stroke="var(--theme-color)" stroke-width="4" opacity="0.99"/>
-            <circle cx="310" cy="310" r="92" fill="none" stroke="var(--theme-color)" stroke-width="1.5" stroke-dasharray="5 6" opacity="0.8"/>
+            <circle id="core-center-bg" cx="310" cy="310" r="104" fill="var(--dark-amber)" stroke="var(--orange-bright)" stroke-width="4" opacity="0.99"/>
+            <circle cx="310" cy="310" r="92" fill="none" stroke="var(--orange-core)" stroke-width="1.5" stroke-dasharray="5 6" opacity="0.8"/>
             <text x="310" y="312" id="core-label-fixed" text-anchor="middle" dominant-baseline="central">JARVIS</text>
         </svg>
     </div>
@@ -493,7 +492,7 @@
         </div>
 
         <div id="jarvis-chat" class="interactive hud-piece">
-            <div class="msg jarvis" id="welcome-msg">JARVIS: Prototipo 3 en línea. A su orden, señor.</div>
+            <div class="msg jarvis" id="welcome-msg">JARVIS: Prototipo con núcleo naranja en línea. A su orden, señor.</div>
         </div>
 
         <div id="right-panel-wrapper" class="interactive hud-piece">
@@ -614,13 +613,11 @@
                 root.style.setProperty('--theme-glow', 'rgba(255, 50, 50, 0.6)');
                 root.style.setProperty('--theme-bg', 'rgba(20, 2, 2, 0.95)');
                 if(!isAdvancedWorkMode) particlesMat.color.setHex(0xff3333);
-                if(svgCore) svgCore.style.filter = "drop-shadow(0 0 20px #ff3333) drop-shadow(0 0 40px rgba(255, 50, 50, 0.6))";
             } else if (!isAdvancedWorkMode) {
                 root.style.setProperty('--theme-color', '#00f0ff');
                 root.style.setProperty('--theme-glow', 'rgba(0, 240, 255, 0.6)');
                 root.style.setProperty('--theme-bg', 'rgba(2, 8, 19, 0.95)');
                 particlesMat.color.setHex(0x00f0ff);
-                if(svgCore) svgCore.style.filter = "drop-shadow(0 0 20px #00f0ff) drop-shadow(0 0 40px rgba(0, 240, 255, 0.6))";
             }
         }
 
@@ -657,8 +654,6 @@
                     
                     particlesMat.color.setHex(0xff3333);
                     isAdvancedWorkMode = true;
-
-                    if(svgCore) svgCore.style.filter = "drop-shadow(0 0 30px #ff3333)";
 
                     pieces.forEach((piece, index) => {
                         if (piece) {
@@ -697,8 +692,6 @@
                     root.style.setProperty('--theme-bg', isStarkMode ? 'rgba(20, 2, 2, 0.95)' : 'rgba(2, 8, 19, 0.95)');
                     
                     particlesMat.color.setHex(isStarkMode ? 0xff3333 : 0x00f0ff);
-
-                    if(svgCore) svgCore.style.filter = isStarkMode ? "drop-shadow(0 0 20px #ff3333)" : "drop-shadow(0 0 20px #00f0ff)";
 
                     pieces.forEach((piece, index) => {
                         if (piece) {
@@ -1194,7 +1187,6 @@
             chat.scrollTop = chat.scrollHeight;
         }
 
-        // FUNCIÓN TEXT-TO-SPEECH ACTUALIZADA: 100% gratuita, sin tarjetas ni llaves con StreamElements
         function speakJarvis(text) {
             if (!text) return;
             const cleanText = text.replace(/<[^>]*>?/gm, '');
@@ -1205,7 +1197,7 @@
             audio.playbackRate = 1.05;
 
             audio.play().catch(err => {
-                console.warn("Error reproduciendo audio libre de StreamElements:", err);
+                console.warn("Error reproduciendo audio:", err);
             });
         }
     </script>
