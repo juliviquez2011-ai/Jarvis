@@ -688,7 +688,7 @@
         animateSlot3D();
 
         function getSystemPrompt() {
-            return "Eres J.A.R.V.I.S., asistente avanzado de Tony Stark. Directo, sarcástico, altamente eficiente y tecnológico. Nunca digas 'Buenos días' ni uses saludos formales molestos. Responde de manera concisa y lúcida, dirigiéndote al usuario única y exclusivamente como 'señor'.";
+            return "Eres J.A.R.V.I.S., asistente avanzado . Directo, sarcástico, altamente eficiente y tecnológico. Nunca digas 'Buenos días' ni uses saludos formales molestos. Responde de manera concisa y lúcida, dirigiéndote al usuario única y exclusivamente como 'señor'.";
         }
 
         let chatHistory = [
@@ -962,78 +962,75 @@
             const lower = text.toLowerCase();
             let codeSnippet = '';
 
-           // Modo Avanzado / Trabajo
-if (lower.includes("modo de trabajo avanzado") || lower.includes("modo avanzado")) {
-    const container = document.getElementById('hud-container');
-    container.classList.add('hud-transition-left');
-    
-    setTimeout(() => {
-        document.documentElement.style.setProperty('--theme-color', '#ff3300');
-        document.documentElement.style.setProperty('--theme-glow', 'rgba(255, 51, 0, 0.6)');
-        document.documentElement.style.setProperty('--theme-bg', 'rgba(18, 4, 2, 0.95)');
-        container.classList.remove('hud-transition-left');
-        container.classList.add('hud-transition-right');
-        setTimeout(() => container.classList.remove('hud-transition-right'), 1200);
-    }, 1200);
+      // Desplazamiento completo de todo el HUD hacia la izquierda (incluyendo logotipo y paneles)
+            if (lower.includes("modo de trabajo avanzado") || lower.includes("modo avanzado")) {
+                const container = document.getElementById('hud-container');
+                container.classList.add('hud-transition-left');
+                
+                setTimeout(() => {
+                    document.documentElement.style.setProperty('--theme-color', '#ff3300');
+                    document.documentElement.style.setProperty('--theme-glow', 'rgba(255, 51, 0, 0.6)');
+                    document.documentElement.style.setProperty('--theme-bg', 'rgba(18, 4, 2, 0.95)');
+                    container.classList.remove('hud-transition-left');
+                    container.classList.add('hud-transition-right');
+                    setTimeout(() => container.classList.remove('hud-transition-right'), 1200);
+                }, 1200);
 
-    addChatMessage("JARVIS: Modo avanzado activo. Procesamiento al máximo, señor.", "jarvis");
-    speakJarvis("Modo avanzado activo, señor.");
-    return;
-} else if (lower.includes("desactivar modo") || lower.includes("modo normal")) {
-    const container = document.getElementById('hud-container');
-    container.classList.add('hud-transition-right');
-    
-    setTimeout(() => {
-        document.documentElement.style.setProperty('--theme-color', '#00eeff');
-        document.documentElement.style.setProperty('--theme-glow', 'rgba(0, 238, 255, 0.5)');
-        document.documentElement.style.setProperty('--theme-bg', 'rgba(2, 10, 18, 0.92)');
-        container.classList.remove('hud-transition-right');
-        container.classList.add('hud-transition-left');
-        setTimeout(() => container.classList.remove('hud-transition-left'), 1200);
-    }, 1200);
+                addChatMessage("JARVIS: Modo avanzado activo. Procesamiento al máximo, señor.", "jarvis");
+                speakJarvis("Modo avanzado activo, señor.");
+                return;
+            } else if (lower.includes("desactivar modo") || lower.includes("modo normal")) {
+                const container = document.getElementById('hud-container');
+                container.classList.add('hud-transition-right');
+                
+                setTimeout(() => {
+                    document.documentElement.style.setProperty('--theme-color', '#00eeff');
+                    document.documentElement.style.setProperty('--theme-glow', 'rgba(0, 238, 255, 0.5)');
+                    document.documentElement.style.setProperty('--theme-bg', 'rgba(2, 10, 18, 0.92)');
+                    container.classList.remove('hud-transition-right');
+                    container.classList.add('hud-transition-left');
+                    setTimeout(() => container.classList.remove('hud-transition-left'), 1200);
+                }, 1200);
 
-    addChatMessage("JARVIS: Parámetros estándar restaurados, señor.", "jarvis");
-    speakJarvis("Parámetros estándar restaurados, señor.");
-    return;
-}
+                addChatMessage("JARVIS: Parámetros estándar restaurados, señor.", "jarvis");
+                speakJarvis("Parámetros estándar restaurados, señor.");
+                return;
+            }
 
-// Goon Mode (Desplazamiento total, cambio de color y desactivación precisa)
-if (lower.includes("activate goon mode") || lower.includes("activa goon mode")) {
-    const container = document.getElementById('hud-container');
-    // Desplaza todo el HUD (incluyendo el núcleo central de puntos y paneles) a la izquierda
-    container.classList.add('hud-transition-left');
-    
-    setTimeout(() => {
-        // Cambia toda la interfaz a un tono distintivo
-        document.documentElement.style.setProperty('--theme-color', '#bf00ff'); // Cambiado a un morado/neón futurista (puedes ajustarlo si prefieres otro)
-        document.documentElement.style.setProperty('--theme-glow', 'rgba(191, 0, 255, 0.7)');
-        document.documentElement.style.setProperty('--theme-bg', 'rgba(15, 2, 18, 0.95)');
-        container.classList.remove('hud-transition-left');
-        container.classList.add('hud-transition-right');
-        setTimeout(() => container.classList.remove('hud-transition-right'), 1200);
-    }, 1200);
+              // Desplazamiento completo de todo el HUD hacia la izquierda (incluyendo logotipo y paneles)
+            if (lower.includes("activate goon mode") || lower.includes("activa goon mode")) {
+                const container = document.getElementById('hud-container');
+                container.classList.add('hud-transition-left');
+                
+                setTimeout(() => {
+                    document.documentElement.style.setProperty('--theme-color', '#FFA500');
+                    document.documentElement.style.setProperty('--theme-glow', 'rgba(255, 165, 0)');
+                    document.documentElement.style.setProperty('--theme-bg', 'rgba(18, 4, 2, 0.95)');
+                    container.classList.remove('hud-transition-left');
+                    container.classList.add('hud-transition-right');
+                    setTimeout(() => container.classList.remove('hud-transition-right'), 1200);
+                }, 1200);
 
-    addChatMessage("JARVIS: At your service, sir. Goon mode activated.", "jarvis");
-    speakJarvis("Goon mode activated, sir.");
-    return;
-} else if (lower.includes("deactivate goon mode") || lower.includes("desactivar goon mode") || lower.includes("deactivate") || lower.includes("activate normal mode")) {
-    const container = document.getElementById('hud-container');
-    container.classList.add('hud-transition-right');
-    
-    setTimeout(() => {
-        // Restaura los valores originales de la interfaz
-        document.documentElement.style.setProperty('--theme-color', '#00eeff');
-        document.documentElement.style.setProperty('--theme-glow', 'rgba(0, 238, 255, 0.5)');
-        document.documentElement.style.setProperty('--theme-bg', 'rgba(2, 10, 18, 0.92)');
-        container.classList.remove('hud-transition-right');
-        container.classList.add('hud-transition-left');
-        setTimeout(() => container.classList.remove('hud-transition-left'), 1200);
-    }, 1200);
+                addChatMessage("JARVIS: at your service sir goon mode activated., sir.", "jarvis");
+                
+                return;
+            } else if (lower.includes("Deactivate") || lower.includes("activate normal mode")) {
+                const container = document.getElementById('hud-container');
+                container.classList.add('hud-transition-right');
+                
+                setTimeout(() => {
+                    document.documentElement.style.setProperty('--theme-color', '#00eeff');
+                    document.documentElement.style.setProperty('--theme-glow', 'rgba(0, 238, 255, 0.5)');
+                    document.documentElement.style.setProperty('--theme-bg', 'rgba(2, 10, 18, 0.92)');
+                    container.classList.remove('hud-transition-right');
+                    container.classList.add('hud-transition-left');
+                    setTimeout(() => container.classList.remove('hud-transition-left'), 1200);
+                }, 1200);
 
-    addChatMessage("JARVIS: Deactivating goon mode. Standard parameters restored, sir.", "jarvis");
-    speakJarvis("Goon mode deactivated. Standard parameters restored, sir.");
-    return;
-}
+                addChatMessage("JARVIS: Parámetros estándar restaurados, señor.", "jarvis");
+                speakJarvis("Parámetros estándar restaurados, señor.");
+                return;
+            }
 
             const esOrdenDeBusqueda = lower.includes("busca") || lower.includes("búscame");
             if (esOrdenDeBusqueda && (lower.includes("modelo") || lower.includes("stl") || lower.includes("printables") || lower.includes("thingiverse"))) {
