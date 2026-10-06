@@ -271,7 +271,7 @@
         }
         .model-link-btn:hover { background: var(--theme-color); color: #000; }
 
-        /* NÚCLEO CENTRAL 3D FIJO (Inmune al barrido general del HUD) */
+        /* NÚCLEO CENTRAL 3D */
         #core-3d-wrapper {
             position: absolute;
             top: 50%;
@@ -1011,10 +1011,10 @@
                     setTimeout(() => container.classList.remove('hud-transition-right'), 1200);
                 }, 1200);
 
-                addChatMessage("JARVIS: at your service sir goon mode activated., sir.", "jarvis");
+                addChatMessage("JARVIS: at your service sir goon mode activated.,.", "jarvis");
                 
                 return;
-            } else if (lower.includes("Deactivate") || lower.includes("activate normal mode")) {
+            } else if (lower.includes("turn off") || lower.includes("activate normal mode")) {
                 const container = document.getElementById('hud-container');
                 container.classList.add('hud-transition-right');
                 
