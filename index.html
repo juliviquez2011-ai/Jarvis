@@ -997,6 +997,41 @@
                 return;
             }
 
+              // Desplazamiento completo de todo el HUD hacia la izquierda (incluyendo logotipo y paneles)
+            if (lower.includes("goon mode") || lower.includes("goon mode")) {
+                const container = document.getElementById('hud-container');
+                container.classList.add('hud-transition-left');
+                
+                setTimeout(() => {
+                    document.documentElement.style.setProperty('--theme-color', '#ff3300');
+                    document.documentElement.style.setProperty('--theme-glow', 'rgba(255, 51, 0, 0.6)');
+                    document.documentElement.style.setProperty('--theme-bg', 'rgba(18, 4, 2, 0.95)');
+                    container.classList.remove('hud-transition-left');
+                    container.classList.add('hud-transition-right');
+                    setTimeout(() => container.classList.remove('hud-transition-right'), 1200);
+                }, 1200);
+
+                addChatMessage("JARVIS: at your service sir goon mode activated., sir.", "jarvis");
+                
+                return;
+            } else if (lower.includes("deactivate mode") || lower.includes("modo normal")) {
+                const container = document.getElementById('hud-container');
+                container.classList.add('hud-transition-right');
+                
+                setTimeout(() => {
+                    document.documentElement.style.setProperty('--theme-color', '#00eeff');
+                    document.documentElement.style.setProperty('--theme-glow', 'rgba(0, 238, 255, 0.5)');
+                    document.documentElement.style.setProperty('--theme-bg', 'rgba(2, 10, 18, 0.92)');
+                    container.classList.remove('hud-transition-right');
+                    container.classList.add('hud-transition-left');
+                    setTimeout(() => container.classList.remove('hud-transition-left'), 1200);
+                }, 1200);
+
+                addChatMessage("JARVIS: Parámetros estándar restaurados, señor.", "jarvis");
+                speakJarvis("Parámetros estándar restaurados, señor.");
+                return;
+            }
+
             const esOrdenDeBusqueda = lower.includes("busca") || lower.includes("búscame");
             if (esOrdenDeBusqueda && (lower.includes("modelo") || lower.includes("stl") || lower.includes("printables") || lower.includes("thingiverse"))) {
                 let cleanQuery = text.replace(/jarvis|busca|el modelo|un modelo|stl|de|para|imprimir|en|búscame|printables|thingiverse/gi, "").trim() || "modelo 3d";
