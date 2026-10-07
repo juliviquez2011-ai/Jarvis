@@ -289,12 +289,13 @@
             transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1), opacity 1.2s ease;
         }
 
-        #hud-container.hud-transition-left ~ #core-3d-wrapper {
+        /* Si el contenedor del HUD tiene la clase, forzamos la animación en el núcleo sin importar el orden */
+        body:has(#hud-container.hud-transition-left) #core-3d-wrapper {
             transform: translate(-50%, -50%) translateX(-100vw) scale(0.9) !important;
             opacity: 0;
         }
 
-        #hud-container.hud-transition-right ~ #core-3d-wrapper {
+        body:has(#hud-container.hud-transition-right) #core-3d-wrapper {
             transform: translate(-50%, -50%) translateX(100vw) scale(0.9) !important;
             opacity: 0;
         }
