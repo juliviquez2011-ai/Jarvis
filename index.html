@@ -1107,13 +1107,12 @@
             chat.scrollTop = chat.scrollHeight;
         }
 
-        // Integración de Piper TTS (Servidor local ejecutando Piper)
+        // Integración de Piper TTS (Conexión local al servidor Python)
         async function speakJarvis(text) {
             if (!text) return;
             const cleanText = text.replace(/<[^>]*>?/gm, '');
             
             try {
-                // Envía el texto al servidor local donde corre Piper TTS
                 const response = await fetch("http://localhost:5000/tts", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
