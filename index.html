@@ -1107,15 +1107,30 @@
             chat.scrollTop = chat.scrollHeight;
         }
 
-        function speakJarvis(text) {
+        // Integración de Piper TTS (Servidor local ejecutando Piper)
+        async function speakJarvis(text) {
             if (!text) return;
             const cleanText = text.replace(/<[^>]*>?/gm, '');
-            const encodedText = encodeURIComponent(cleanText);
-            const audioUrl = `https://api.streamelements.com/kappa/v2/speech?voice=es-ES-AlvaroNeural&text=${encodedText}`;
+            
+            try {
+                // Envía el texto al servidor local donde corre Piper TTS
+                const response = await fetch("http://localhost:5000/tts", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ text: cleanText })
+                });
 
-            const audio = new Audio(audioUrl);
-            audio.playbackRate = 1.05;
-            audio.play().catch(err => {});
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const audioUrl = URL.createObjectURL(blob);
+                    const audio = new Audio(audioUrl);
+                    audio.play().catch(err => {});
+                } else {
+                    console.warn("No se pudo conectar con el servidor local de Piper TTS, señor.");
+                }
+            } catch (err) {
+                console.warn("Error de enlace con Piper TTS local, señor.");
+            }
         }
     </script>
 </body>
