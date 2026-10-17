@@ -289,7 +289,6 @@
             transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1), opacity 1.2s ease;
         }
 
-        /* Si el contenedor del HUD tiene la clase, forzamos la animación en el núcleo sin importar el orden */
         body:has(#hud-container.hud-transition-left) #core-3d-wrapper {
             transform: translate(-50%, -50%) translateX(-100vw) scale(0.9) !important;
             opacity: 0;
@@ -385,12 +384,10 @@
 
     <canvas id="bg-canvas"></canvas>
     
-    <!-- Núcleo Central 3D Fijo (Red Neuronal Masiva con Anillos Segmentados y Aberturas) -->
     <div id="core-3d-wrapper">
         <canvas id="core-canvas-3d"></canvas>
     </div>
 
-    <!-- Contenedor general que se desplaza completo al activar/desactivar modos -->
     <div id="hud-container">
         
         <div id="jarvis-status-header" class="interactive">
@@ -520,7 +517,7 @@
         }
         animateBg();
 
-        // 2. NÚCLEO CENTRAL 3D: RED NEURONAL SÚPER DENSA Y ANILLOS TECNOLÓGICOS CON ABERTURAS
+        // 2. NÚCLEO CENTRAL 3D
         const coreContainer = document.getElementById('core-canvas-3d');
         const sceneCore = new THREE.Scene();
         const cameraCore = new THREE.PerspectiveCamera(45, coreContainer.clientWidth / coreContainer.clientHeight, 0.1, 1000);
@@ -536,10 +533,9 @@
         const matGoldBright = new THREE.MeshBasicMaterial({ color: 0xffaa11, wireframe: true, transparent: true, opacity: 0.95 });
         const matDeepAmber = new THREE.MeshBasicMaterial({ color: 0xff4400, wireframe: true, transparent: true, opacity: 0.85 });
 
-        // Anillos tecnológicos avanzados con aberturas (segmentados y con ranuras técnicas)
         const ringOuterGroup = new THREE.Group();
         for (let i = 0; i < 16; i++) {
-            if (i % 3 !== 0) { // Crea aberturas deliberadas en el anillo
+            if (i % 3 !== 0) {
                 const segment = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.04, 0.04), matOrangeGlow);
                 const angle = i * (Math.PI / 8);
                 segment.position.set(Math.cos(angle) * 1.85, Math.sin(angle) * 1.85, 0);
@@ -575,7 +571,6 @@
         ringTilted2.rotation.y = Math.PI * 0.4;
         coreGroup.add(ringTilted2);
 
-        // RED NEURONAL MASIVA: Muchísimos más puntos y ligeramente más grandes
         const neuronNodeCount = 4500;
         const neuronPositions = new Float32Array(neuronNodeCount * 3);
         const nodeCoords = [];
@@ -600,7 +595,7 @@
         const neuronGeo = new THREE.BufferGeometry();
         neuronGeo.setAttribute('position', new THREE.BufferAttribute(neuronPositions, 3));
         const neuronMat = new THREE.PointsMaterial({
-            size: 0.024, // Ligeramente más grandes y brillantes
+            size: 0.024,
             color: 0xffaa22,
             transparent: true,
             opacity: 0.9
@@ -608,7 +603,6 @@
         const neuronPoints = new THREE.Points(neuronGeo, neuronMat);
         coreGroup.add(neuronPoints);
 
-        // Sinapsis / Líneas neuronales ultradensas
         const linePositions = [];
         for(let i = 0; i < nodeCoords.length; i += 4) {
             for(let j = i + 1; j < nodeCoords.length; j += 15) {
@@ -973,7 +967,6 @@
             const lower = text.toLowerCase();
             let codeSnippet = '';
 
-      // Desplazamiento completo de todo el HUD hacia la izquierda (incluyendo logotipo y paneles)
             if (lower.includes("modo de trabajo avanzado") || lower.includes("modo avanzado")) {
                 const container = document.getElementById('hud-container');
                 container.classList.add('hud-transition-left');
@@ -1008,14 +1001,13 @@
                 return;
             }
 
-              // Desplazamiento completo de todo el HUD hacia la izquierda (incluyendo logotipo y paneles)
             if (lower.includes("activate goon mode") || lower.includes("activa modo")) {
                 const container = document.getElementById('hud-container');
                 container.classList.add('hud-transition-left');
                 
                 setTimeout(() => {
                     document.documentElement.style.setProperty('--theme-color', '#FFA500');
-                    document.documentElement.style.setProperty('--theme-glow', 'rgba(255, 165, 0)');
+                    document.documentElement.style.setProperty('--theme-glow', 'rgba(255, 165, 0)');
                     document.documentElement.style.setProperty('--theme-bg', 'rgba(18, 4, 2, 0.95)');
                     container.classList.remove('hud-transition-left');
                     container.classList.add('hud-transition-right');
@@ -1023,7 +1015,7 @@
                 }, 1200);
 
                 addChatMessage("JARVIS: at your service sir goon mode activated", "jarvis");
-                
+                speakJarvis("At your service sir, goon mode activated.");
                 return;
             } else if (lower.includes("turn off") || lower.includes("apaga")) {
                 const container = document.getElementById('hud-container');
@@ -1107,29 +1099,20 @@
             chat.scrollTop = chat.scrollHeight;
         }
 
-        // Integración de Piper TTS (Conexión local al servidor Python)
-        async function speakJarvis(text) {
+        // VOZ DE MASCULINA ONLINE SÚPER RÁPIDA Y 100% GRATIS PARA IPAD (Sin créditos y sin PC)
+        function speakJarvis(text) {
             if (!text) return;
             const cleanText = text.replace(/<[^>]*>?/gm, '');
+            const encodedText = encodeURIComponent(cleanText);
             
-            try {
-                const response = await fetch("http://localhost:5000/tts", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ text: cleanText })
-                });
+            // Voz masculina de Microsoft Neural (es-MX-JorgeNeural / es-ES-AlvaroNeural)
+            const audioUrl = `https://api.streamelements.com/kappa/v2/speech?voice=es-MX-JorgeNeural&text=${encodedText}`;
 
-                if (response.ok) {
-                    const blob = await response.blob();
-                    const audioUrl = URL.createObjectURL(blob);
-                    const audio = new Audio(audioUrl);
-                    audio.play().catch(err => {});
-                } else {
-                    console.warn("No se pudo conectar con el servidor local de Piper TTS, señor.");
-                }
-            } catch (err) {
-                console.warn("Error de enlace con Piper TTS local, señor.");
-            }
+            const audio = new Audio(audioUrl);
+            audio.playbackRate = 1.05; // Ligeramente acelerado para dar toque táctico
+            audio.play().catch(err => {
+                console.warn("Touch interaction required to play audio on iPadOS.");
+            });
         }
     </script>
 </body>
