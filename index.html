@@ -928,6 +928,12 @@
 
         async function callGroqAPI(key, payloadMessages) {
             try {
+                const hasImage = payloadMessages.some(msg => 
+                    Array.isArray(msg.content) && msg.content.some(item => item.type === "image_url")
+                );
+
+                const activeModel = hasImage ? "qwen/qwen3.8-27b" : "openai/gpt-oss-120b";
+
                 const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                     method: "POST",
                     headers: {
@@ -935,7 +941,7 @@
                         "Authorization": `Bearer ${key}`
                     },
                     body: JSON.stringify({
-                        model: "openai/gpt-oss-120b",
+                        model: activeModel,
                         messages: payloadMessages,
                         max_tokens: 2048
                     })
