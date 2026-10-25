@@ -909,8 +909,13 @@
                 }
             }
 
-            let messagesPayload = [...chatHistory];
+            // Armamos los mensajes del historial asegurando que todos tengan 'content' tipo string
+            let messagesPayload = chatHistory.map(msg => ({
+                role: msg.role,
+                content: String(msg.content)
+            }));
 
+            // Si hay una imagen activa, agregamos la estructura especial sólo a este último mensaje
             if (currentImageBase64) {
                 messagesPayload.push({
                     role: "user",
@@ -923,11 +928,15 @@
                 messagesPayload.push({ role: "user", content: userText });
             }
 
+            // Guardamos el texto del usuario en el historial permanente como String plano
+            chatHistory.push({ role: "user", content: userText || "Analiza la imagen" });
+
             return await callGroqAPI(groqKey, messagesPayload);
         }
 
         async function callGroqAPI(key, payloadMessages) {
             try {
+                // Verificamos si este mensaje específico trae imagen
                 const hasImage = payloadMessages.some(msg => 
                     Array.isArray(msg.content) && msg.content.some(item => item.type === "image_url")
                 );
@@ -950,7 +959,7 @@
                 if (data.choices && data.choices[0] && data.choices[0].message) {
                     const reply = data.choices[0].message.content;
                     chatHistory.push({ role: "assistant", content: reply });
-                    currentImageBase64 = null;
+                    currentImageBase64 = null; // Se limpia la imagen tras ser analizada con éxito
                     return reply;
                 } else if (data.error) {
                     return `Error de Groq, señor: ${data.error.message || 'Desconocido'}`;
