@@ -112,7 +112,7 @@
             position: absolute;
             bottom: 80px;
             right: 25px;
-            width: 280px;
+            width: 310px;
             background: var(--theme-bg);
             border: 1px solid var(--theme-color);
             border-radius: 12px;
@@ -413,9 +413,12 @@
         <button id="settings-toggle-btn" class="hud-btn interactive" style="padding: 8px 12px; font-size: 12px;" onclick="toggleSettingsMenu()">⚙️ Config</button>
 
         <div id="settings-modal" class="interactive">
-            <h3>CONFIGURACIÓN</h3>
+            <h3>CONFIGURACIÓN & MEMORIA</h3>
+            <div style="font-size: 9px; margin-top: 4px; color: #fff;">Memoria de Largo Plazo (Core):</div>
+            <textarea id="core-memory-textarea" style="width: 100%; height: 60px; background: #000; border: 1px solid var(--theme-color); color: var(--theme-color); font-size: 9px; padding: 4px; resize: none; outline: none;" placeholder="Ej: Proyecto Iván, actuadores lineales con kill switch, impresora K2 Combo..."></textarea>
+            <button class="hud-btn" style="margin-left: 0; margin-top: 2px; font-size: 9px; padding: 4px; width: 100%;" onclick="saveCoreMemory()">Actualizar Core Memoria</button>
             <div style="display: flex; gap: 5px; margin-top: 4px;">
-                <button class="hud-btn" style="flex: 1; margin: 0; font-size: 9px; padding: 4px;" onclick="clearChatHistory()">Limpiar Chat</button>
+                <button class="hud-btn" style="flex: 1; margin: 0; font-size: 9px; padding: 4px;" onclick="clearChatHistory()">Nuevo Chat</button>
                 <button class="hud-btn" style="flex: 1; margin: 0; font-size: 9px; padding: 4px; border-color: var(--theme-color); color: var(--theme-color);" onclick="restartSystem()">🔄 Reiniciar</button>
             </div>
             <button class="hud-btn" style="margin-left: 0; margin-top: 2px; text-align: center; font-size: 10px; width: 100%;" onclick="toggleSettingsMenu()">Cerrar</button>
@@ -693,11 +696,14 @@
         animateSlot3D();
 
         function getSystemPrompt() {
-            return "Eres J.A.R.V.I.S., software de IA . Directo, sarcástico, altamente eficiente y tecnológico. Nunca digas 'Buenos días' ni uses saludos formales molestos. Si el usuario dice a trabajar respondes con a la orden. Responde de manera concisa y lúcida, dirigiéndote al usuario única y exclusivamente como 'señor'.";
+            let coreMemory = localStorage.getItem('jarvis_core_memory') || "Ningún proyecto registrado todavía.";
+            return `Eres J.A.R.V.I.S., software de IA . Directo, sarcástico, altamente eficiente y tecnológico. Nunca digas 'Buenos días' ni uses saludos formales molestos. Si el usuario dice a trabajar respondes con a la orden. Responde de manera concisa y lúcida, dirigiéndote al usuario única y exclusivamente como 'señor'. 
+[MEMORIA DE LARGO PLAZO DEL TALLER Y PROYECTOS DEL SEÑOR]:
+${coreMemory}`;
         }
 
-        // Memoria Persistente de Chat
-        let chatHistory = JSON.parse(localStorage.getItem('jarvis_chat_memory')) || [
+        // Historial limpio por cada sesión (nuevo chat al reiniciar app)
+        let chatHistory = [
             { role: "system", content: getSystemPrompt() }
         ];
 
@@ -706,11 +712,18 @@
             modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
         }
 
+        function saveCoreMemory() {
+            const memoryText = document.getElementById('core-memory-textarea').value.trim();
+            localStorage.setItem('jarvis_core_memory', memoryText);
+            // Actualizamos el system prompt del chat activo con la nueva memoria
+            chatHistory[0].content = getSystemPrompt();
+            addChatMessage("JARVIS: Core Memoria actualizada en el núcleo, señor.", "jarvis");
+        }
+
         function clearChatHistory() {
             const chat = document.getElementById('jarvis-chat');
-            chat.innerHTML = `<div class="msg jarvis" id="welcome-msg">JARVIS: Memoria depurada, señor.</div>`;
+            chat.innerHTML = `<div class="msg jarvis" id="welcome-msg">JARVIS: Nuevo ciclo de chat iniciado, señor. Memoria de largo plazo activa.</div>`;
             chatHistory = [{ role: "system", content: getSystemPrompt() }];
-            localStorage.removeItem('jarvis_chat_memory');
         }
 
         function restartSystem() { location.reload(); }
@@ -731,22 +744,12 @@
             const savedGroq = localStorage.getItem('groq_api_key');
             const savedTavily = localStorage.getItem('tavily_api_key');
             const savedAi3D = localStorage.getItem('ai3d_api_key');
+            const savedCoreMem = localStorage.getItem('jarvis_core_memory');
 
             if (savedGroq) document.getElementById('groq-key-input').value = savedGroq;
             if (savedTavily) document.getElementById('tavily-key-input').value = savedTavily;
             if (savedAi3D) document.getElementById('ai3d-key-input').value = savedAi3D;
-
-            // Restaurar visualmente la memoria de chat anterior al cargar la página
-            const chat = document.getElementById('jarvis-chat');
-            chat.innerHTML = `<div class="msg jarvis" id="welcome-msg">JARVIS: Memoria de red recuperada, señor.</div>`;
-            
-            chatHistory.forEach(msg => {
-                if (msg.role !== "system") {
-                    let senderClass = (msg.role === "assistant") ? "jarvis" : "user";
-                    let prefix = (msg.role === "assistant") ? "JARVIS: " : "";
-                    addChatMessage(prefix + msg.content, senderClass);
-                }
-            });
+            if (savedCoreMem) document.getElementById('core-memory-textarea').value = savedCoreMem;
         });
 
         function handleImageUpload(event) {
@@ -922,6 +925,9 @@
                 }
             }
 
+            // Asegurarnos de que el system prompt tenga la memoria más actualizada
+            chatHistory[0].content = getSystemPrompt();
+
             let messagesPayload = chatHistory.map(msg => ({
                 role: msg.role,
                 content: String(msg.content)
@@ -940,7 +946,6 @@
             }
 
             chatHistory.push({ role: "user", content: userText || "Analiza la imagen" });
-            localStorage.setItem('jarvis_chat_memory', JSON.stringify(chatHistory));
 
             return await callGroqAPI(groqKey, messagesPayload);
         }
@@ -969,7 +974,6 @@
                 if (data.choices && data.choices[0] && data.choices[0].message) {
                     const reply = data.choices[0].message.content;
                     chatHistory.push({ role: "assistant", content: reply });
-                    localStorage.setItem('jarvis_chat_memory', JSON.stringify(chatHistory));
                     currentImageBase64 = null;
                     return reply;
                 } else if (data.error) {
