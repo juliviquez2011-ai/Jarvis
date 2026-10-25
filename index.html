@@ -696,7 +696,8 @@
             return "Eres J.A.R.V.I.S., software de IA . Directo, sarcástico, altamente eficiente y tecnológico. Nunca digas 'Buenos días' ni uses saludos formales molestos. Si el usuario dice a trabajar respondes con a la orden. Responde de manera concisa y lúcida, dirigiéndote al usuario única y exclusivamente como 'señor'.";
         }
 
-        let chatHistory = [
+        // Memoria Persistente de Chat
+        let chatHistory = JSON.parse(localStorage.getItem('jarvis_chat_memory')) || [
             { role: "system", content: getSystemPrompt() }
         ];
 
@@ -709,6 +710,7 @@
             const chat = document.getElementById('jarvis-chat');
             chat.innerHTML = `<div class="msg jarvis" id="welcome-msg">JARVIS: Memoria depurada, señor.</div>`;
             chatHistory = [{ role: "system", content: getSystemPrompt() }];
+            localStorage.removeItem('jarvis_chat_memory');
         }
 
         function restartSystem() { location.reload(); }
@@ -722,7 +724,6 @@
             if (tavilyKey) localStorage.setItem('tavily_api_key', tavilyKey);
             if (ai3dKey) localStorage.setItem('ai3d_api_key', ai3dKey);
             
-            chatHistory = [{ role: "system", content: getSystemPrompt() }];
             addChatMessage("JARVIS: Credenciales actualizadas, señor.", "jarvis");
         }
 
@@ -734,6 +735,18 @@
             if (savedGroq) document.getElementById('groq-key-input').value = savedGroq;
             if (savedTavily) document.getElementById('tavily-key-input').value = savedTavily;
             if (savedAi3D) document.getElementById('ai3d-key-input').value = savedAi3D;
+
+            // Restaurar visualmente la memoria de chat anterior al cargar la página
+            const chat = document.getElementById('jarvis-chat');
+            chat.innerHTML = `<div class="msg jarvis" id="welcome-msg">JARVIS: Memoria de red recuperada, señor.</div>`;
+            
+            chatHistory.forEach(msg => {
+                if (msg.role !== "system") {
+                    let senderClass = (msg.role === "assistant") ? "jarvis" : "user";
+                    let prefix = (msg.role === "assistant") ? "JARVIS: " : "";
+                    addChatMessage(prefix + msg.content, senderClass);
+                }
+            });
         });
 
         function handleImageUpload(event) {
@@ -909,13 +922,11 @@
                 }
             }
 
-            // Armamos los mensajes del historial asegurando que todos tengan 'content' tipo string
             let messagesPayload = chatHistory.map(msg => ({
                 role: msg.role,
                 content: String(msg.content)
             }));
 
-            // Si hay una imagen activa, agregamos la estructura especial sólo a este último mensaje
             if (currentImageBase64) {
                 messagesPayload.push({
                     role: "user",
@@ -928,15 +939,14 @@
                 messagesPayload.push({ role: "user", content: userText });
             }
 
-            // Guardamos el texto del usuario en el historial permanente como String plano
             chatHistory.push({ role: "user", content: userText || "Analiza la imagen" });
+            localStorage.setItem('jarvis_chat_memory', JSON.stringify(chatHistory));
 
             return await callGroqAPI(groqKey, messagesPayload);
         }
 
         async function callGroqAPI(key, payloadMessages) {
             try {
-                // Verificamos si este mensaje específico trae imagen
                 const hasImage = payloadMessages.some(msg => 
                     Array.isArray(msg.content) && msg.content.some(item => item.type === "image_url")
                 );
@@ -959,7 +969,8 @@
                 if (data.choices && data.choices[0] && data.choices[0].message) {
                     const reply = data.choices[0].message.content;
                     chatHistory.push({ role: "assistant", content: reply });
-                    currentImageBase64 = null; // Se limpia la imagen tras ser analizada con éxito
+                    localStorage.setItem('jarvis_chat_memory', JSON.stringify(chatHistory));
+                    currentImageBase64 = null;
                     return reply;
                 } else if (data.error) {
                     return `Error de Groq, señor: ${data.error.message || 'Desconocido'}`;
